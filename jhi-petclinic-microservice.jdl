@@ -1,0 +1,140 @@
+/*
+ * This is a microservice e-commerce store sample with Gateway and three microservice applications
+ * This uses Consul for service discovery and JWT authentication
+ */
+
+application {
+  config {
+    baseName petclinic
+    applicationType gateway
+    packageName fr.vmz.jhipster.petclinic
+    serviceDiscoveryType consul
+    authenticationType jwt
+    databaseType sql
+    devDatabaseType h2Disk
+    prodDatabaseType postgresql
+    cacheProvider no
+    buildTool maven
+    clientFramework angular
+    testFrameworks [cypress, cucumber, gatling]
+    reactive true
+  }
+  entities *
+}
+
+application {
+  config {
+    baseName customer
+    applicationType microservice
+    packageName fr.vmz.jhipster.petclinic.customer
+    serviceDiscoveryType consul
+    authenticationType jwt
+    databaseType sql
+    devDatabaseType h2Disk
+    prodDatabaseType postgresql
+    cacheProvider hazelcast
+    buildTool maven
+    serverPort 8081
+    skipUserManagement true
+    testFrameworks [cucumber, gatling]
+  }
+  entities PetType, Pet, Owner
+}
+
+application {
+  config {
+    baseName vet
+    applicationType microservice
+    packageName fr.vmz.jhipster.petclinic.vet
+    serviceDiscoveryType consul
+    authenticationType jwt
+    databaseType sql
+    devDatabaseType h2Disk
+    prodDatabaseType postgresql
+    buildTool maven
+    serverPort 8082
+    skipUserManagement true
+    testFrameworks [cucumber, gatling]
+  }
+  entities Vet, Specialty
+}
+
+application {
+  config {
+    baseName visit
+    applicationType microservice
+    packageName fr.vmz.jhipster.petclinic.visit
+    serviceDiscoveryType consul
+    authenticationType jwt
+    databaseType sql
+    devDatabaseType h2Disk
+    prodDatabaseType postgresql
+    cacheProvider no
+    enableHibernateCache false
+    buildTool maven
+    serverPort 8083
+    skipUserManagement true
+    testFrameworks [cucumber, gatling]
+  }
+  entities Visit
+}
+
+/* Entities for Petclinic Gateway */
+
+/* Entities for Customer microservic*/
+
+entity PetType(types) {
+  name String required maxlength(80)
+}
+
+entity Owner(owners) {
+  firstName String required maxlength(30)
+  lastName String required maxlength(30)
+  address String required maxlength(255)
+  city String required maxlength(80)
+  telephone String required maxlength(20)
+}
+
+entity Pet(pets) {
+  name String required maxlength(30)
+  birthDate LocalDate
+}
+
+relationship ManyToOne {
+  Pet{type(name)} to PetType
+}
+
+relationship OneToMany {
+  Owner{pets(name)} to Pet{owner(lastName)}
+  //Pet{visits} to Visit{pet(name)}
+}
+
+service Pet, Owner, PetType with serviceClass
+paginate Pet, Owner, PetType with pagination
+microservice Pet, Owner, PetType with customer
+
+/* Entities for Vet microservice */
+entity Vet(vets) {
+  firstName String required maxlength(30)
+  lastName String required maxlength(30)
+}
+
+entity Specialty(specialties) {
+  name String required maxlength(80)
+}
+
+relationship ManyToMany {
+  Vet{specialties(name)} to Specialty{vets}
+}
+
+service Vet, Specialty with serviceClass
+paginate Vet, Specialty with pagination
+microservice Vet, Specialty with vet
+
+/* Entities for Visit microservice */
+
+entity Visit(visits) {
+  visitDate LocalDate
+  description String required maxlength(255)
+}
+microservice Visit with visit

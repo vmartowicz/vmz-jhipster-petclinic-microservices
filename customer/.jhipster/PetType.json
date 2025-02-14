@@ -1,0 +1,23 @@
+{
+  "annotations": {
+    "changelogDate": "20250130211520"
+  },
+  "applications": ["petclinic", "customer"],
+  "clientRootFolder": "customer",
+  "databaseType": "sql",
+  "entityTableName": "types",
+  "fields": [
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "80"
+    }
+  ],
+  "microserviceName": "customer",
+  "name": "PetType",
+  "pagination": "pagination",
+  "relationships": [],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

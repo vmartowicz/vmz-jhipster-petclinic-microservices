@@ -1,0 +1,38 @@
+{
+  "annotations": {
+    "changelogDate": "20250130211820"
+  },
+  "applications": ["petclinic", "vet"],
+  "clientRootFolder": "vet",
+  "databaseType": "sql",
+  "entityTableName": "vets",
+  "fields": [
+    {
+      "fieldName": "firstName",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "30"
+    },
+    {
+      "fieldName": "lastName",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "30"
+    }
+  ],
+  "microserviceName": "vet",
+  "name": "Vet",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityField": "name",
+      "otherEntityName": "specialty",
+      "otherEntityRelationshipName": "vets",
+      "relationshipName": "specialties",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}
