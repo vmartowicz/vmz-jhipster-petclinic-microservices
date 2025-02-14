@@ -35,8 +35,8 @@ sudo docker compose -f visit/src/main/docker/postgresql.yml up -d
 
 #### To start yours application microservices, run:
 ```
-cd customer && ./mvnw
-cd vet && ./mvnw
-cd visit && ./mvnw
-cd petclinic && ./mvnw 
+cd customer && ./mvnw -Pprod
+cd vet && ./mvnw -Pprod
+cd visit && ./mvnw -Pprod
+cd petclinic && ./mvnw -Pprod
 ```
