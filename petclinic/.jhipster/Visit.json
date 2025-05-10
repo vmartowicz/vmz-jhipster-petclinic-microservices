@@ -1,0 +1,30 @@
+{
+  "annotations": {
+    "changelogDate": "20250130212020"
+  },
+  "applications": ["petclinic", "visit"],
+  "clientRootFolder": "visit",
+  "databaseType": "sql",
+  "entityTableName": "visits",
+  "fields": [
+    {
+      "fieldName": "visitDate",
+      "fieldType": "LocalDate"
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "255"
+    },
+    {
+      "fieldName": "petId",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "microserviceName": "visit",
+  "name": "Visit",
+  "relationships": [],
+  "searchEngine": "no"
+}

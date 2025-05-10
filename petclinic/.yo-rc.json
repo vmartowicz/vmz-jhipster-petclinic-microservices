@@ -1,0 +1,49 @@
+{
+  "generator-jhipster": {
+    "applicationIndex": 0,
+    "applicationType": "gateway",
+    "applications": {
+      "customer": {
+        "applicationIndex": 1,
+        "serverPort": "8081"
+      },
+      "vet": {
+        "applicationIndex": 2,
+        "serverPort": "8082"
+      },
+      "visit": {
+        "applicationIndex": 3,
+        "serverPort": "8083"
+      }
+    },
+    "authenticationType": "jwt",
+    "baseName": "petclinic",
+    "blueprints": [
+      {
+        "name": "generator-jhipster-entity-audit"
+      }
+    ],
+    "buildTool": "maven",
+    "cacheProvider": "no",
+    "clientFramework": "angular",
+    "creationTimestamp": 1738442482529,
+    "databaseType": "sql",
+    "devDatabaseType": "h2Disk",
+    "devServerPort": 4200,
+    "entities": ["PetType", "Owner", "Pet", "Vet", "Specialty", "Visit"],
+    "jhipsterVersion": "8.9.0",
+    "jwtSecretKey": "NzYzMzdkYjA2MWIyNWIyNDM3NzhkOWFhNTJjN2Y5MTQxMjM5YTY1NzJlNzMwOTZkYjJlN2VlN2U0MGYzY2ViMTRhNzdmMTZmNTM2YmE3NDg4YmRjNDZiNDE2ZWMxM2UxMWI0M2ZhYTYyM2U1Mjg3NWE3Nzg5NzA4NThlNTJkNTg=",
+    "languages": ["en"],
+    "lastLiquibaseTimestamp": 1738272020000,
+    "nativeLanguage": "en",
+    "packageName": "fr.vmz.jhipster.petclinic",
+    "prodDatabaseType": "postgresql",
+    "reactive": true,
+    "serverPort": 8080,
+    "serviceDiscoveryType": "consul",
+    "testFrameworks": ["cypress", "cucumber", "gatling"]
+  },
+  "generator-jhipster-entity-audit": {
+    "auditFramework": "javers"
+  }
+}

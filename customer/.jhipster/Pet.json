@@ -1,0 +1,43 @@
+{
+  "annotations": {
+    "changelogDate": "20250130211720"
+  },
+  "applications": ["petclinic", "customer"],
+  "clientRootFolder": "customer",
+  "databaseType": "sql",
+  "entityTableName": "pets",
+  "fields": [
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "30"
+    },
+    {
+      "fieldName": "birthDate",
+      "fieldType": "LocalDate"
+    }
+  ],
+  "microserviceName": "customer",
+  "name": "Pet",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityField": "name",
+      "otherEntityName": "petType",
+      "relationshipName": "type",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityField": "lastName",
+      "otherEntityName": "owner",
+      "otherEntityRelationshipName": "pets",
+      "relationshipName": "owner",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}
