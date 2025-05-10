@@ -10,7 +10,7 @@
     "databaseType": "sql",
     "devDatabaseType": "h2Disk",
     "entities": ["PetType", "Owner", "Pet"],
-    "jhipsterVersion": "8.9.0",
+    "jhipsterVersion": "8.11.0",
     "jwtSecretKey": "Yjk0M2M3NjQ3NzRjZTBmYTcwNDdlMDdiZTFmM2M0Y2FjODJmZmFiYWMyZmUzZjc5YzQyZDQyYWJjNmY0NjA3MjU0NmY2M2Q2YmY1Y2VjZTgzN2Y5YWM0MDAzYjI0MmFlMjZkNWEyNThhY2E0NjVkYmMyODc2MGNjODEzZTlmNjY=",
     "languages": ["en"],
     "lastLiquibaseTimestamp": 1738271840000,
