@@ -48,7 +48,8 @@ public class VisitAsserts {
         assertThat(actual)
             .as("Verify Visit relevant properties")
             .satisfies(a -> assertThat(a.getVisitDate()).as("check visitDate").isEqualTo(expected.getVisitDate()))
-            .satisfies(a -> assertThat(a.getDescription()).as("check description").isEqualTo(expected.getDescription()));
+            .satisfies(a -> assertThat(a.getDescription()).as("check description").isEqualTo(expected.getDescription()))
+            .satisfies(a -> assertThat(a.getPetId()).as("check petId").isEqualTo(expected.getPetId()));
     }
 
     /**

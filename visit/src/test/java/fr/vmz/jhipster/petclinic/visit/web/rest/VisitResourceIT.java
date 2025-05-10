@@ -40,6 +40,9 @@ class VisitResourceIT {
     private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
     private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
 
+    private static final Long DEFAULT_PET_ID = 1L;
+    private static final Long UPDATED_PET_ID = 2L;
+
     private static final String ENTITY_API_URL = "/api/visits";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
@@ -69,7 +72,7 @@ class VisitResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Visit createEntity() {
-        return new Visit().visitDate(DEFAULT_VISIT_DATE).description(DEFAULT_DESCRIPTION);
+        return new Visit().visitDate(DEFAULT_VISIT_DATE).description(DEFAULT_DESCRIPTION).petId(DEFAULT_PET_ID);
     }
 
     /**
@@ -79,7 +82,7 @@ class VisitResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Visit createUpdatedEntity() {
-        return new Visit().visitDate(UPDATED_VISIT_DATE).description(UPDATED_DESCRIPTION);
+        return new Visit().visitDate(UPDATED_VISIT_DATE).description(UPDATED_DESCRIPTION).petId(UPDATED_PET_ID);
     }
 
     @BeforeEach
@@ -152,6 +155,22 @@ class VisitResourceIT {
 
     @Test
     @Transactional
+    void checkPetIdIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        // set the field null
+        visit.setPetId(null);
+
+        // Create the Visit, which fails.
+
+        restVisitMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(visit)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     void getAllVisits() throws Exception {
         // Initialize the database
         insertedVisit = visitRepository.saveAndFlush(visit);
@@ -163,7 +182,8 @@ class VisitResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(visit.getId().intValue())))
             .andExpect(jsonPath("$.[*].visitDate").value(hasItem(DEFAULT_VISIT_DATE.toString())))
-            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)));
+            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
+            .andExpect(jsonPath("$.[*].petId").value(hasItem(DEFAULT_PET_ID.intValue())));
     }
 
     @Test
@@ -179,7 +199,8 @@ class VisitResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(visit.getId().intValue()))
             .andExpect(jsonPath("$.visitDate").value(DEFAULT_VISIT_DATE.toString()))
-            .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION));
+            .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION))
+            .andExpect(jsonPath("$.petId").value(DEFAULT_PET_ID.intValue()));
     }
 
     @Test
@@ -201,7 +222,7 @@ class VisitResourceIT {
         Visit updatedVisit = visitRepository.findById(visit.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedVisit are not directly saved in db
         em.detach(updatedVisit);
-        updatedVisit.visitDate(UPDATED_VISIT_DATE).description(UPDATED_DESCRIPTION);
+        updatedVisit.visitDate(UPDATED_VISIT_DATE).description(UPDATED_DESCRIPTION).petId(UPDATED_PET_ID);
 
         restVisitMockMvc
             .perform(
@@ -277,7 +298,7 @@ class VisitResourceIT {
         Visit partialUpdatedVisit = new Visit();
         partialUpdatedVisit.setId(visit.getId());
 
-        partialUpdatedVisit.visitDate(UPDATED_VISIT_DATE);
+        partialUpdatedVisit.visitDate(UPDATED_VISIT_DATE).petId(UPDATED_PET_ID);
 
         restVisitMockMvc
             .perform(
@@ -305,7 +326,7 @@ class VisitResourceIT {
         Visit partialUpdatedVisit = new Visit();
         partialUpdatedVisit.setId(visit.getId());
 
-        partialUpdatedVisit.visitDate(UPDATED_VISIT_DATE).description(UPDATED_DESCRIPTION);
+        partialUpdatedVisit.visitDate(UPDATED_VISIT_DATE).description(UPDATED_DESCRIPTION).petId(UPDATED_PET_ID);
 
         restVisitMockMvc
             .perform(

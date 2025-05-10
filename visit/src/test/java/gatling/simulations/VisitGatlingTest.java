@@ -65,7 +65,15 @@ public class VisitGatlingTest extends Simulation {
                     http("Create new visit")
                         .post("/services/visit/api/visits")
                         .headers(headersHttpAuthenticated)
-                        .body(StringBody("{" + "\"visitDate\": \"2020-01-01T00:00:00.000Z\"" + ", \"description\": \"SAMPLE_TEXT\"" + "}"))
+                        .body(
+                            StringBody(
+                                "{" +
+                                "\"visitDate\": \"2020-01-01T00:00:00.000Z\"" +
+                                ", \"description\": \"SAMPLE_TEXT\"" +
+                                ", \"petId\": 0" +
+                                "}"
+                            )
+                        )
                         .asJson()
                         .check(status().is(201))
                         .check(headerRegex("Location", "(.*)").saveAs("new_visit_url"))

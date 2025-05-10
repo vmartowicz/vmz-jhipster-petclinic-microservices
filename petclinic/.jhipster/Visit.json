@@ -16,6 +16,11 @@
       "fieldType": "String",
       "fieldValidateRules": ["required", "maxlength"],
       "fieldValidateRulesMaxlength": "255"
+    },
+    {
+      "fieldName": "petId",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
     }
   ],
   "microserviceName": "visit",

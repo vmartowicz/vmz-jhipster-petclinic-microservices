@@ -127,6 +127,9 @@ public class VisitResource {
                 if (visit.getDescription() != null) {
                     existingVisit.setDescription(visit.getDescription());
                 }
+                if (visit.getPetId() != null) {
+                    existingVisit.setPetId(visit.getPetId());
+                }
 
                 return existingVisit;
             })
@@ -175,5 +178,11 @@ public class VisitResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    @GetMapping("/pets")
+    public  List<Visit> read(@RequestParam("petIds") List<Integer> petIds) {
+        LOG.debug("REST request to get all Visits by petIds : {}", petIds);
+        return  visitRepository.findByPetIdIn(petIds);
     }
 }

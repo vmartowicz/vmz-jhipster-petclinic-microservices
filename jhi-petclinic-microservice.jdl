@@ -136,5 +136,7 @@ microservice Vet, Specialty with vet
 entity Visit(visits) {
   visitDate LocalDate
   description String required maxlength(255)
+  petId Long required
+
 }
 microservice Visit with visit

@@ -29,6 +29,10 @@ public class Visit implements Serializable {
     @Column(name = "description", length = 255, nullable = false)
     private String description;
 
+    @NotNull
+    @Column(name = "pet_id", nullable = false)
+    private Long petId;
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public Long getId() {
@@ -70,6 +74,19 @@ public class Visit implements Serializable {
         this.description = description;
     }
 
+    public Long getPetId() {
+        return this.petId;
+    }
+
+    public Visit petId(Long petId) {
+        this.setPetId(petId);
+        return this;
+    }
+
+    public void setPetId(Long petId) {
+        this.petId = petId;
+    }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -96,6 +113,7 @@ public class Visit implements Serializable {
             "id=" + getId() +
             ", visitDate='" + getVisitDate() + "'" +
             ", description='" + getDescription() + "'" +
+            ", petId=" + getPetId() +
             "}";
     }
 }
