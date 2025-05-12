@@ -140,3 +140,4 @@ entity Visit(visits) {
 
 }
 microservice Visit with visit
+paginate Visit with pagination

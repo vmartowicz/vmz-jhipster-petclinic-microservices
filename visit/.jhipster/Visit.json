@@ -25,6 +25,7 @@
   ],
   "microserviceName": "visit",
   "name": "Visit",
+  "pagination": "pagination",
   "relationships": [],
   "searchEngine": "no"
 }
