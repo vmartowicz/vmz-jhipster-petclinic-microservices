@@ -97,9 +97,10 @@ class VisitExtendedResourceIT {
         // Get all the visitList by petIds
         restVisitMockMvc
             .perform(get(ENTITY_API_URL + "/pets")
-                .param("petIds", DEFAULT_PET_ID.toString()))
+                .param("petIds", DEFAULT_PET_ID +","+UPDATED_PET_ID))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(insertedVisit.getId().intValue())))
             .andExpect(jsonPath("$.[*].petId").value(hasItem(DEFAULT_PET_ID.intValue())));
     }
 
