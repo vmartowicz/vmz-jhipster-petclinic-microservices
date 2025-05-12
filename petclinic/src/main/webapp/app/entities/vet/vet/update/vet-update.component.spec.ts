@@ -47,7 +47,7 @@ describe('Vet Management Update Component', () => {
   });
 
   describe('ngOnInit', () => {
-    it('Should call Specialty query and add missing value', () => {
+    it('should call Specialty query and add missing value', () => {
       const vet: IVet = { id: 5685 };
       const specialties: ISpecialty[] = [{ id: 29362 }];
       vet.specialties = specialties;
@@ -69,7 +69,7 @@ describe('Vet Management Update Component', () => {
       expect(comp.specialtiesSharedCollection).toEqual(expectedCollection);
     });
 
-    it('Should update editForm', () => {
+    it('should update editForm', () => {
       const vet: IVet = { id: 5685 };
       const specialties: ISpecialty = { id: 29362 };
       vet.specialties = [specialties];
@@ -83,7 +83,7 @@ describe('Vet Management Update Component', () => {
   });
 
   describe('save', () => {
-    it('Should call update service on save for existing entity', () => {
+    it('should call update service on save for existing entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IVet>>();
       const vet = { id: 31928 };
@@ -106,7 +106,7 @@ describe('Vet Management Update Component', () => {
       expect(comp.isSaving).toEqual(false);
     });
 
-    it('Should call create service on save for new entity', () => {
+    it('should call create service on save for new entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IVet>>();
       const vet = { id: 31928 };
@@ -129,7 +129,7 @@ describe('Vet Management Update Component', () => {
       expect(comp.previousState).toHaveBeenCalled();
     });
 
-    it('Should set isSaving to false on error', () => {
+    it('should set isSaving to false on error', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IVet>>();
       const vet = { id: 31928 };
@@ -152,7 +152,7 @@ describe('Vet Management Update Component', () => {
 
   describe('Compare relationships', () => {
     describe('compareSpecialty', () => {
-      it('Should forward to specialtyService', () => {
+      it('should forward to specialtyService', () => {
         const entity = { id: 29362 };
         const entity2 = { id: 20679 };
         jest.spyOn(specialtyService, 'compareSpecialty');

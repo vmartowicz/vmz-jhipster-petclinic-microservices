@@ -51,7 +51,7 @@ describe('Pet Management Update Component', () => {
   });
 
   describe('ngOnInit', () => {
-    it('Should call PetType query and add missing value', () => {
+    it('should call PetType query and add missing value', () => {
       const pet: IPet = { id: 28893 };
       const type: IPetType = { id: 13878 };
       pet.type = type;
@@ -73,7 +73,7 @@ describe('Pet Management Update Component', () => {
       expect(comp.petTypesSharedCollection).toEqual(expectedCollection);
     });
 
-    it('Should call Owner query and add missing value', () => {
+    it('should call Owner query and add missing value', () => {
       const pet: IPet = { id: 28893 };
       const owner: IOwner = { id: 25615 };
       pet.owner = owner;
@@ -95,7 +95,7 @@ describe('Pet Management Update Component', () => {
       expect(comp.ownersSharedCollection).toEqual(expectedCollection);
     });
 
-    it('Should update editForm', () => {
+    it('should update editForm', () => {
       const pet: IPet = { id: 28893 };
       const type: IPetType = { id: 13878 };
       pet.type = type;
@@ -112,7 +112,7 @@ describe('Pet Management Update Component', () => {
   });
 
   describe('save', () => {
-    it('Should call update service on save for existing entity', () => {
+    it('should call update service on save for existing entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IPet>>();
       const pet = { id: 23154 };
@@ -135,7 +135,7 @@ describe('Pet Management Update Component', () => {
       expect(comp.isSaving).toEqual(false);
     });
 
-    it('Should call create service on save for new entity', () => {
+    it('should call create service on save for new entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IPet>>();
       const pet = { id: 23154 };
@@ -158,7 +158,7 @@ describe('Pet Management Update Component', () => {
       expect(comp.previousState).toHaveBeenCalled();
     });
 
-    it('Should set isSaving to false on error', () => {
+    it('should set isSaving to false on error', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IPet>>();
       const pet = { id: 23154 };
@@ -181,7 +181,7 @@ describe('Pet Management Update Component', () => {
 
   describe('Compare relationships', () => {
     describe('comparePetType', () => {
-      it('Should forward to petTypeService', () => {
+      it('should forward to petTypeService', () => {
         const entity = { id: 13878 };
         const entity2 = { id: 6067 };
         jest.spyOn(petTypeService, 'comparePetType');
@@ -191,7 +191,7 @@ describe('Pet Management Update Component', () => {
     });
 
     describe('compareOwner', () => {
-      it('Should forward to ownerService', () => {
+      it('should forward to ownerService', () => {
         const entity = { id: 25615 };
         const entity2 = { id: 10278 };
         jest.spyOn(ownerService, 'compareOwner');

@@ -78,7 +78,7 @@ describe('PetType Management Component', () => {
       );
   });
 
-  it('Should call load all on init', () => {
+  it('should call load all on init', () => {
     // WHEN
     comp.ngOnInit();
 
@@ -88,7 +88,7 @@ describe('PetType Management Component', () => {
   });
 
   describe('trackId', () => {
-    it('Should forward to petTypeService', () => {
+    it('should forward to petTypeService', () => {
       const entity = { id: 13878 };
       jest.spyOn(service, 'getPetTypeIdentifier');
       const id = comp.trackId(entity);

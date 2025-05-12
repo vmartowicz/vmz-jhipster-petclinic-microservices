@@ -19,8 +19,8 @@
     <property name="timeType" value="time(6)" dbms="postgresql"/>
 
     <include file="config/liquibase/changelog/00000000000000_initial_schema.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20250130211920_added_entity_Specialty.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20250130211820_added_entity_Vet.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250130211920_added_entity_Specialty.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <include file="config/liquibase/changelog/20250130211820_added_entity_constraints_Vet.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->

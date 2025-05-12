@@ -20,6 +20,7 @@ type VisitFormGroupContent = {
   id: FormControl<IVisit['id'] | NewVisit['id']>;
   visitDate: FormControl<IVisit['visitDate']>;
   description: FormControl<IVisit['description']>;
+  petId: FormControl<IVisit['petId']>;
 };
 
 export type VisitFormGroup = FormGroup<VisitFormGroupContent>;
@@ -42,6 +43,9 @@ export class VisitFormService {
       visitDate: new FormControl(visitRawValue.visitDate),
       description: new FormControl(visitRawValue.description, {
         validators: [Validators.required, Validators.maxLength(255)],
+      }),
+      petId: new FormControl(visitRawValue.petId, {
+        validators: [Validators.required],
       }),
     });
   }

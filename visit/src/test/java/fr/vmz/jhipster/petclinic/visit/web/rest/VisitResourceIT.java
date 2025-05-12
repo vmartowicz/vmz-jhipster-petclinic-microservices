@@ -86,12 +86,12 @@ class VisitResourceIT {
     }
 
     @BeforeEach
-    public void initTest() {
+    void initTest() {
         visit = createEntity();
     }
 
     @AfterEach
-    public void cleanup() {
+    void cleanup() {
         if (insertedVisit != null) {
             visitRepository.delete(insertedVisit);
             insertedVisit = null;

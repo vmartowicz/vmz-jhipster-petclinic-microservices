@@ -78,7 +78,7 @@ describe('Specialty Management Component', () => {
       );
   });
 
-  it('Should call load all on init', () => {
+  it('should call load all on init', () => {
     // WHEN
     comp.ngOnInit();
 
@@ -88,7 +88,7 @@ describe('Specialty Management Component', () => {
   });
 
   describe('trackId', () => {
-    it('Should forward to specialtyService', () => {
+    it('should forward to specialtyService', () => {
       const entity = { id: 29362 };
       jest.spyOn(service, 'getSpecialtyIdentifier');
       const id = comp.trackId(entity);

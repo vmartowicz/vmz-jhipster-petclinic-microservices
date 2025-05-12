@@ -78,12 +78,12 @@ class SpecialtyResourceIT {
     }
 
     @BeforeEach
-    public void initTest() {
+    void initTest() {
         specialty = createEntity();
     }
 
     @AfterEach
-    public void cleanup() {
+    void cleanup() {
         if (insertedSpecialty != null) {
             specialtyRepository.delete(insertedSpecialty);
             insertedSpecialty = null;

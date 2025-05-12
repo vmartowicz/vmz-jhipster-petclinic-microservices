@@ -1,7 +1,6 @@
 {
   "annotations": {
-    "changelogDate": "20250130211620",
-    "enableAudit": true
+    "changelogDate": "20250130211620"
   },
   "applications": ["petclinic", "customer"],
   "clientRootFolder": "customer",

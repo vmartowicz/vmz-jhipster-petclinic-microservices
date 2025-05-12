@@ -78,12 +78,12 @@ class PetTypeResourceIT {
     }
 
     @BeforeEach
-    public void initTest() {
+    void initTest() {
         petType = createEntity();
     }
 
     @AfterEach
-    public void cleanup() {
+    void cleanup() {
         if (insertedPetType != null) {
             petTypeRepository.delete(insertedPetType);
             insertedPetType = null;

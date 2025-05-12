@@ -12,6 +12,7 @@ public class JHipsterBlockHoundIntegration implements BlockHoundIntegration {
         builder.allowBlockingCallsInside("fr.vmz.jhipster.petclinic.security.DomainUserDetailsService", "createSpringSecurityUser");
         builder.allowBlockingCallsInside("org.springframework.web.reactive.result.method.InvocableHandlerMethod", "invoke");
         builder.allowBlockingCallsInside("org.springdoc.core.service.OpenAPIService", "build");
+        builder.allowBlockingCallsInside("org.springdoc.core.service.OpenAPIService", "getWebhooks");
         builder.allowBlockingCallsInside("org.springdoc.core.service.AbstractRequestService", "build");
         // jhipster-needle-blockhound-integration - JHipster will add additional gradle plugins here
     }

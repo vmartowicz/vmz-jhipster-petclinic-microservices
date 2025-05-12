@@ -22,6 +22,7 @@ describe('Visit Form Service', () => {
             id: expect.any(Object),
             visitDate: expect.any(Object),
             description: expect.any(Object),
+            petId: expect.any(Object),
           }),
         );
       });
@@ -34,6 +35,7 @@ describe('Visit Form Service', () => {
             id: expect.any(Object),
             visitDate: expect.any(Object),
             description: expect.any(Object),
+            petId: expect.any(Object),
           }),
         );
       });

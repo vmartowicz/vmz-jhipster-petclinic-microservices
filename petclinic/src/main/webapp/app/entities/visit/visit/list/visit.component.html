@@ -20,9 +20,9 @@
     </div>
   </h2>
 
-  <jhi-alert-error></jhi-alert-error>
+  <jhi-alert-error />
 
-  <jhi-alert></jhi-alert>
+  <jhi-alert />
 
   @if (visits().length === 0) {
     <div class="alert alert-warning" id="no-result">
@@ -54,6 +54,13 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
+            <th scope="col" jhiSortBy="petId">
+              <div class="d-flex">
+                <span jhiTranslate="petclinicApp.visitVisit.petId">Pet Id</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
             <th scope="col"></th>
           </tr>
         </thead>
@@ -65,6 +72,7 @@
               </td>
               <td>{{ visit.visitDate | formatMediumDate }}</td>
               <td>{{ visit.description }}</td>
+              <td>{{ visit.petId }}</td>
               <td class="text-end">
                 <div class="btn-group">
                   <a [routerLink]="['/visit', visit.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">

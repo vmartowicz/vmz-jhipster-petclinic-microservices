@@ -4,6 +4,7 @@ export interface IVisit {
   id: number;
   visitDate?: dayjs.Dayjs | null;
   description?: string | null;
+  petId?: number | null;
 }
 
 export type NewVisit = Omit<IVisit, 'id'> & { id: null };

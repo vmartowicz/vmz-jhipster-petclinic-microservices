@@ -15,7 +15,7 @@ describe('Visit e2e test', () => {
   const visitPageUrlPattern = new RegExp('/visit(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const visitSample = { description: 'volunteer before disinherit' };
+  const visitSample = { description: 'spotless', petId: 28637 };
 
   let visit;
 
@@ -163,6 +163,9 @@ describe('Visit e2e test', () => {
 
       cy.get(`[data-cy="description"]`).type('intervention antique');
       cy.get(`[data-cy="description"]`).should('have.value', 'intervention antique');
+
+      cy.get(`[data-cy="petId"]`).type('23376');
+      cy.get(`[data-cy="petId"]`).should('have.value', '23376');
 
       cy.get(entityCreateSaveButtonSelector).click();
 

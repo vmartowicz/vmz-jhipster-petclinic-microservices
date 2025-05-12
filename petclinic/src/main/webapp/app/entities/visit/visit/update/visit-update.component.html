@@ -6,7 +6,7 @@
       </h2>
 
       <div>
-        <jhi-alert-error></jhi-alert-error>
+        <jhi-alert-error />
 
         @if (editForm.controls.id.value !== null) {
           <div class="mb-3">
@@ -53,6 +53,22 @@
                   >This field cannot be longer than 255 characters.</small
                 >
               }
+            </div>
+          }
+        </div>
+
+        @let petIdRef = editForm.get('petId')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_petId" jhiTranslate="petclinicApp.visitVisit.petId">Pet Id</label>
+          <input type="number" class="form-control" name="petId" id="field_petId" data-cy="petId" formControlName="petId" />
+          @if (petIdRef.invalid && (petIdRef.dirty || petIdRef.touched)) {
+            <div>
+              @if (editForm.get('petId')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('petId')?.errors?.number" jhiTranslate="entity.validation.number"
+                >This field should be a number.</small
+              >
             </div>
           }
         </div>
