@@ -3,6 +3,8 @@ package fr.vmz.jhipster.petclinic.vet.service.impl;
 import fr.vmz.jhipster.petclinic.vet.domain.Specialty;
 import fr.vmz.jhipster.petclinic.vet.repository.SpecialtyRepository;
 import fr.vmz.jhipster.petclinic.vet.service.SpecialtyService;
+import fr.vmz.jhipster.petclinic.vet.service.dto.SpecialtyDTO;
+import fr.vmz.jhipster.petclinic.vet.service.mapper.SpecialtyMapper;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,50 +24,56 @@ public class SpecialtyServiceImpl implements SpecialtyService {
 
     private final SpecialtyRepository specialtyRepository;
 
-    public SpecialtyServiceImpl(SpecialtyRepository specialtyRepository) {
+    private final SpecialtyMapper specialtyMapper;
+
+    public SpecialtyServiceImpl(SpecialtyRepository specialtyRepository, SpecialtyMapper specialtyMapper) {
         this.specialtyRepository = specialtyRepository;
+        this.specialtyMapper = specialtyMapper;
     }
 
     @Override
-    public Specialty save(Specialty specialty) {
-        LOG.debug("Request to save Specialty : {}", specialty);
-        return specialtyRepository.save(specialty);
+    public SpecialtyDTO save(SpecialtyDTO specialtyDTO) {
+        LOG.debug("Request to save Specialty : {}", specialtyDTO);
+        Specialty specialty = specialtyMapper.toEntity(specialtyDTO);
+        specialty = specialtyRepository.save(specialty);
+        return specialtyMapper.toDto(specialty);
     }
 
     @Override
-    public Specialty update(Specialty specialty) {
-        LOG.debug("Request to update Specialty : {}", specialty);
-        return specialtyRepository.save(specialty);
+    public SpecialtyDTO update(SpecialtyDTO specialtyDTO) {
+        LOG.debug("Request to update Specialty : {}", specialtyDTO);
+        Specialty specialty = specialtyMapper.toEntity(specialtyDTO);
+        specialty = specialtyRepository.save(specialty);
+        return specialtyMapper.toDto(specialty);
     }
 
     @Override
-    public Optional<Specialty> partialUpdate(Specialty specialty) {
-        LOG.debug("Request to partially update Specialty : {}", specialty);
+    public Optional<SpecialtyDTO> partialUpdate(SpecialtyDTO specialtyDTO) {
+        LOG.debug("Request to partially update Specialty : {}", specialtyDTO);
 
         return specialtyRepository
-            .findById(specialty.getId())
+            .findById(specialtyDTO.getId())
             .map(existingSpecialty -> {
-                if (specialty.getName() != null) {
-                    existingSpecialty.setName(specialty.getName());
-                }
+                specialtyMapper.partialUpdate(existingSpecialty, specialtyDTO);
 
                 return existingSpecialty;
             })
-            .map(specialtyRepository::save);
+            .map(specialtyRepository::save)
+            .map(specialtyMapper::toDto);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Specialty> findAll(Pageable pageable) {
+    public Page<SpecialtyDTO> findAll(Pageable pageable) {
         LOG.debug("Request to get all Specialties");
-        return specialtyRepository.findAll(pageable);
+        return specialtyRepository.findAll(pageable).map(specialtyMapper::toDto);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Specialty> findOne(Long id) {
+    public Optional<SpecialtyDTO> findOne(Long id) {
         LOG.debug("Request to get Specialty : {}", id);
-        return specialtyRepository.findById(id);
+        return specialtyRepository.findById(id).map(specialtyMapper::toDto);
     }
 
     @Override

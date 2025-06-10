@@ -14,6 +14,8 @@ import fr.vmz.jhipster.petclinic.vet.domain.Specialty;
 import fr.vmz.jhipster.petclinic.vet.domain.Vet;
 import fr.vmz.jhipster.petclinic.vet.repository.VetRepository;
 import fr.vmz.jhipster.petclinic.vet.service.VetService;
+import fr.vmz.jhipster.petclinic.vet.service.dto.VetDTO;
+import fr.vmz.jhipster.petclinic.vet.service.mapper.VetMapper;
 import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.Random;
@@ -62,6 +64,9 @@ class VetResourceIT {
 
     @Mock
     private VetRepository vetRepositoryMock;
+
+    @Autowired
+    private VetMapper vetMapper;
 
     @Mock
     private VetService vetServiceMock;
@@ -114,18 +119,20 @@ class VetResourceIT {
     void createVet() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
         // Create the Vet
-        var returnedVet = om.readValue(
+        VetDTO vetDTO = vetMapper.toDto(vet);
+        var returnedVetDTO = om.readValue(
             restVetMockMvc
-                .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(vet)))
+                .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(vetDTO)))
                 .andExpect(status().isCreated())
                 .andReturn()
                 .getResponse()
                 .getContentAsString(),
-            Vet.class
+            VetDTO.class
         );
 
         // Validate the Vet in the database
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
+        var returnedVet = vetMapper.toEntity(returnedVetDTO);
         assertVetUpdatableFieldsEquals(returnedVet, getPersistedVet(returnedVet));
 
         insertedVet = returnedVet;
@@ -136,12 +143,13 @@ class VetResourceIT {
     void createVetWithExistingId() throws Exception {
         // Create the Vet with an existing ID
         vet.setId(1L);
+        VetDTO vetDTO = vetMapper.toDto(vet);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restVetMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(vet)))
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(vetDTO)))
             .andExpect(status().isBadRequest());
 
         // Validate the Vet in the database
@@ -156,9 +164,10 @@ class VetResourceIT {
         vet.setFirstName(null);
 
         // Create the Vet, which fails.
+        VetDTO vetDTO = vetMapper.toDto(vet);
 
         restVetMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(vet)))
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(vetDTO)))
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
@@ -172,9 +181,10 @@ class VetResourceIT {
         vet.setLastName(null);
 
         // Create the Vet, which fails.
+        VetDTO vetDTO = vetMapper.toDto(vet);
 
         restVetMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(vet)))
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(vetDTO)))
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
@@ -430,11 +440,10 @@ class VetResourceIT {
         // Disconnect from session so that the updates on updatedVet are not directly saved in db
         em.detach(updatedVet);
         updatedVet.firstName(UPDATED_FIRST_NAME).lastName(UPDATED_LAST_NAME);
+        VetDTO vetDTO = vetMapper.toDto(updatedVet);
 
         restVetMockMvc
-            .perform(
-                put(ENTITY_API_URL_ID, updatedVet.getId()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(updatedVet))
-            )
+            .perform(put(ENTITY_API_URL_ID, vetDTO.getId()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(vetDTO)))
             .andExpect(status().isOk());
 
         // Validate the Vet in the database
@@ -448,9 +457,12 @@ class VetResourceIT {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         vet.setId(longCount.incrementAndGet());
 
+        // Create the Vet
+        VetDTO vetDTO = vetMapper.toDto(vet);
+
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restVetMockMvc
-            .perform(put(ENTITY_API_URL_ID, vet.getId()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(vet)))
+            .perform(put(ENTITY_API_URL_ID, vetDTO.getId()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(vetDTO)))
             .andExpect(status().isBadRequest());
 
         // Validate the Vet in the database
@@ -463,12 +475,15 @@ class VetResourceIT {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         vet.setId(longCount.incrementAndGet());
 
+        // Create the Vet
+        VetDTO vetDTO = vetMapper.toDto(vet);
+
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restVetMockMvc
             .perform(
                 put(ENTITY_API_URL_ID, longCount.incrementAndGet())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(vet))
+                    .content(om.writeValueAsBytes(vetDTO))
             )
             .andExpect(status().isBadRequest());
 
@@ -482,9 +497,12 @@ class VetResourceIT {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         vet.setId(longCount.incrementAndGet());
 
+        // Create the Vet
+        VetDTO vetDTO = vetMapper.toDto(vet);
+
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restVetMockMvc
-            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(vet)))
+            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(vetDTO)))
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the Vet in the database
@@ -551,9 +569,14 @@ class VetResourceIT {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         vet.setId(longCount.incrementAndGet());
 
+        // Create the Vet
+        VetDTO vetDTO = vetMapper.toDto(vet);
+
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restVetMockMvc
-            .perform(patch(ENTITY_API_URL_ID, vet.getId()).contentType("application/merge-patch+json").content(om.writeValueAsBytes(vet)))
+            .perform(
+                patch(ENTITY_API_URL_ID, vetDTO.getId()).contentType("application/merge-patch+json").content(om.writeValueAsBytes(vetDTO))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the Vet in the database
@@ -566,12 +589,15 @@ class VetResourceIT {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         vet.setId(longCount.incrementAndGet());
 
+        // Create the Vet
+        VetDTO vetDTO = vetMapper.toDto(vet);
+
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restVetMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, longCount.incrementAndGet())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(vet))
+                    .content(om.writeValueAsBytes(vetDTO))
             )
             .andExpect(status().isBadRequest());
 
@@ -585,9 +611,12 @@ class VetResourceIT {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         vet.setId(longCount.incrementAndGet());
 
+        // Create the Vet
+        VetDTO vetDTO = vetMapper.toDto(vet);
+
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restVetMockMvc
-            .perform(patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(om.writeValueAsBytes(vet)))
+            .perform(patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(om.writeValueAsBytes(vetDTO)))
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the Vet in the database

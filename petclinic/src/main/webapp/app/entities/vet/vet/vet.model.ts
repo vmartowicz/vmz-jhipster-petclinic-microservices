@@ -4,7 +4,7 @@ export interface IVet {
   id: number;
   firstName?: string | null;
   lastName?: string | null;
-  specialties?: ISpecialty[] | null;
+  specialties?: Pick<ISpecialty, 'id' | 'name'>[] | null;
 }
 
 export type NewVet = Omit<IVet, 'id'> & { id: null };

@@ -4,6 +4,8 @@ import fr.vmz.jhipster.petclinic.vet.domain.*; // for static metamodels
 import fr.vmz.jhipster.petclinic.vet.domain.Vet;
 import fr.vmz.jhipster.petclinic.vet.repository.VetRepository;
 import fr.vmz.jhipster.petclinic.vet.service.criteria.VetCriteria;
+import fr.vmz.jhipster.petclinic.vet.service.dto.VetDTO;
+import fr.vmz.jhipster.petclinic.vet.service.mapper.VetMapper;
 import jakarta.persistence.criteria.JoinType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +20,7 @@ import tech.jhipster.service.QueryService;
  * Service for executing complex queries for {@link Vet} entities in the database.
  * The main input is a {@link VetCriteria} which gets converted to {@link Specification},
  * in a way that all the filters must apply.
- * It returns a {@link Page} of {@link Vet} which fulfills the criteria.
+ * It returns a {@link Page} of {@link VetDTO} which fulfills the criteria.
  */
 @Service
 @Transactional(readOnly = true)
@@ -28,21 +30,24 @@ public class VetQueryService extends QueryService<Vet> {
 
     private final VetRepository vetRepository;
 
-    public VetQueryService(VetRepository vetRepository) {
+    private final VetMapper vetMapper;
+
+    public VetQueryService(VetRepository vetRepository, VetMapper vetMapper) {
         this.vetRepository = vetRepository;
+        this.vetMapper = vetMapper;
     }
 
     /**
-     * Return a {@link Page} of {@link Vet} which matches the criteria from the database.
+     * Return a {@link Page} of {@link VetDTO} which matches the criteria from the database.
      * @param criteria The object which holds all the filters, which the entities should match.
      * @param page The page, which should be returned.
      * @return the matching entities.
      */
     @Transactional(readOnly = true)
-    public Page<Vet> findByCriteria(VetCriteria criteria, Pageable page) {
+    public Page<VetDTO> findByCriteria(VetCriteria criteria, Pageable page) {
         LOG.debug("find by criteria : {}, page: {}", criteria, page);
         final Specification<Vet> specification = createSpecification(criteria);
-        return vetRepository.fetchBagRelationships(vetRepository.findAll(specification, page));
+        return vetRepository.fetchBagRelationships(vetRepository.findAll(specification, page)).map(vetMapper::toDto);
     }
 
     /**

@@ -1,6 +1,6 @@
 package fr.vmz.jhipster.petclinic.vet.service;
 
-import fr.vmz.jhipster.petclinic.vet.domain.Specialty;
+import fr.vmz.jhipster.petclinic.vet.service.dto.SpecialtyDTO;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,26 +12,26 @@ public interface SpecialtyService {
     /**
      * Save a specialty.
      *
-     * @param specialty the entity to save.
+     * @param specialtyDTO the entity to save.
      * @return the persisted entity.
      */
-    Specialty save(Specialty specialty);
+    SpecialtyDTO save(SpecialtyDTO specialtyDTO);
 
     /**
      * Updates a specialty.
      *
-     * @param specialty the entity to update.
+     * @param specialtyDTO the entity to update.
      * @return the persisted entity.
      */
-    Specialty update(Specialty specialty);
+    SpecialtyDTO update(SpecialtyDTO specialtyDTO);
 
     /**
      * Partially updates a specialty.
      *
-     * @param specialty the entity to update partially.
+     * @param specialtyDTO the entity to update partially.
      * @return the persisted entity.
      */
-    Optional<Specialty> partialUpdate(Specialty specialty);
+    Optional<SpecialtyDTO> partialUpdate(SpecialtyDTO specialtyDTO);
 
     /**
      * Get all the specialties.
@@ -39,7 +39,7 @@ public interface SpecialtyService {
      * @param pageable the pagination information.
      * @return the list of entities.
      */
-    Page<Specialty> findAll(Pageable pageable);
+    Page<SpecialtyDTO> findAll(Pageable pageable);
 
     /**
      * Get the "id" specialty.
@@ -47,7 +47,7 @@ public interface SpecialtyService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<Specialty> findOne(Long id);
+    Optional<SpecialtyDTO> findOne(Long id);
 
     /**
      * Delete the "id" specialty.

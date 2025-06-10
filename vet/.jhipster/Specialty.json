@@ -5,6 +5,7 @@
   "applications": ["petclinic", "vet"],
   "clientRootFolder": "vet",
   "databaseType": "sql",
+  "dto": "mapstruct",
   "entityTableName": "specialties",
   "fields": [
     {

@@ -1,6 +1,6 @@
 package fr.vmz.jhipster.petclinic.vet.service;
 
-import fr.vmz.jhipster.petclinic.vet.domain.Vet;
+import fr.vmz.jhipster.petclinic.vet.service.dto.VetDTO;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,26 +12,26 @@ public interface VetService {
     /**
      * Save a vet.
      *
-     * @param vet the entity to save.
+     * @param vetDTO the entity to save.
      * @return the persisted entity.
      */
-    Vet save(Vet vet);
+    VetDTO save(VetDTO vetDTO);
 
     /**
      * Updates a vet.
      *
-     * @param vet the entity to update.
+     * @param vetDTO the entity to update.
      * @return the persisted entity.
      */
-    Vet update(Vet vet);
+    VetDTO update(VetDTO vetDTO);
 
     /**
      * Partially updates a vet.
      *
-     * @param vet the entity to update partially.
+     * @param vetDTO the entity to update partially.
      * @return the persisted entity.
      */
-    Optional<Vet> partialUpdate(Vet vet);
+    Optional<VetDTO> partialUpdate(VetDTO vetDTO);
 
     /**
      * Get all the vets with eager load of many-to-many relationships.
@@ -39,7 +39,7 @@ public interface VetService {
      * @param pageable the pagination information.
      * @return the list of entities.
      */
-    Page<Vet> findAllWithEagerRelationships(Pageable pageable);
+    Page<VetDTO> findAllWithEagerRelationships(Pageable pageable);
 
     /**
      * Get the "id" vet.
@@ -47,7 +47,7 @@ public interface VetService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<Vet> findOne(Long id);
+    Optional<VetDTO> findOne(Long id);
 
     /**
      * Delete the "id" vet.

@@ -134,6 +134,7 @@ service Vet, Specialty with serviceImpl
 paginate Vet, Specialty with pagination
 microservice Vet, Specialty with vet
 filter Vet
+dto Vet, Specialty with mapstruct
 
 /* Entities for Visit microservice */
 

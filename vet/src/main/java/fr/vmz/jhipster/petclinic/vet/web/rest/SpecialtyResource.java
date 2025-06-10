@@ -1,8 +1,8 @@
 package fr.vmz.jhipster.petclinic.vet.web.rest;
 
-import fr.vmz.jhipster.petclinic.vet.domain.Specialty;
 import fr.vmz.jhipster.petclinic.vet.repository.SpecialtyRepository;
 import fr.vmz.jhipster.petclinic.vet.service.SpecialtyService;
+import fr.vmz.jhipster.petclinic.vet.service.dto.SpecialtyDTO;
 import fr.vmz.jhipster.petclinic.vet.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -50,42 +50,42 @@ public class SpecialtyResource {
     /**
      * {@code POST  /specialties} : Create a new specialty.
      *
-     * @param specialty the specialty to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new specialty, or with status {@code 400 (Bad Request)} if the specialty has already an ID.
+     * @param specialtyDTO the specialtyDTO to create.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new specialtyDTO, or with status {@code 400 (Bad Request)} if the specialty has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
-    public ResponseEntity<Specialty> createSpecialty(@Valid @RequestBody Specialty specialty) throws URISyntaxException {
-        LOG.debug("REST request to save Specialty : {}", specialty);
-        if (specialty.getId() != null) {
+    public ResponseEntity<SpecialtyDTO> createSpecialty(@Valid @RequestBody SpecialtyDTO specialtyDTO) throws URISyntaxException {
+        LOG.debug("REST request to save Specialty : {}", specialtyDTO);
+        if (specialtyDTO.getId() != null) {
             throw new BadRequestAlertException("A new specialty cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        specialty = specialtyService.save(specialty);
-        return ResponseEntity.created(new URI("/api/specialties/" + specialty.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, specialty.getId().toString()))
-            .body(specialty);
+        specialtyDTO = specialtyService.save(specialtyDTO);
+        return ResponseEntity.created(new URI("/api/specialties/" + specialtyDTO.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, specialtyDTO.getId().toString()))
+            .body(specialtyDTO);
     }
 
     /**
      * {@code PUT  /specialties/:id} : Updates an existing specialty.
      *
-     * @param id the id of the specialty to save.
-     * @param specialty the specialty to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated specialty,
-     * or with status {@code 400 (Bad Request)} if the specialty is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the specialty couldn't be updated.
+     * @param id the id of the specialtyDTO to save.
+     * @param specialtyDTO the specialtyDTO to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated specialtyDTO,
+     * or with status {@code 400 (Bad Request)} if the specialtyDTO is not valid,
+     * or with status {@code 500 (Internal Server Error)} if the specialtyDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Specialty> updateSpecialty(
+    public ResponseEntity<SpecialtyDTO> updateSpecialty(
         @PathVariable(value = "id", required = false) final Long id,
-        @Valid @RequestBody Specialty specialty
+        @Valid @RequestBody SpecialtyDTO specialtyDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to update Specialty : {}, {}", id, specialty);
-        if (specialty.getId() == null) {
+        LOG.debug("REST request to update Specialty : {}, {}", id, specialtyDTO);
+        if (specialtyDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!Objects.equals(id, specialty.getId())) {
+        if (!Objects.equals(id, specialtyDTO.getId())) {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
@@ -93,33 +93,33 @@ public class SpecialtyResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        specialty = specialtyService.update(specialty);
+        specialtyDTO = specialtyService.update(specialtyDTO);
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, specialty.getId().toString()))
-            .body(specialty);
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, specialtyDTO.getId().toString()))
+            .body(specialtyDTO);
     }
 
     /**
      * {@code PATCH  /specialties/:id} : Partial updates given fields of an existing specialty, field will ignore if it is null
      *
-     * @param id the id of the specialty to save.
-     * @param specialty the specialty to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated specialty,
-     * or with status {@code 400 (Bad Request)} if the specialty is not valid,
-     * or with status {@code 404 (Not Found)} if the specialty is not found,
-     * or with status {@code 500 (Internal Server Error)} if the specialty couldn't be updated.
+     * @param id the id of the specialtyDTO to save.
+     * @param specialtyDTO the specialtyDTO to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated specialtyDTO,
+     * or with status {@code 400 (Bad Request)} if the specialtyDTO is not valid,
+     * or with status {@code 404 (Not Found)} if the specialtyDTO is not found,
+     * or with status {@code 500 (Internal Server Error)} if the specialtyDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<Specialty> partialUpdateSpecialty(
+    public ResponseEntity<SpecialtyDTO> partialUpdateSpecialty(
         @PathVariable(value = "id", required = false) final Long id,
-        @NotNull @RequestBody Specialty specialty
+        @NotNull @RequestBody SpecialtyDTO specialtyDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update Specialty partially : {}, {}", id, specialty);
-        if (specialty.getId() == null) {
+        LOG.debug("REST request to partial update Specialty partially : {}, {}", id, specialtyDTO);
+        if (specialtyDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!Objects.equals(id, specialty.getId())) {
+        if (!Objects.equals(id, specialtyDTO.getId())) {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
@@ -127,11 +127,11 @@ public class SpecialtyResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        Optional<Specialty> result = specialtyService.partialUpdate(specialty);
+        Optional<SpecialtyDTO> result = specialtyService.partialUpdate(specialtyDTO);
 
         return ResponseUtil.wrapOrNotFound(
             result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, specialty.getId().toString())
+            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, specialtyDTO.getId().toString())
         );
     }
 
@@ -142,9 +142,9 @@ public class SpecialtyResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of specialties in body.
      */
     @GetMapping("")
-    public ResponseEntity<List<Specialty>> getAllSpecialties(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<SpecialtyDTO>> getAllSpecialties(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
         LOG.debug("REST request to get a page of Specialties");
-        Page<Specialty> page = specialtyService.findAll(pageable);
+        Page<SpecialtyDTO> page = specialtyService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -152,20 +152,20 @@ public class SpecialtyResource {
     /**
      * {@code GET  /specialties/:id} : get the "id" specialty.
      *
-     * @param id the id of the specialty to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the specialty, or with status {@code 404 (Not Found)}.
+     * @param id the id of the specialtyDTO to retrieve.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the specialtyDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Specialty> getSpecialty(@PathVariable("id") Long id) {
+    public ResponseEntity<SpecialtyDTO> getSpecialty(@PathVariable("id") Long id) {
         LOG.debug("REST request to get Specialty : {}", id);
-        Optional<Specialty> specialty = specialtyService.findOne(id);
-        return ResponseUtil.wrapOrNotFound(specialty);
+        Optional<SpecialtyDTO> specialtyDTO = specialtyService.findOne(id);
+        return ResponseUtil.wrapOrNotFound(specialtyDTO);
     }
 
     /**
      * {@code DELETE  /specialties/:id} : delete the "id" specialty.
      *
-     * @param id the id of the specialty to delete.
+     * @param id the id of the specialtyDTO to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
