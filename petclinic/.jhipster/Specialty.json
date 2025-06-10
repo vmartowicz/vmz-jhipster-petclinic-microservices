@@ -27,5 +27,5 @@
     }
   ],
   "searchEngine": "no",
-  "service": "serviceClass"
+  "service": "serviceImpl"
 }

@@ -2,7 +2,9 @@ package fr.vmz.jhipster.petclinic.vet.web.rest;
 
 import fr.vmz.jhipster.petclinic.vet.domain.Vet;
 import fr.vmz.jhipster.petclinic.vet.repository.VetRepository;
+import fr.vmz.jhipster.petclinic.vet.service.VetQueryService;
 import fr.vmz.jhipster.petclinic.vet.service.VetService;
+import fr.vmz.jhipster.petclinic.vet.service.criteria.VetCriteria;
 import fr.vmz.jhipster.petclinic.vet.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -42,9 +44,12 @@ public class VetResource {
 
     private final VetRepository vetRepository;
 
-    public VetResource(VetService vetService, VetRepository vetRepository) {
+    private final VetQueryService vetQueryService;
+
+    public VetResource(VetService vetService, VetRepository vetRepository, VetQueryService vetQueryService) {
         this.vetService = vetService;
         this.vetRepository = vetRepository;
+        this.vetQueryService = vetQueryService;
     }
 
     /**
@@ -135,23 +140,28 @@ public class VetResource {
      * {@code GET  /vets} : get all the vets.
      *
      * @param pageable the pagination information.
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of vets in body.
      */
     @GetMapping("")
-    public ResponseEntity<List<Vet>> getAllVets(
-        @org.springdoc.core.annotations.ParameterObject Pageable pageable,
-        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
-    ) {
-        LOG.debug("REST request to get a page of Vets");
-        Page<Vet> page;
-        if (eagerload) {
-            page = vetService.findAllWithEagerRelationships(pageable);
-        } else {
-            page = vetService.findAll(pageable);
-        }
+    public ResponseEntity<List<Vet>> getAllVets(VetCriteria criteria, @org.springdoc.core.annotations.ParameterObject Pageable pageable) {
+        LOG.debug("REST request to get Vets by criteria: {}", criteria);
+
+        Page<Vet> page = vetQueryService.findByCriteria(criteria, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    /**
+     * {@code GET  /vets/count} : count all the vets.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countVets(VetCriteria criteria) {
+        LOG.debug("REST request to count Vets by criteria: {}", criteria);
+        return ResponseEntity.ok().body(vetQueryService.countByCriteria(criteria));
     }
 
     /**

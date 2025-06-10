@@ -91,6 +91,9 @@ describe('Visit e2e test', () => {
             },
             {
               statusCode: 200,
+              headers: {
+                link: '<http://localhost/services/visit/api/visits?page=0&size=20>; rel="last",<http://localhost/services/visit/api/visits?page=0&size=20>; rel="first"',
+              },
               body: [visit],
             },
           ).as('entitiesRequestInternal');

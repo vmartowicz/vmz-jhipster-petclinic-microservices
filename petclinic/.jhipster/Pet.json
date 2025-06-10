@@ -5,6 +5,7 @@
   "applications": ["petclinic", "customer"],
   "clientRootFolder": "customer",
   "databaseType": "sql",
+  "dto": "mapstruct",
   "entityTableName": "pets",
   "fields": [
     {
@@ -18,6 +19,7 @@
       "fieldType": "LocalDate"
     }
   ],
+  "jpaMetamodelFiltering": true,
   "microserviceName": "customer",
   "name": "Pet",
   "pagination": "pagination",
@@ -39,5 +41,5 @@
     }
   ],
   "searchEngine": "no",
-  "service": "serviceClass"
+  "service": "serviceImpl"
 }

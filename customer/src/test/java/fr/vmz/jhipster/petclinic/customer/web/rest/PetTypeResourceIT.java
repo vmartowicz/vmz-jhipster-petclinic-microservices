@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.vmz.jhipster.petclinic.customer.IntegrationTest;
 import fr.vmz.jhipster.petclinic.customer.domain.PetType;
 import fr.vmz.jhipster.petclinic.customer.repository.PetTypeRepository;
+import fr.vmz.jhipster.petclinic.customer.service.dto.PetTypeDTO;
+import fr.vmz.jhipster.petclinic.customer.service.mapper.PetTypeMapper;
 import jakarta.persistence.EntityManager;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
@@ -46,6 +48,9 @@ class PetTypeResourceIT {
 
     @Autowired
     private PetTypeRepository petTypeRepository;
+
+    @Autowired
+    private PetTypeMapper petTypeMapper;
 
     @Autowired
     private EntityManager em;
@@ -95,18 +100,20 @@ class PetTypeResourceIT {
     void createPetType() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
         // Create the PetType
-        var returnedPetType = om.readValue(
+        PetTypeDTO petTypeDTO = petTypeMapper.toDto(petType);
+        var returnedPetTypeDTO = om.readValue(
             restPetTypeMockMvc
-                .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(petType)))
+                .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(petTypeDTO)))
                 .andExpect(status().isCreated())
                 .andReturn()
                 .getResponse()
                 .getContentAsString(),
-            PetType.class
+            PetTypeDTO.class
         );
 
         // Validate the PetType in the database
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
+        var returnedPetType = petTypeMapper.toEntity(returnedPetTypeDTO);
         assertPetTypeUpdatableFieldsEquals(returnedPetType, getPersistedPetType(returnedPetType));
 
         insertedPetType = returnedPetType;
@@ -117,12 +124,13 @@ class PetTypeResourceIT {
     void createPetTypeWithExistingId() throws Exception {
         // Create the PetType with an existing ID
         petType.setId(1L);
+        PetTypeDTO petTypeDTO = petTypeMapper.toDto(petType);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restPetTypeMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(petType)))
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(petTypeDTO)))
             .andExpect(status().isBadRequest());
 
         // Validate the PetType in the database
@@ -137,9 +145,10 @@ class PetTypeResourceIT {
         petType.setName(null);
 
         // Create the PetType, which fails.
+        PetTypeDTO petTypeDTO = petTypeMapper.toDto(petType);
 
         restPetTypeMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(petType)))
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(petTypeDTO)))
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
@@ -195,12 +204,11 @@ class PetTypeResourceIT {
         // Disconnect from session so that the updates on updatedPetType are not directly saved in db
         em.detach(updatedPetType);
         updatedPetType.name(UPDATED_NAME);
+        PetTypeDTO petTypeDTO = petTypeMapper.toDto(updatedPetType);
 
         restPetTypeMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, updatedPetType.getId())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(updatedPetType))
+                put(ENTITY_API_URL_ID, petTypeDTO.getId()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(petTypeDTO))
             )
             .andExpect(status().isOk());
 
@@ -215,9 +223,14 @@ class PetTypeResourceIT {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         petType.setId(longCount.incrementAndGet());
 
+        // Create the PetType
+        PetTypeDTO petTypeDTO = petTypeMapper.toDto(petType);
+
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restPetTypeMockMvc
-            .perform(put(ENTITY_API_URL_ID, petType.getId()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(petType)))
+            .perform(
+                put(ENTITY_API_URL_ID, petTypeDTO.getId()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(petTypeDTO))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the PetType in the database
@@ -230,12 +243,15 @@ class PetTypeResourceIT {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         petType.setId(longCount.incrementAndGet());
 
+        // Create the PetType
+        PetTypeDTO petTypeDTO = petTypeMapper.toDto(petType);
+
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restPetTypeMockMvc
             .perform(
                 put(ENTITY_API_URL_ID, longCount.incrementAndGet())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(petType))
+                    .content(om.writeValueAsBytes(petTypeDTO))
             )
             .andExpect(status().isBadRequest());
 
@@ -249,9 +265,12 @@ class PetTypeResourceIT {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         petType.setId(longCount.incrementAndGet());
 
+        // Create the PetType
+        PetTypeDTO petTypeDTO = petTypeMapper.toDto(petType);
+
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restPetTypeMockMvc
-            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(petType)))
+            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(petTypeDTO)))
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the PetType in the database
@@ -320,10 +339,15 @@ class PetTypeResourceIT {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         petType.setId(longCount.incrementAndGet());
 
+        // Create the PetType
+        PetTypeDTO petTypeDTO = petTypeMapper.toDto(petType);
+
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restPetTypeMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, petType.getId()).contentType("application/merge-patch+json").content(om.writeValueAsBytes(petType))
+                patch(ENTITY_API_URL_ID, petTypeDTO.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(om.writeValueAsBytes(petTypeDTO))
             )
             .andExpect(status().isBadRequest());
 
@@ -337,12 +361,15 @@ class PetTypeResourceIT {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         petType.setId(longCount.incrementAndGet());
 
+        // Create the PetType
+        PetTypeDTO petTypeDTO = petTypeMapper.toDto(petType);
+
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restPetTypeMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, longCount.incrementAndGet())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(petType))
+                    .content(om.writeValueAsBytes(petTypeDTO))
             )
             .andExpect(status().isBadRequest());
 
@@ -356,9 +383,12 @@ class PetTypeResourceIT {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         petType.setId(longCount.incrementAndGet());
 
+        // Create the PetType
+        PetTypeDTO petTypeDTO = petTypeMapper.toDto(petType);
+
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restPetTypeMockMvc
-            .perform(patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(om.writeValueAsBytes(petType)))
+            .perform(patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(om.writeValueAsBytes(petTypeDTO)))
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the PetType in the database

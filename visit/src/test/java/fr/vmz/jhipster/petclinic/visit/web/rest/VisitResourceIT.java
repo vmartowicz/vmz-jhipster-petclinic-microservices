@@ -36,12 +36,14 @@ class VisitResourceIT {
 
     private static final LocalDate DEFAULT_VISIT_DATE = LocalDate.ofEpochDay(0L);
     private static final LocalDate UPDATED_VISIT_DATE = LocalDate.now(ZoneId.systemDefault());
+    private static final LocalDate SMALLER_VISIT_DATE = LocalDate.ofEpochDay(-1L);
 
     private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
     private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
 
     private static final Long DEFAULT_PET_ID = 1L;
     private static final Long UPDATED_PET_ID = 2L;
+    private static final Long SMALLER_PET_ID = 1L - 1L;
 
     private static final String ENTITY_API_URL = "/api/visits";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -201,6 +203,256 @@ class VisitResourceIT {
             .andExpect(jsonPath("$.visitDate").value(DEFAULT_VISIT_DATE.toString()))
             .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION))
             .andExpect(jsonPath("$.petId").value(DEFAULT_PET_ID.intValue()));
+    }
+
+    @Test
+    @Transactional
+    void getVisitsByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedVisit = visitRepository.saveAndFlush(visit);
+
+        Long id = visit.getId();
+
+        defaultVisitFiltering("id.equals=" + id, "id.notEquals=" + id);
+
+        defaultVisitFiltering("id.greaterThanOrEqual=" + id, "id.greaterThan=" + id);
+
+        defaultVisitFiltering("id.lessThanOrEqual=" + id, "id.lessThan=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllVisitsByVisitDateIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedVisit = visitRepository.saveAndFlush(visit);
+
+        // Get all the visitList where visitDate equals to
+        defaultVisitFiltering("visitDate.equals=" + DEFAULT_VISIT_DATE, "visitDate.equals=" + UPDATED_VISIT_DATE);
+    }
+
+    @Test
+    @Transactional
+    void getAllVisitsByVisitDateIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedVisit = visitRepository.saveAndFlush(visit);
+
+        // Get all the visitList where visitDate in
+        defaultVisitFiltering("visitDate.in=" + DEFAULT_VISIT_DATE + "," + UPDATED_VISIT_DATE, "visitDate.in=" + UPDATED_VISIT_DATE);
+    }
+
+    @Test
+    @Transactional
+    void getAllVisitsByVisitDateIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedVisit = visitRepository.saveAndFlush(visit);
+
+        // Get all the visitList where visitDate is not null
+        defaultVisitFiltering("visitDate.specified=true", "visitDate.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllVisitsByVisitDateIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedVisit = visitRepository.saveAndFlush(visit);
+
+        // Get all the visitList where visitDate is greater than or equal to
+        defaultVisitFiltering("visitDate.greaterThanOrEqual=" + DEFAULT_VISIT_DATE, "visitDate.greaterThanOrEqual=" + UPDATED_VISIT_DATE);
+    }
+
+    @Test
+    @Transactional
+    void getAllVisitsByVisitDateIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedVisit = visitRepository.saveAndFlush(visit);
+
+        // Get all the visitList where visitDate is less than or equal to
+        defaultVisitFiltering("visitDate.lessThanOrEqual=" + DEFAULT_VISIT_DATE, "visitDate.lessThanOrEqual=" + SMALLER_VISIT_DATE);
+    }
+
+    @Test
+    @Transactional
+    void getAllVisitsByVisitDateIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedVisit = visitRepository.saveAndFlush(visit);
+
+        // Get all the visitList where visitDate is less than
+        defaultVisitFiltering("visitDate.lessThan=" + UPDATED_VISIT_DATE, "visitDate.lessThan=" + DEFAULT_VISIT_DATE);
+    }
+
+    @Test
+    @Transactional
+    void getAllVisitsByVisitDateIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedVisit = visitRepository.saveAndFlush(visit);
+
+        // Get all the visitList where visitDate is greater than
+        defaultVisitFiltering("visitDate.greaterThan=" + SMALLER_VISIT_DATE, "visitDate.greaterThan=" + DEFAULT_VISIT_DATE);
+    }
+
+    @Test
+    @Transactional
+    void getAllVisitsByDescriptionIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedVisit = visitRepository.saveAndFlush(visit);
+
+        // Get all the visitList where description equals to
+        defaultVisitFiltering("description.equals=" + DEFAULT_DESCRIPTION, "description.equals=" + UPDATED_DESCRIPTION);
+    }
+
+    @Test
+    @Transactional
+    void getAllVisitsByDescriptionIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedVisit = visitRepository.saveAndFlush(visit);
+
+        // Get all the visitList where description in
+        defaultVisitFiltering("description.in=" + DEFAULT_DESCRIPTION + "," + UPDATED_DESCRIPTION, "description.in=" + UPDATED_DESCRIPTION);
+    }
+
+    @Test
+    @Transactional
+    void getAllVisitsByDescriptionIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedVisit = visitRepository.saveAndFlush(visit);
+
+        // Get all the visitList where description is not null
+        defaultVisitFiltering("description.specified=true", "description.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllVisitsByDescriptionContainsSomething() throws Exception {
+        // Initialize the database
+        insertedVisit = visitRepository.saveAndFlush(visit);
+
+        // Get all the visitList where description contains
+        defaultVisitFiltering("description.contains=" + DEFAULT_DESCRIPTION, "description.contains=" + UPDATED_DESCRIPTION);
+    }
+
+    @Test
+    @Transactional
+    void getAllVisitsByDescriptionNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedVisit = visitRepository.saveAndFlush(visit);
+
+        // Get all the visitList where description does not contain
+        defaultVisitFiltering("description.doesNotContain=" + UPDATED_DESCRIPTION, "description.doesNotContain=" + DEFAULT_DESCRIPTION);
+    }
+
+    @Test
+    @Transactional
+    void getAllVisitsByPetIdIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedVisit = visitRepository.saveAndFlush(visit);
+
+        // Get all the visitList where petId equals to
+        defaultVisitFiltering("petId.equals=" + DEFAULT_PET_ID, "petId.equals=" + UPDATED_PET_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllVisitsByPetIdIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedVisit = visitRepository.saveAndFlush(visit);
+
+        // Get all the visitList where petId in
+        defaultVisitFiltering("petId.in=" + DEFAULT_PET_ID + "," + UPDATED_PET_ID, "petId.in=" + UPDATED_PET_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllVisitsByPetIdIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedVisit = visitRepository.saveAndFlush(visit);
+
+        // Get all the visitList where petId is not null
+        defaultVisitFiltering("petId.specified=true", "petId.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllVisitsByPetIdIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedVisit = visitRepository.saveAndFlush(visit);
+
+        // Get all the visitList where petId is greater than or equal to
+        defaultVisitFiltering("petId.greaterThanOrEqual=" + DEFAULT_PET_ID, "petId.greaterThanOrEqual=" + UPDATED_PET_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllVisitsByPetIdIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedVisit = visitRepository.saveAndFlush(visit);
+
+        // Get all the visitList where petId is less than or equal to
+        defaultVisitFiltering("petId.lessThanOrEqual=" + DEFAULT_PET_ID, "petId.lessThanOrEqual=" + SMALLER_PET_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllVisitsByPetIdIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedVisit = visitRepository.saveAndFlush(visit);
+
+        // Get all the visitList where petId is less than
+        defaultVisitFiltering("petId.lessThan=" + UPDATED_PET_ID, "petId.lessThan=" + DEFAULT_PET_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllVisitsByPetIdIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedVisit = visitRepository.saveAndFlush(visit);
+
+        // Get all the visitList where petId is greater than
+        defaultVisitFiltering("petId.greaterThan=" + SMALLER_PET_ID, "petId.greaterThan=" + DEFAULT_PET_ID);
+    }
+
+    private void defaultVisitFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultVisitShouldBeFound(shouldBeFound);
+        defaultVisitShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultVisitShouldBeFound(String filter) throws Exception {
+        restVisitMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(visit.getId().intValue())))
+            .andExpect(jsonPath("$.[*].visitDate").value(hasItem(DEFAULT_VISIT_DATE.toString())))
+            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
+            .andExpect(jsonPath("$.[*].petId").value(hasItem(DEFAULT_PET_ID.intValue())));
+
+        // Check, that the count call also returns 1
+        restVisitMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultVisitShouldNotBeFound(String filter) throws Exception {
+        restVisitMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restVisitMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
     }
 
     @Test

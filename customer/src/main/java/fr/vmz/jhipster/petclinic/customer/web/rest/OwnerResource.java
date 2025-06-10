@@ -1,8 +1,10 @@
 package fr.vmz.jhipster.petclinic.customer.web.rest;
 
-import fr.vmz.jhipster.petclinic.customer.domain.Owner;
 import fr.vmz.jhipster.petclinic.customer.repository.OwnerRepository;
+import fr.vmz.jhipster.petclinic.customer.service.OwnerQueryService;
 import fr.vmz.jhipster.petclinic.customer.service.OwnerService;
+import fr.vmz.jhipster.petclinic.customer.service.criteria.OwnerCriteria;
+import fr.vmz.jhipster.petclinic.customer.service.dto.OwnerDTO;
 import fr.vmz.jhipster.petclinic.customer.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -42,48 +44,53 @@ public class OwnerResource {
 
     private final OwnerRepository ownerRepository;
 
-    public OwnerResource(OwnerService ownerService, OwnerRepository ownerRepository) {
+    private final OwnerQueryService ownerQueryService;
+
+    public OwnerResource(OwnerService ownerService, OwnerRepository ownerRepository, OwnerQueryService ownerQueryService) {
         this.ownerService = ownerService;
         this.ownerRepository = ownerRepository;
+        this.ownerQueryService = ownerQueryService;
     }
 
     /**
      * {@code POST  /owners} : Create a new owner.
      *
-     * @param owner the owner to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new owner, or with status {@code 400 (Bad Request)} if the owner has already an ID.
+     * @param ownerDTO the ownerDTO to create.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new ownerDTO, or with status {@code 400 (Bad Request)} if the owner has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
-    public ResponseEntity<Owner> createOwner(@Valid @RequestBody Owner owner) throws URISyntaxException {
-        LOG.debug("REST request to save Owner : {}", owner);
-        if (owner.getId() != null) {
+    public ResponseEntity<OwnerDTO> createOwner(@Valid @RequestBody OwnerDTO ownerDTO) throws URISyntaxException {
+        LOG.debug("REST request to save Owner : {}", ownerDTO);
+        if (ownerDTO.getId() != null) {
             throw new BadRequestAlertException("A new owner cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        owner = ownerService.save(owner);
-        return ResponseEntity.created(new URI("/api/owners/" + owner.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, owner.getId().toString()))
-            .body(owner);
+        ownerDTO = ownerService.save(ownerDTO);
+        return ResponseEntity.created(new URI("/api/owners/" + ownerDTO.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, ownerDTO.getId().toString()))
+            .body(ownerDTO);
     }
 
     /**
      * {@code PUT  /owners/:id} : Updates an existing owner.
      *
-     * @param id the id of the owner to save.
-     * @param owner the owner to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated owner,
-     * or with status {@code 400 (Bad Request)} if the owner is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the owner couldn't be updated.
+     * @param id the id of the ownerDTO to save.
+     * @param ownerDTO the ownerDTO to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated ownerDTO,
+     * or with status {@code 400 (Bad Request)} if the ownerDTO is not valid,
+     * or with status {@code 500 (Internal Server Error)} if the ownerDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Owner> updateOwner(@PathVariable(value = "id", required = false) final Long id, @Valid @RequestBody Owner owner)
-        throws URISyntaxException {
-        LOG.debug("REST request to update Owner : {}, {}", id, owner);
-        if (owner.getId() == null) {
+    public ResponseEntity<OwnerDTO> updateOwner(
+        @PathVariable(value = "id", required = false) final Long id,
+        @Valid @RequestBody OwnerDTO ownerDTO
+    ) throws URISyntaxException {
+        LOG.debug("REST request to update Owner : {}, {}", id, ownerDTO);
+        if (ownerDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!Objects.equals(id, owner.getId())) {
+        if (!Objects.equals(id, ownerDTO.getId())) {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
@@ -91,33 +98,33 @@ public class OwnerResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        owner = ownerService.update(owner);
+        ownerDTO = ownerService.update(ownerDTO);
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, owner.getId().toString()))
-            .body(owner);
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, ownerDTO.getId().toString()))
+            .body(ownerDTO);
     }
 
     /**
      * {@code PATCH  /owners/:id} : Partial updates given fields of an existing owner, field will ignore if it is null
      *
-     * @param id the id of the owner to save.
-     * @param owner the owner to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated owner,
-     * or with status {@code 400 (Bad Request)} if the owner is not valid,
-     * or with status {@code 404 (Not Found)} if the owner is not found,
-     * or with status {@code 500 (Internal Server Error)} if the owner couldn't be updated.
+     * @param id the id of the ownerDTO to save.
+     * @param ownerDTO the ownerDTO to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated ownerDTO,
+     * or with status {@code 400 (Bad Request)} if the ownerDTO is not valid,
+     * or with status {@code 404 (Not Found)} if the ownerDTO is not found,
+     * or with status {@code 500 (Internal Server Error)} if the ownerDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<Owner> partialUpdateOwner(
+    public ResponseEntity<OwnerDTO> partialUpdateOwner(
         @PathVariable(value = "id", required = false) final Long id,
-        @NotNull @RequestBody Owner owner
+        @NotNull @RequestBody OwnerDTO ownerDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update Owner partially : {}, {}", id, owner);
-        if (owner.getId() == null) {
+        LOG.debug("REST request to partial update Owner partially : {}, {}", id, ownerDTO);
+        if (ownerDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!Objects.equals(id, owner.getId())) {
+        if (!Objects.equals(id, ownerDTO.getId())) {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
@@ -125,11 +132,11 @@ public class OwnerResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        Optional<Owner> result = ownerService.partialUpdate(owner);
+        Optional<OwnerDTO> result = ownerService.partialUpdate(ownerDTO);
 
         return ResponseUtil.wrapOrNotFound(
             result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, owner.getId().toString())
+            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, ownerDTO.getId().toString())
         );
     }
 
@@ -137,33 +144,50 @@ public class OwnerResource {
      * {@code GET  /owners} : get all the owners.
      *
      * @param pageable the pagination information.
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of owners in body.
      */
     @GetMapping("")
-    public ResponseEntity<List<Owner>> getAllOwners(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
-        LOG.debug("REST request to get a page of Owners");
-        Page<Owner> page = ownerService.findAll(pageable);
+    public ResponseEntity<List<OwnerDTO>> getAllOwners(
+        OwnerCriteria criteria,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        LOG.debug("REST request to get Owners by criteria: {}", criteria);
+
+        Page<OwnerDTO> page = ownerQueryService.findByCriteria(criteria, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
     /**
+     * {@code GET  /owners/count} : count all the owners.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countOwners(OwnerCriteria criteria) {
+        LOG.debug("REST request to count Owners by criteria: {}", criteria);
+        return ResponseEntity.ok().body(ownerQueryService.countByCriteria(criteria));
+    }
+
+    /**
      * {@code GET  /owners/:id} : get the "id" owner.
      *
-     * @param id the id of the owner to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the owner, or with status {@code 404 (Not Found)}.
+     * @param id the id of the ownerDTO to retrieve.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the ownerDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Owner> getOwner(@PathVariable("id") Long id) {
+    public ResponseEntity<OwnerDTO> getOwner(@PathVariable("id") Long id) {
         LOG.debug("REST request to get Owner : {}", id);
-        Optional<Owner> owner = ownerService.findOne(id);
-        return ResponseUtil.wrapOrNotFound(owner);
+        Optional<OwnerDTO> ownerDTO = ownerService.findOne(id);
+        return ResponseUtil.wrapOrNotFound(ownerDTO);
     }
 
     /**
      * {@code DELETE  /owners/:id} : delete the "id" owner.
      *
-     * @param id the id of the owner to delete.
+     * @param id the id of the ownerDTO to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")

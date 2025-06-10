@@ -5,6 +5,7 @@
   "applications": ["petclinic", "customer"],
   "clientRootFolder": "customer",
   "databaseType": "sql",
+  "dto": "mapstruct",
   "entityTableName": "owners",
   "fields": [
     {
@@ -38,6 +39,7 @@
       "fieldValidateRulesMaxlength": "20"
     }
   ],
+  "jpaMetamodelFiltering": true,
   "microserviceName": "customer",
   "name": "Owner",
   "pagination": "pagination",
@@ -52,5 +54,5 @@
     }
   ],
   "searchEngine": "no",
-  "service": "serviceClass"
+  "service": "serviceImpl"
 }

@@ -20,6 +20,7 @@
       "fieldValidateRulesMaxlength": "30"
     }
   ],
+  "jpaMetamodelFiltering": true,
   "microserviceName": "vet",
   "name": "Vet",
   "pagination": "pagination",
@@ -34,5 +35,5 @@
     }
   ],
   "searchEngine": "no",
-  "service": "serviceClass"
+  "service": "serviceImpl"
 }

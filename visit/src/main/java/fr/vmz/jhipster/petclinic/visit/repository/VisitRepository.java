@@ -11,7 +11,8 @@ import java.util.List;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface VisitRepository extends JpaRepository<Visit, Long> {
+public interface VisitRepository extends JpaRepository<Visit, Long>, JpaSpecificationExecutor<Visit> {
 
     List<Visit> findByPetIdIn(List<Integer> petIds);
+
 }

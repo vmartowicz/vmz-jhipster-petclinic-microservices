@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.vmz.jhipster.petclinic.customer.IntegrationTest;
 import fr.vmz.jhipster.petclinic.customer.domain.Owner;
 import fr.vmz.jhipster.petclinic.customer.repository.OwnerRepository;
+import fr.vmz.jhipster.petclinic.customer.service.dto.OwnerDTO;
+import fr.vmz.jhipster.petclinic.customer.service.mapper.OwnerMapper;
 import jakarta.persistence.EntityManager;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
@@ -58,6 +60,9 @@ class OwnerResourceIT {
 
     @Autowired
     private OwnerRepository ownerRepository;
+
+    @Autowired
+    private OwnerMapper ownerMapper;
 
     @Autowired
     private EntityManager em;
@@ -117,18 +122,20 @@ class OwnerResourceIT {
     void createOwner() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
         // Create the Owner
-        var returnedOwner = om.readValue(
+        OwnerDTO ownerDTO = ownerMapper.toDto(owner);
+        var returnedOwnerDTO = om.readValue(
             restOwnerMockMvc
-                .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(owner)))
+                .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(ownerDTO)))
                 .andExpect(status().isCreated())
                 .andReturn()
                 .getResponse()
                 .getContentAsString(),
-            Owner.class
+            OwnerDTO.class
         );
 
         // Validate the Owner in the database
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
+        var returnedOwner = ownerMapper.toEntity(returnedOwnerDTO);
         assertOwnerUpdatableFieldsEquals(returnedOwner, getPersistedOwner(returnedOwner));
 
         insertedOwner = returnedOwner;
@@ -139,12 +146,13 @@ class OwnerResourceIT {
     void createOwnerWithExistingId() throws Exception {
         // Create the Owner with an existing ID
         owner.setId(1L);
+        OwnerDTO ownerDTO = ownerMapper.toDto(owner);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restOwnerMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(owner)))
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(ownerDTO)))
             .andExpect(status().isBadRequest());
 
         // Validate the Owner in the database
@@ -159,9 +167,10 @@ class OwnerResourceIT {
         owner.setFirstName(null);
 
         // Create the Owner, which fails.
+        OwnerDTO ownerDTO = ownerMapper.toDto(owner);
 
         restOwnerMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(owner)))
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(ownerDTO)))
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
@@ -175,9 +184,10 @@ class OwnerResourceIT {
         owner.setLastName(null);
 
         // Create the Owner, which fails.
+        OwnerDTO ownerDTO = ownerMapper.toDto(owner);
 
         restOwnerMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(owner)))
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(ownerDTO)))
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
@@ -191,9 +201,10 @@ class OwnerResourceIT {
         owner.setAddress(null);
 
         // Create the Owner, which fails.
+        OwnerDTO ownerDTO = ownerMapper.toDto(owner);
 
         restOwnerMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(owner)))
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(ownerDTO)))
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
@@ -207,9 +218,10 @@ class OwnerResourceIT {
         owner.setCity(null);
 
         // Create the Owner, which fails.
+        OwnerDTO ownerDTO = ownerMapper.toDto(owner);
 
         restOwnerMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(owner)))
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(ownerDTO)))
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
@@ -223,9 +235,10 @@ class OwnerResourceIT {
         owner.setTelephone(null);
 
         // Create the Owner, which fails.
+        OwnerDTO ownerDTO = ownerMapper.toDto(owner);
 
         restOwnerMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(owner)))
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(ownerDTO)))
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
@@ -271,6 +284,318 @@ class OwnerResourceIT {
 
     @Test
     @Transactional
+    void getOwnersByIdFiltering() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        Long id = owner.getId();
+
+        defaultOwnerFiltering("id.equals=" + id, "id.notEquals=" + id);
+
+        defaultOwnerFiltering("id.greaterThanOrEqual=" + id, "id.greaterThan=" + id);
+
+        defaultOwnerFiltering("id.lessThanOrEqual=" + id, "id.lessThan=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByFirstNameIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where firstName equals to
+        defaultOwnerFiltering("firstName.equals=" + DEFAULT_FIRST_NAME, "firstName.equals=" + UPDATED_FIRST_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByFirstNameIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where firstName in
+        defaultOwnerFiltering("firstName.in=" + DEFAULT_FIRST_NAME + "," + UPDATED_FIRST_NAME, "firstName.in=" + UPDATED_FIRST_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByFirstNameIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where firstName is not null
+        defaultOwnerFiltering("firstName.specified=true", "firstName.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByFirstNameContainsSomething() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where firstName contains
+        defaultOwnerFiltering("firstName.contains=" + DEFAULT_FIRST_NAME, "firstName.contains=" + UPDATED_FIRST_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByFirstNameNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where firstName does not contain
+        defaultOwnerFiltering("firstName.doesNotContain=" + UPDATED_FIRST_NAME, "firstName.doesNotContain=" + DEFAULT_FIRST_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByLastNameIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where lastName equals to
+        defaultOwnerFiltering("lastName.equals=" + DEFAULT_LAST_NAME, "lastName.equals=" + UPDATED_LAST_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByLastNameIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where lastName in
+        defaultOwnerFiltering("lastName.in=" + DEFAULT_LAST_NAME + "," + UPDATED_LAST_NAME, "lastName.in=" + UPDATED_LAST_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByLastNameIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where lastName is not null
+        defaultOwnerFiltering("lastName.specified=true", "lastName.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByLastNameContainsSomething() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where lastName contains
+        defaultOwnerFiltering("lastName.contains=" + DEFAULT_LAST_NAME, "lastName.contains=" + UPDATED_LAST_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByLastNameNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where lastName does not contain
+        defaultOwnerFiltering("lastName.doesNotContain=" + UPDATED_LAST_NAME, "lastName.doesNotContain=" + DEFAULT_LAST_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByAddressIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where address equals to
+        defaultOwnerFiltering("address.equals=" + DEFAULT_ADDRESS, "address.equals=" + UPDATED_ADDRESS);
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByAddressIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where address in
+        defaultOwnerFiltering("address.in=" + DEFAULT_ADDRESS + "," + UPDATED_ADDRESS, "address.in=" + UPDATED_ADDRESS);
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByAddressIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where address is not null
+        defaultOwnerFiltering("address.specified=true", "address.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByAddressContainsSomething() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where address contains
+        defaultOwnerFiltering("address.contains=" + DEFAULT_ADDRESS, "address.contains=" + UPDATED_ADDRESS);
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByAddressNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where address does not contain
+        defaultOwnerFiltering("address.doesNotContain=" + UPDATED_ADDRESS, "address.doesNotContain=" + DEFAULT_ADDRESS);
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByCityIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where city equals to
+        defaultOwnerFiltering("city.equals=" + DEFAULT_CITY, "city.equals=" + UPDATED_CITY);
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByCityIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where city in
+        defaultOwnerFiltering("city.in=" + DEFAULT_CITY + "," + UPDATED_CITY, "city.in=" + UPDATED_CITY);
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByCityIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where city is not null
+        defaultOwnerFiltering("city.specified=true", "city.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByCityContainsSomething() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where city contains
+        defaultOwnerFiltering("city.contains=" + DEFAULT_CITY, "city.contains=" + UPDATED_CITY);
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByCityNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where city does not contain
+        defaultOwnerFiltering("city.doesNotContain=" + UPDATED_CITY, "city.doesNotContain=" + DEFAULT_CITY);
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByTelephoneIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where telephone equals to
+        defaultOwnerFiltering("telephone.equals=" + DEFAULT_TELEPHONE, "telephone.equals=" + UPDATED_TELEPHONE);
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByTelephoneIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where telephone in
+        defaultOwnerFiltering("telephone.in=" + DEFAULT_TELEPHONE + "," + UPDATED_TELEPHONE, "telephone.in=" + UPDATED_TELEPHONE);
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByTelephoneIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where telephone is not null
+        defaultOwnerFiltering("telephone.specified=true", "telephone.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByTelephoneContainsSomething() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where telephone contains
+        defaultOwnerFiltering("telephone.contains=" + DEFAULT_TELEPHONE, "telephone.contains=" + UPDATED_TELEPHONE);
+    }
+
+    @Test
+    @Transactional
+    void getAllOwnersByTelephoneNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedOwner = ownerRepository.saveAndFlush(owner);
+
+        // Get all the ownerList where telephone does not contain
+        defaultOwnerFiltering("telephone.doesNotContain=" + UPDATED_TELEPHONE, "telephone.doesNotContain=" + DEFAULT_TELEPHONE);
+    }
+
+    private void defaultOwnerFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultOwnerShouldBeFound(shouldBeFound);
+        defaultOwnerShouldNotBeFound(shouldNotBeFound);
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultOwnerShouldBeFound(String filter) throws Exception {
+        restOwnerMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(owner.getId().intValue())))
+            .andExpect(jsonPath("$.[*].firstName").value(hasItem(DEFAULT_FIRST_NAME)))
+            .andExpect(jsonPath("$.[*].lastName").value(hasItem(DEFAULT_LAST_NAME)))
+            .andExpect(jsonPath("$.[*].address").value(hasItem(DEFAULT_ADDRESS)))
+            .andExpect(jsonPath("$.[*].city").value(hasItem(DEFAULT_CITY)))
+            .andExpect(jsonPath("$.[*].telephone").value(hasItem(DEFAULT_TELEPHONE)));
+
+        // Check, that the count call also returns 1
+        restOwnerMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultOwnerShouldNotBeFound(String filter) throws Exception {
+        restOwnerMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restOwnerMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
+    }
+
+    @Test
+    @Transactional
     void getNonExistingOwner() throws Exception {
         // Get the owner
         restOwnerMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
@@ -294,12 +619,11 @@ class OwnerResourceIT {
             .address(UPDATED_ADDRESS)
             .city(UPDATED_CITY)
             .telephone(UPDATED_TELEPHONE);
+        OwnerDTO ownerDTO = ownerMapper.toDto(updatedOwner);
 
         restOwnerMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, updatedOwner.getId())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(updatedOwner))
+                put(ENTITY_API_URL_ID, ownerDTO.getId()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(ownerDTO))
             )
             .andExpect(status().isOk());
 
@@ -314,9 +638,14 @@ class OwnerResourceIT {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         owner.setId(longCount.incrementAndGet());
 
+        // Create the Owner
+        OwnerDTO ownerDTO = ownerMapper.toDto(owner);
+
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restOwnerMockMvc
-            .perform(put(ENTITY_API_URL_ID, owner.getId()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(owner)))
+            .perform(
+                put(ENTITY_API_URL_ID, ownerDTO.getId()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(ownerDTO))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the Owner in the database
@@ -329,12 +658,15 @@ class OwnerResourceIT {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         owner.setId(longCount.incrementAndGet());
 
+        // Create the Owner
+        OwnerDTO ownerDTO = ownerMapper.toDto(owner);
+
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restOwnerMockMvc
             .perform(
                 put(ENTITY_API_URL_ID, longCount.incrementAndGet())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(owner))
+                    .content(om.writeValueAsBytes(ownerDTO))
             )
             .andExpect(status().isBadRequest());
 
@@ -348,9 +680,12 @@ class OwnerResourceIT {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         owner.setId(longCount.incrementAndGet());
 
+        // Create the Owner
+        OwnerDTO ownerDTO = ownerMapper.toDto(owner);
+
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restOwnerMockMvc
-            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(owner)))
+            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(ownerDTO)))
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the Owner in the database
@@ -424,10 +759,15 @@ class OwnerResourceIT {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         owner.setId(longCount.incrementAndGet());
 
+        // Create the Owner
+        OwnerDTO ownerDTO = ownerMapper.toDto(owner);
+
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restOwnerMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, owner.getId()).contentType("application/merge-patch+json").content(om.writeValueAsBytes(owner))
+                patch(ENTITY_API_URL_ID, ownerDTO.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(om.writeValueAsBytes(ownerDTO))
             )
             .andExpect(status().isBadRequest());
 
@@ -441,12 +781,15 @@ class OwnerResourceIT {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         owner.setId(longCount.incrementAndGet());
 
+        // Create the Owner
+        OwnerDTO ownerDTO = ownerMapper.toDto(owner);
+
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restOwnerMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, longCount.incrementAndGet())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(owner))
+                    .content(om.writeValueAsBytes(ownerDTO))
             )
             .andExpect(status().isBadRequest());
 
@@ -460,9 +803,12 @@ class OwnerResourceIT {
         long databaseSizeBeforeUpdate = getRepositoryCount();
         owner.setId(longCount.incrementAndGet());
 
+        // Create the Owner
+        OwnerDTO ownerDTO = ownerMapper.toDto(owner);
+
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restOwnerMockMvc
-            .perform(patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(om.writeValueAsBytes(owner)))
+            .perform(patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(om.writeValueAsBytes(ownerDTO)))
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the Owner in the database

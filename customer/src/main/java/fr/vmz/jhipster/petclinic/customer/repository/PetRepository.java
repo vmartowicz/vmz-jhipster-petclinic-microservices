@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
  * Spring Data JPA repository for the Pet entity.
  */
 @Repository
-public interface PetRepository extends JpaRepository<Pet, Long> {
+public interface PetRepository extends JpaRepository<Pet, Long>, JpaSpecificationExecutor<Pet> {
     default Optional<Pet> findOneWithEagerRelationships(Long id) {
         return this.findOneWithToOneRelationships(id);
     }

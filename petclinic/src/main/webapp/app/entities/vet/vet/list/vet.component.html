@@ -24,6 +24,8 @@
 
   <jhi-alert />
 
+  <jhi-filter [filters]="filters" />
+
   @if (vets().length === 0) {
     <div class="alert alert-warning" id="no-result">
       <span jhiTranslate="petclinicApp.vetVet.home.notFound">No Vets found</span>

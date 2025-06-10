@@ -24,6 +24,8 @@
 
   <jhi-alert />
 
+  <jhi-filter [filters]="filters" />
+
   @if (owners().length === 0) {
     <div class="alert alert-warning" id="no-result">
       <span jhiTranslate="petclinicApp.customerOwner.home.notFound">No Owners found</span>
@@ -91,6 +93,21 @@
               <td>{{ owner.telephone }}</td>
               <td class="text-end">
                 <div class="btn-group">
+                  <button
+                    type="submit"
+                    [routerLink]="['/pet']"
+                    [queryParams]="{ 'filter[ownerId.in]': owner.id }"
+                    class="btn btn-info btn-sm"
+                    data-cy="filterOtherEntityButton"
+                  >
+                    <fa-icon icon="eye"></fa-icon>
+                    <span
+                      class="d-none d-md-inline"
+                      jhiTranslate="entity.action.show"
+                      [translateValues]="{ otherEntity: ('petclinicApp.customerOwner.pets' | translate) }"
+                      >Show Pets</span
+                    >
+                  </button>
                   <a [routerLink]="['/owner', owner.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
                     <fa-icon icon="eye"></fa-icon>
                     <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>

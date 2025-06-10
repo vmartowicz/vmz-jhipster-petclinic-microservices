@@ -109,9 +109,12 @@ relationship OneToMany {
   //Pet{visits} to Visit{pet(name)}
 }
 
-service Pet, Owner, PetType with serviceClass
+service Pet, Owner, PetType with serviceImpl
 paginate Pet, Owner, PetType with pagination
 microservice Pet, Owner, PetType with customer
+filter Owner, Pet
+// Use Data Transfer Objects (DTO)
+dto Owner, Pet, PetType with mapstruct
 
 /* Entities for Vet microservice */
 entity Vet(vets) {
@@ -127,9 +130,10 @@ relationship ManyToMany {
   Vet{specialties(name)} to Specialty{vets}
 }
 
-service Vet, Specialty with serviceClass
+service Vet, Specialty with serviceImpl
 paginate Vet, Specialty with pagination
 microservice Vet, Specialty with vet
+filter Vet
 
 /* Entities for Visit microservice */
 
@@ -139,5 +143,7 @@ entity Visit(visits) {
   petId Long required
 
 }
+service Visit with serviceImpl
 microservice Visit with visit
 paginate Visit with pagination
+filter Visit

@@ -26,16 +26,18 @@
     "devDatabaseType": "h2Disk",
     "devServerPort": 4200,
     "entities": ["PetType", "Owner", "Pet", "Vet", "Specialty", "Visit"],
-    "jhipsterVersion": "8.9.0",
+    "jhipsterVersion": "8.11.0",
     "jwtSecretKey": "NzYzMzdkYjA2MWIyNWIyNDM3NzhkOWFhNTJjN2Y5MTQxMjM5YTY1NzJlNzMwOTZkYjJlN2VlN2U0MGYzY2ViMTRhNzdmMTZmNTM2YmE3NDg4YmRjNDZiNDE2ZWMxM2UxMWI0M2ZhYTYyM2U1Mjg3NWE3Nzg5NzA4NThlNTJkNTg=",
     "languages": ["en"],
     "lastLiquibaseTimestamp": 1738272020000,
+    "monorepository": true,
     "nativeLanguage": "en",
     "packageName": "fr.vmz.jhipster.petclinic",
     "prodDatabaseType": "postgresql",
     "reactive": true,
     "serverPort": 8080,
     "serviceDiscoveryType": "consul",
+    "skipCommitHook": true,
     "testFrameworks": ["cypress", "cucumber", "gatling"]
   }
 }

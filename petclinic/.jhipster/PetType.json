@@ -5,6 +5,7 @@
   "applications": ["petclinic", "customer"],
   "clientRootFolder": "customer",
   "databaseType": "sql",
+  "dto": "mapstruct",
   "entityTableName": "types",
   "fields": [
     {
@@ -19,5 +20,5 @@
   "pagination": "pagination",
   "relationships": [],
   "searchEngine": "no",
-  "service": "serviceClass"
+  "service": "serviceImpl"
 }
