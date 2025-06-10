@@ -18,7 +18,8 @@
       "name": "Name",
       "birthDate": "Birth Date",
       "type": "Type",
-      "owner": "Owner"
+      "owner": "Owner",
+      "visits": "Visits"
     }
   },
   "customerApp": {
