@@ -31,6 +31,7 @@ export class VisitService {
   protected readonly applicationConfigService = inject(ApplicationConfigService);
 
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/visits', 'visit');
+  protected resourceCompositeUrl = this.applicationConfigService.getEndpointFor('api/composite/visits');
 
   create(visit: NewVisit): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(visit);
@@ -60,7 +61,7 @@ export class VisitService {
   query(req?: any): Observable<EntityArrayResponseType> {
     const options = createRequestOption(req);
     return this.http
-      .get<RestVisit[]>(this.resourceUrl, { params: options, observe: 'response' })
+      .get<RestVisit[]>(this.resourceCompositeUrl, { params: options, observe: 'response' })
       .pipe(map(res => this.convertResponseArrayFromServer(res)));
   }
 

@@ -56,9 +56,9 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="petId">
+            <th scope="col" jhiSortBy="petName">
               <div class="d-flex">
-                <span jhiTranslate="petclinicApp.visitVisit.petId">Pet Id</span>
+                <span jhiTranslate="petclinicApp.visitVisit.petName">Pet Name</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
@@ -77,7 +77,7 @@
               <td>
                 @if (visit.petId) {
                   <div>
-                    <a [routerLink]="['/pet', visit.petId, 'view']">{{ visit.petId }}</a>
+                    <a [routerLink]="['/pet', visit.petId, 'view']">{{ visit.petName }}</a>
                   </div>
                 }
               </td>

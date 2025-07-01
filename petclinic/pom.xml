@@ -87,6 +87,8 @@
         <spring.profiles.active>dev</spring.profiles.active>
         <springdoc-openapi-starter-webflux-api.version>2.8.8</springdoc-openapi-starter-webflux-api.version>
         <testng.version>7.11.0</testng.version>
+
+        <wiremock-spring-boot.version>3.10.0</wiremock-spring-boot.version>
     </properties>
 
     <dependencyManagement>
@@ -379,6 +381,11 @@
             <artifactId>testng</artifactId>
             <version>${testng.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.wiremock.integrations</groupId>
+          <artifactId>wiremock-spring-boot</artifactId>
+          <version>${wiremock-spring-boot.version}</version>
         </dependency>
     </dependencies>
 
