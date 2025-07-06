@@ -23,7 +23,7 @@
           <dd>
             @for (vets of specialtyRef.vets; track $index; let last = $last) {
               <span>
-                <a [routerLink]="['/vet', vets.id, 'view']">{{ vets?.id }}</a
+                <a [routerLink]="['/vet', vets.id, 'view']">{{ vets?.lastName }}</a
                 >{{ last ? '' : ', ' }}
               </span>
             }

@@ -45,7 +45,7 @@
             [compareWith]="compareVet"
           >
             @for (vetOption of vetsSharedCollection; track $index) {
-              <option [ngValue]="vetOption">{{ vetOption.id }}</option>
+              <option [ngValue]="vetOption">{{ vetOption.lastName }}</option>
             }
           </select>
         </div>

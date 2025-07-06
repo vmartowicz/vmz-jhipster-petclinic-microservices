@@ -20,6 +20,7 @@
   "pagination": "pagination",
   "relationships": [
     {
+      "otherEntityField": "lastName",
       "otherEntityName": "vet",
       "otherEntityRelationshipName": "specialties",
       "relationshipName": "vets",

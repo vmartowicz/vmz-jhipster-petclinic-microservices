@@ -13,20 +13,21 @@ import org.mapstruct.*;
  */
 @Mapper(componentModel = "spring")
 public interface SpecialtyMapper extends EntityMapper<SpecialtyDTO, Specialty> {
-    @Mapping(target = "vets", source = "vets", qualifiedByName = "vetIdSet")
+    @Mapping(target = "vets", source = "vets", qualifiedByName = "vetLastNameSet")
     SpecialtyDTO toDto(Specialty s);
 
     @Mapping(target = "vets", ignore = true)
     @Mapping(target = "removeVets", ignore = true)
     Specialty toEntity(SpecialtyDTO specialtyDTO);
 
-    @Named("vetId")
+    @Named("vetLastName")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
-    VetDTO toDtoVetId(Vet vet);
+    @Mapping(target = "lastName", source = "lastName")
+    VetDTO toDtoVetLastName(Vet vet);
 
-    @Named("vetIdSet")
-    default Set<VetDTO> toDtoVetIdSet(Set<Vet> vet) {
-        return vet.stream().map(this::toDtoVetId).collect(Collectors.toSet());
+    @Named("vetLastNameSet")
+    default Set<VetDTO> toDtoVetLastNameSet(Set<Vet> vet) {
+        return vet.stream().map(this::toDtoVetLastName).collect(Collectors.toSet());
     }
 }

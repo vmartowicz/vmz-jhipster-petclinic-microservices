@@ -127,7 +127,7 @@ entity Specialty(specialties) {
 }
 
 relationship ManyToMany {
-  Vet{specialties(name)} to Specialty{vets}
+  Vet{specialties(name)} to Specialty{vets(lastName)}
 }
 
 service Vet, Specialty with serviceImpl
