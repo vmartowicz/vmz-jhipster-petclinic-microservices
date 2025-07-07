@@ -82,7 +82,7 @@ public class CompositeResource {
         return 0;
     }
 
-    private static int sortByPetName(VisitDTO left, VisitDTO right) {
+    private int sortByPetName(VisitDTO left, VisitDTO right) {
         return left.getPetName().compareTo(right.getPetName());
     }
 

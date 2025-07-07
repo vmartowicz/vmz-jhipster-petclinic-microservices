@@ -16,6 +16,7 @@ import org.wiremock.spring.EnableWireMock;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static fr.vmz.jhipster.petclinic.web.rest.AccountResourceIT.TEST_USER_LOGIN;
@@ -48,7 +49,6 @@ class CompositeResourceIT {
     void setup() {
 
         ServiceInstance si = mock(ServiceInstance.class);
-        when(si.getUri()).thenReturn(URI.create(wireMockUrl));
         when(si.getHost()).thenReturn("localhost");
         when(si.getPort()).thenReturn(wireMockPort);
         when(discoveryClient.getInstances(anyString())).thenReturn(List.of(si));
@@ -57,28 +57,24 @@ class CompositeResourceIT {
             get(urlPathEqualTo("/api/visits"))
                 .withQueryParam("page", equalTo("0"))
                 .withQueryParam("size", equalTo("20"))
-                .withQueryParam("sort", equalTo(""))
+                .withQueryParam("sort", equalTo("id,asc"))
                 .willReturn(
                     okJson("[" +
-                            "{\"id\":1,\"petId\":1,\"visitDate\":\"2023-10-01T00:00:00Z\",\"description\":\"Visit 1\"}," +
-                            "{\"id\":2,\"petId\":2,\"visitDate\":\"2024-10-01T00:00:00Z\",\"description\":\"Visit 2\"}" +
+                            "{\"id\":1,\"petId\":1,\"visitDate\":\"2021-10-01T00:00:00Z\",\"description\":\"Visit 1\"}," +
+                            "{\"id\":2,\"petId\":2,\"visitDate\":\"2022-10-01T00:00:00Z\",\"description\":\"Visit 2\"}" +
                         "]")
                 )
         );
-        stubFor(
-            get(urlPathTemplate("/api/pets/{id}"))
-                .withPathParam("id", equalTo("1"))
-                .willReturn(
-                    okJson("{\"id\":1,\"name\":\"PetName 1\",\"type\":\"Dog\",\"birthDate\":\"2023-01-01T00:00:00Z\"}")
-                )
-        );
-        stubFor(
-            get(urlPathTemplate("/api/pets/{id}"))
-                .withPathParam("id", equalTo("2"))
-                .willReturn(
-                    okJson("{\"id\":2,\"name\":\"PetName 2\",\"type\":\"Cat\",\"birthDate\":\"2024-01-01T00:00:00Z\"}")
-                )
-        );
+
+        IntStream.range(1,3).forEach(id -> {
+            stubFor(
+                get(urlPathTemplate("/api/pets/{id}"))
+                    .withPathParam("id", equalTo(String.valueOf(id)))
+                    .willReturn(
+                        okJson("{\"id\":" + id + ",\"name\":\"PetName " + id + "\",\"type\":\"Dog\",\"birthDate\":\"202" + id + "-01-01T00:00:00Z\"}")
+                    )
+            );
+        });
     }
 
     @Test
@@ -86,7 +82,13 @@ class CompositeResourceIT {
     void shouldGetAllVisits() {
         webTestClient
             .get()
-            .uri("/api/composite/visits")
+            .uri(uriBuilder ->
+                uriBuilder
+                    .path("/api/composite/visits")
+                    .queryParam("page", "0")
+                    .queryParam("size", "20")
+                    .queryParam("sort", "id,asc")
+                    .build())
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus()
@@ -98,13 +100,13 @@ class CompositeResourceIT {
             .jsonPath("$.[*].id").value(hasItem(1))
             .jsonPath("$.[*].petId").value(hasItem(1))
             .jsonPath("$.[*].description").value(hasItem("Visit 1"))
-            .jsonPath("$.[*].visitDate").value(hasItem("2023-10-01"))
+            .jsonPath("$.[*].visitDate").value(hasItem("2021-10-01"))
             .jsonPath("$.[*].petName").value(hasItem("PetName 1"))
 
             .jsonPath("$.[*].id").value(hasItem(2))
             .jsonPath("$.[*].petId").value(hasItem(2))
             .jsonPath("$.[*].description").value(hasItem("Visit 2"))
-            .jsonPath("$.[*].visitDate").value(hasItem("2024-10-01"))
+            .jsonPath("$.[*].visitDate").value(hasItem("2022-10-01"))
             .jsonPath("$.[*].petName").value(hasItem("PetName 2"))
         ;
 

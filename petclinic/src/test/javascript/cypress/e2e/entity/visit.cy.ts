@@ -25,6 +25,7 @@ describe('Visit e2e test', () => {
 
   beforeEach(() => {
     cy.intercept('GET', '/services/visit/api/visits+(?*|)').as('entitiesRequest');
+    cy.intercept('GET', '/api/composite/visits+(?*|)').as('entitiesCompositeRequest');
     cy.intercept('POST', '/services/visit/api/visits').as('postEntityRequest');
     cy.intercept('DELETE', '/services/visit/api/visits/*').as('deleteEntityRequest');
   });
@@ -43,7 +44,7 @@ describe('Visit e2e test', () => {
   it('Visits menu should load Visits page', () => {
     cy.visit('/');
     cy.clickOnEntityMenuItem('visit');
-    cy.wait('@entitiesRequest').then(({ response }) => {
+    cy.wait('@entitiesCompositeRequest').then(({ response }) => {
       if (response?.body.length === 0) {
         cy.get(entityTableSelector).should('not.exist');
       } else {
@@ -58,7 +59,7 @@ describe('Visit e2e test', () => {
     describe('create button click', () => {
       beforeEach(() => {
         cy.visit(visitPageUrl);
-        cy.wait('@entitiesRequest');
+        cy.wait('@entitiesCompositeRequest');
       });
 
       it('should load create Visit page', () => {
@@ -67,7 +68,7 @@ describe('Visit e2e test', () => {
         cy.getEntityCreateUpdateHeading('Visit');
         cy.get(entityCreateSaveButtonSelector).should('exist');
         cy.get(entityCreateCancelButtonSelector).click();
-        cy.wait('@entitiesRequest').then(({ response }) => {
+        cy.wait('@entitiesCompositeRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
         cy.url().should('match', visitPageUrlPattern);
@@ -86,7 +87,7 @@ describe('Visit e2e test', () => {
           cy.intercept(
             {
               method: 'GET',
-              url: '/services/visit/api/visits+(?*|)',
+              url: '/api/composite/visits+(?*|)',
               times: 1,
             },
             {
@@ -108,7 +109,7 @@ describe('Visit e2e test', () => {
         cy.get(entityDetailsButtonSelector).first().click();
         cy.getEntityDetailsHeading('visit');
         cy.get(entityDetailsBackButtonSelector).click();
-        cy.wait('@entitiesRequest').then(({ response }) => {
+        cy.wait('@entitiesCompositeRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
         cy.url().should('match', visitPageUrlPattern);
@@ -119,7 +120,7 @@ describe('Visit e2e test', () => {
         cy.getEntityCreateUpdateHeading('Visit');
         cy.get(entityCreateSaveButtonSelector).should('exist');
         cy.get(entityCreateCancelButtonSelector).click();
-        cy.wait('@entitiesRequest').then(({ response }) => {
+        cy.wait('@entitiesCompositeRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
         cy.url().should('match', visitPageUrlPattern);
@@ -129,7 +130,7 @@ describe('Visit e2e test', () => {
         cy.get(entityEditButtonSelector).first().click();
         cy.getEntityCreateUpdateHeading('Visit');
         cy.get(entityCreateSaveButtonSelector).click();
-        cy.wait('@entitiesRequest').then(({ response }) => {
+        cy.wait('@entitiesCompositeRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
         cy.url().should('match', visitPageUrlPattern);
@@ -142,7 +143,7 @@ describe('Visit e2e test', () => {
         cy.wait('@deleteEntityRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(204);
         });
-        cy.wait('@entitiesRequest').then(({ response }) => {
+        cy.wait('@entitiesCompositeRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
         cy.url().should('match', visitPageUrlPattern);
@@ -176,7 +177,7 @@ describe('Visit e2e test', () => {
         expect(response?.statusCode).to.equal(201);
         visit = response.body;
       });
-      cy.wait('@entitiesRequest').then(({ response }) => {
+      cy.wait('@entitiesCompositeRequest').then(({ response }) => {
         expect(response?.statusCode).to.equal(200);
       });
       cy.url().should('match', visitPageUrlPattern);
