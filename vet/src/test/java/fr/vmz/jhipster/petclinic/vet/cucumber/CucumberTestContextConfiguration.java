@@ -1,10 +1,15 @@
 package fr.vmz.jhipster.petclinic.vet.cucumber;
 
 import fr.vmz.jhipster.petclinic.vet.IntegrationTest;
+import fr.vmz.jhipster.petclinic.vet.security.AuthoritiesConstants;
 import io.cucumber.spring.CucumberContextConfiguration;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles({ "test", "testprod" })
 @CucumberContextConfiguration
 @IntegrationTest
-@WebAppConfiguration
+@AutoConfigureMockMvc
+@WithMockUser(authorities = AuthoritiesConstants.ADMIN)
 public class CucumberTestContextConfiguration {}

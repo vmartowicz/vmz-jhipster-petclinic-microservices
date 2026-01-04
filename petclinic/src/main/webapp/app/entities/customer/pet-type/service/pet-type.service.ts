@@ -1,10 +1,11 @@
-import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+
 import { Observable } from 'rxjs';
 
-import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
+import { isPresent } from 'app/core/util/operators';
 import { IPetType, NewPetType } from '../pet-type.model';
 
 export type PartialUpdatePetType = Partial<IPetType> & Pick<IPetType, 'id'>;
@@ -24,15 +25,19 @@ export class PetTypeService {
   }
 
   update(petType: IPetType): Observable<EntityResponseType> {
-    return this.http.put<IPetType>(`${this.resourceUrl}/${this.getPetTypeIdentifier(petType)}`, petType, { observe: 'response' });
+    return this.http.put<IPetType>(`${this.resourceUrl}/${encodeURIComponent(this.getPetTypeIdentifier(petType))}`, petType, {
+      observe: 'response',
+    });
   }
 
   partialUpdate(petType: PartialUpdatePetType): Observable<EntityResponseType> {
-    return this.http.patch<IPetType>(`${this.resourceUrl}/${this.getPetTypeIdentifier(petType)}`, petType, { observe: 'response' });
+    return this.http.patch<IPetType>(`${this.resourceUrl}/${encodeURIComponent(this.getPetTypeIdentifier(petType))}`, petType, {
+      observe: 'response',
+    });
   }
 
   find(id: number): Observable<EntityResponseType> {
-    return this.http.get<IPetType>(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    return this.http.get<IPetType>(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   query(req?: any): Observable<EntityArrayResponseType> {
@@ -41,7 +46,7 @@ export class PetTypeService {
   }
 
   delete(id: number): Observable<HttpResponse<{}>> {
-    return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    return this.http.delete(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   getPetTypeIdentifier(petType: Pick<IPetType, 'id'>): number {

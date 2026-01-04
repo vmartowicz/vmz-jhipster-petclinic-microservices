@@ -51,7 +51,7 @@ public class SecurityConfiguration {
         http
             .securityMatcher(
                 new NegatedServerWebExchangeMatcher(
-                    new OrServerWebExchangeMatcher(pathMatchers("/app/**", "/i18n/**", "/content/**", "/swagger-ui/**"))
+                    new OrServerWebExchangeMatcher(pathMatchers("/content/**", "/resources/**", "/swagger-ui/**"))
                 )
             )
             .cors(withDefaults())

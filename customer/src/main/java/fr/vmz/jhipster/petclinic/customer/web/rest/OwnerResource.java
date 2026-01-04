@@ -37,7 +37,7 @@ public class OwnerResource {
 
     private static final String ENTITY_NAME = "customerOwner";
 
-    @Value("${jhipster.clientApp.name}")
+    @Value("${jhipster.clientApp.name:customer}")
     private String applicationName;
 
     private final OwnerService ownerService;

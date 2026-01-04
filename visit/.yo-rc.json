@@ -11,7 +11,7 @@
     "devDatabaseType": "h2Disk",
     "enableHibernateCache": false,
     "entities": ["Visit"],
-    "jhipsterVersion": "8.11.0",
+    "jhipsterVersion": "9.0.0-beta.0",
     "jwtSecretKey": "YWVmNGNiMGIxZGUyN2RhZTdmZjgwMDAzZTE1MjQxMzVmNWMzYTRkNGY2ZDA0YzM5YzExYjgzZmQ5YmFjZmZmOTVkMDc2YjAxOTZiMzZjMWJiZTk4YjNkMWFhMjU5ODVlMGJjMjJmZDViZjVlOTczNmZjYzg4MGMzYzc0ZDE0ODk=",
     "languages": ["en"],
     "lastLiquibaseTimestamp": 1738271720000,

@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 
 import { IVet } from '../vet.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../vet.test-samples';
@@ -100,8 +100,7 @@ describe('Vet Service', () => {
       it('should add a Vet to an empty array', () => {
         const vet: IVet = sampleWithRequiredData;
         expectedResult = service.addVetToCollectionIfMissing([], vet);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(vet);
+        expect(expectedResult).toEqual([vet]);
       });
 
       it('should not add a Vet to an array that contains it', () => {
@@ -135,16 +134,13 @@ describe('Vet Service', () => {
         const vet: IVet = sampleWithRequiredData;
         const vet2: IVet = sampleWithPartialData;
         expectedResult = service.addVetToCollectionIfMissing([], vet, vet2);
-        expect(expectedResult).toHaveLength(2);
-        expect(expectedResult).toContain(vet);
-        expect(expectedResult).toContain(vet2);
+        expect(expectedResult).toEqual([vet, vet2]);
       });
 
       it('should accept null and undefined values', () => {
         const vet: IVet = sampleWithRequiredData;
         expectedResult = service.addVetToCollectionIfMissing([], null, vet, undefined);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(vet);
+        expect(expectedResult).toEqual([vet]);
       });
 
       it('should return initial array if no Vet is added', () => {

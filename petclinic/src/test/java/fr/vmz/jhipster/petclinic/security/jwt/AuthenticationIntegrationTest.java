@@ -4,6 +4,7 @@ import fr.vmz.jhipster.petclinic.config.SecurityConfiguration;
 import fr.vmz.jhipster.petclinic.config.SecurityJwtConfiguration;
 import fr.vmz.jhipster.petclinic.config.WebConfigurer;
 import fr.vmz.jhipster.petclinic.management.SecurityMetersService;
+import fr.vmz.jhipster.petclinic.repository.UserRepository;
 import fr.vmz.jhipster.petclinic.web.rest.AuthenticateController;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,6 +13,8 @@ import java.lang.annotation.Target;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import tech.jhipster.config.JHipsterProperties;
 
 @Target(ElementType.TYPE)
@@ -34,5 +37,6 @@ import tech.jhipster.config.JHipsterProperties;
     }
 )
 @ComponentScan({})
-public @interface AuthenticationIntegrationTest {
-}
+@MockitoBean(types = ReactiveUserDetailsService.class)
+@MockitoBean(types = UserRepository.class)
+public @interface AuthenticationIntegrationTest {}

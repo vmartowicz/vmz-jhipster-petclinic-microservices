@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 
 import { IOwner } from '../owner.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../owner.test-samples';
@@ -100,8 +100,7 @@ describe('Owner Service', () => {
       it('should add a Owner to an empty array', () => {
         const owner: IOwner = sampleWithRequiredData;
         expectedResult = service.addOwnerToCollectionIfMissing([], owner);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(owner);
+        expect(expectedResult).toEqual([owner]);
       });
 
       it('should not add a Owner to an array that contains it', () => {
@@ -135,16 +134,13 @@ describe('Owner Service', () => {
         const owner: IOwner = sampleWithRequiredData;
         const owner2: IOwner = sampleWithPartialData;
         expectedResult = service.addOwnerToCollectionIfMissing([], owner, owner2);
-        expect(expectedResult).toHaveLength(2);
-        expect(expectedResult).toContain(owner);
-        expect(expectedResult).toContain(owner2);
+        expect(expectedResult).toEqual([owner, owner2]);
       });
 
       it('should accept null and undefined values', () => {
         const owner: IOwner = sampleWithRequiredData;
         expectedResult = service.addOwnerToCollectionIfMissing([], null, owner, undefined);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(owner);
+        expect(expectedResult).toEqual([owner]);
       });
 
       it('should return initial array if no Owner is added', () => {

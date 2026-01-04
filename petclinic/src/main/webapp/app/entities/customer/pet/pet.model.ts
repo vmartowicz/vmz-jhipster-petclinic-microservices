@@ -1,6 +1,7 @@
 import dayjs from 'dayjs/esm';
-import { IPetType } from 'app/entities/customer/pet-type/pet-type.model';
+
 import { IOwner } from 'app/entities/customer/owner/owner.model';
+import { IPetType } from 'app/entities/customer/pet-type/pet-type.model';
 
 export interface IPet {
   id: number;

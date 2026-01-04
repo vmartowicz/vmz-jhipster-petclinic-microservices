@@ -15,7 +15,7 @@ describe('PetType e2e test', () => {
   const petTypePageUrlPattern = new RegExp('/pet-type(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const petTypeSample = { name: 'overcharge excluding' };
+  const petTypeSample = { name: 'taxicab' };
 
   let petType;
 
@@ -154,14 +154,14 @@ describe('PetType e2e test', () => {
 
   describe('new PetType page', () => {
     beforeEach(() => {
-      cy.visit(`${petTypePageUrl}`);
+      cy.visit(petTypePageUrl);
       cy.get(entityCreateButtonSelector).click();
       cy.getEntityCreateUpdateHeading('PetType');
     });
 
     it('should create an instance of PetType', () => {
-      cy.get(`[data-cy="name"]`).type('pillbox');
-      cy.get(`[data-cy="name"]`).should('have.value', 'pillbox');
+      cy.get(`[data-cy="name"]`).type('although');
+      cy.get(`[data-cy="name"]`).should('have.value', 'although');
 
       cy.get(entityCreateSaveButtonSelector).click();
 

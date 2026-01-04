@@ -25,10 +25,10 @@ export type PetTypeFormGroup = FormGroup<PetTypeFormGroupContent>;
 
 @Injectable({ providedIn: 'root' })
 export class PetTypeFormService {
-  createPetTypeFormGroup(petType: PetTypeFormGroupInput = { id: null }): PetTypeFormGroup {
+  createPetTypeFormGroup(petType?: PetTypeFormGroupInput): PetTypeFormGroup {
     const petTypeRawValue = {
       ...this.getFormDefaults(),
-      ...petType,
+      ...(petType ?? { id: null }),
     };
     return new FormGroup<PetTypeFormGroupContent>({
       id: new FormControl(
@@ -50,12 +50,10 @@ export class PetTypeFormService {
 
   resetForm(form: PetTypeFormGroup, petType: PetTypeFormGroupInput): void {
     const petTypeRawValue = { ...this.getFormDefaults(), ...petType };
-    form.reset(
-      {
-        ...petTypeRawValue,
-        id: { value: petTypeRawValue.id, disabled: true },
-      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
-    );
+    form.reset({
+      ...petTypeRawValue,
+      id: { value: petTypeRawValue.id, disabled: true },
+    });
   }
 
   private getFormDefaults(): PetTypeFormDefaults {

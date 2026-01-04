@@ -17,8 +17,7 @@
       "id": "ID",
       "visitDate": "Visit Date",
       "description": "Description",
-      "petId": "Pet Id",
-      "petName": "Pet Name"
+      "petId": "Pet Id"
     }
   },
   "visitApp": {

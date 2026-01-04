@@ -68,7 +68,7 @@ public class VetQueryService extends QueryService<Vet> {
      * @return the matching {@link Specification} of the entity.
      */
     protected Specification<Vet> createSpecification(VetCriteria criteria) {
-        Specification<Vet> specification = Specification.where(null);
+        Specification<Vet> specification = Specification.unrestricted();
         if (criteria != null) {
             // This has to be called first, because the distinct method returns null
             specification = Specification.allOf(

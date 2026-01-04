@@ -20,7 +20,7 @@ import java.util.Optional;
 /**
  * Performance test for the Owner entity.
  *
- * @see <a href="https://github.com/jhipster/generator-jhipster/tree/v8.11.0/generators/gatling#logging-tips">Logging tips</a>
+ * @see <a href="https://github.com/jhipster/generator-jhipster/tree/v9.0.0-beta.0/generators/gatling#logging-tips">Logging tips</a>
  */
 public class OwnerGatlingTest extends Simulation {
 
@@ -68,12 +68,12 @@ public class OwnerGatlingTest extends Simulation {
                         .body(
                             StringBody(
                                 "{" +
-                                "\"firstName\": \"SAMPLE_TEXT\"" +
-                                ", \"lastName\": \"SAMPLE_TEXT\"" +
-                                ", \"address\": \"SAMPLE_TEXT\"" +
-                                ", \"city\": \"SAMPLE_TEXT\"" +
-                                ", \"telephone\": \"SAMPLE_TEXT\"" +
-                                "}"
+                                    "\"firstName\": \"SAMPLE_TEXT\"" +
+                                    ", \"lastName\": \"SAMPLE_TEXT\"" +
+                                    ", \"address\": \"SAMPLE_TEXT\"" +
+                                    ", \"city\": \"SAMPLE_TEXT\"" +
+                                    ", \"telephone\": \"SAMPLE_TEXT\"" +
+                                    "}"
                             )
                         )
                         .asJson()

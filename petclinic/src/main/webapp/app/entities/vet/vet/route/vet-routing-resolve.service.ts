@@ -1,11 +1,12 @@
-import { inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
+import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, Router } from '@angular/router';
+
 import { EMPTY, Observable, of } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
-import { IVet } from '../vet.model';
 import { VetService } from '../service/vet.service';
+import { IVet } from '../vet.model';
 
 const vetResolve = (route: ActivatedRouteSnapshot): Observable<null | IVet> => {
   const id = route.params.id;

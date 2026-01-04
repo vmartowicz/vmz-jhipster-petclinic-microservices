@@ -15,7 +15,7 @@ describe('Pet e2e test', () => {
   const petPageUrlPattern = new RegExp('/pet(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const petSample = { name: 'ouch provided' };
+  const petSample = { name: 'er sick' };
 
   let pet;
 
@@ -154,14 +154,14 @@ describe('Pet e2e test', () => {
 
   describe('new Pet page', () => {
     beforeEach(() => {
-      cy.visit(`${petPageUrl}`);
+      cy.visit(petPageUrl);
       cy.get(entityCreateButtonSelector).click();
       cy.getEntityCreateUpdateHeading('Pet');
     });
 
     it('should create an instance of Pet', () => {
-      cy.get(`[data-cy="name"]`).type('jeopardise');
-      cy.get(`[data-cy="name"]`).should('have.value', 'jeopardise');
+      cy.get(`[data-cy="name"]`).type('indeed');
+      cy.get(`[data-cy="name"]`).should('have.value', 'indeed');
 
       cy.get(`[data-cy="birthDate"]`).type('2025-01-30');
       cy.get(`[data-cy="birthDate"]`).blur();

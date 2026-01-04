@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 
 import { DATE_FORMAT } from 'app/config/input.constants';
 import { IPet } from '../pet.model';
@@ -102,8 +102,7 @@ describe('Pet Service', () => {
       it('should add a Pet to an empty array', () => {
         const pet: IPet = sampleWithRequiredData;
         expectedResult = service.addPetToCollectionIfMissing([], pet);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(pet);
+        expect(expectedResult).toEqual([pet]);
       });
 
       it('should not add a Pet to an array that contains it', () => {
@@ -137,16 +136,13 @@ describe('Pet Service', () => {
         const pet: IPet = sampleWithRequiredData;
         const pet2: IPet = sampleWithPartialData;
         expectedResult = service.addPetToCollectionIfMissing([], pet, pet2);
-        expect(expectedResult).toHaveLength(2);
-        expect(expectedResult).toContain(pet);
-        expect(expectedResult).toContain(pet2);
+        expect(expectedResult).toEqual([pet, pet2]);
       });
 
       it('should accept null and undefined values', () => {
         const pet: IPet = sampleWithRequiredData;
         expectedResult = service.addPetToCollectionIfMissing([], null, pet, undefined);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(pet);
+        expect(expectedResult).toEqual([pet]);
       });
 
       it('should return initial array if no Pet is added', () => {

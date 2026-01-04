@@ -58,7 +58,7 @@ class PetResourceIT {
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
     private static Random random = new Random();
-    private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+    private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2L * Integer.MAX_VALUE));
 
     @Autowired
     private ObjectMapper om;
@@ -550,7 +550,7 @@ class PetResourceIT {
         Pet partialUpdatedPet = new Pet();
         partialUpdatedPet.setId(pet.getId());
 
-        partialUpdatedPet.name(UPDATED_NAME).birthDate(UPDATED_BIRTH_DATE);
+        partialUpdatedPet.birthDate(UPDATED_BIRTH_DATE);
 
         restPetMockMvc
             .perform(

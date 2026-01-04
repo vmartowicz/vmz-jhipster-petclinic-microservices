@@ -49,7 +49,7 @@ class VisitResourceIT {
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
     private static Random random = new Random();
-    private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+    private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2L * Integer.MAX_VALUE));
 
     @Autowired
     private ObjectMapper om;
@@ -549,8 +549,6 @@ class VisitResourceIT {
         // Update the visit using partial update
         Visit partialUpdatedVisit = new Visit();
         partialUpdatedVisit.setId(visit.getId());
-
-        partialUpdatedVisit.visitDate(UPDATED_VISIT_DATE).petId(UPDATED_PET_ID);
 
         restVisitMockMvc
             .perform(

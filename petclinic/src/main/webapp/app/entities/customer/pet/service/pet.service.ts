@@ -1,13 +1,13 @@
-import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
 
 import dayjs from 'dayjs/esm';
+import { Observable, map } from 'rxjs';
 
-import { isPresent } from 'app/core/util/operators';
 import { DATE_FORMAT } from 'app/config/input.constants';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
+import { isPresent } from 'app/core/util/operators';
 import { IPet, NewPet } from '../pet.model';
 
 export type PartialUpdatePet = Partial<IPet> & Pick<IPet, 'id'>;
@@ -40,20 +40,20 @@ export class PetService {
   update(pet: IPet): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(pet);
     return this.http
-      .put<RestPet>(`${this.resourceUrl}/${this.getPetIdentifier(pet)}`, copy, { observe: 'response' })
+      .put<RestPet>(`${this.resourceUrl}/${encodeURIComponent(this.getPetIdentifier(pet))}`, copy, { observe: 'response' })
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
   partialUpdate(pet: PartialUpdatePet): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(pet);
     return this.http
-      .patch<RestPet>(`${this.resourceUrl}/${this.getPetIdentifier(pet)}`, copy, { observe: 'response' })
+      .patch<RestPet>(`${this.resourceUrl}/${encodeURIComponent(this.getPetIdentifier(pet))}`, copy, { observe: 'response' })
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
   find(id: number): Observable<EntityResponseType> {
     return this.http
-      .get<RestPet>(`${this.resourceUrl}/${id}`, { observe: 'response' })
+      .get<RestPet>(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' })
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
@@ -65,7 +65,7 @@ export class PetService {
   }
 
   delete(id: number): Observable<HttpResponse<{}>> {
-    return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    return this.http.delete(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   getPetIdentifier(pet: Pick<IPet, 'id'>): number {

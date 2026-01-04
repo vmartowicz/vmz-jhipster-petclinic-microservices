@@ -20,7 +20,7 @@ import java.util.Optional;
 /**
  * Performance test for the Visit entity.
  *
- * @see <a href="https://github.com/jhipster/generator-jhipster/tree/v8.11.0/generators/gatling#logging-tips">Logging tips</a>
+ * @see <a href="https://github.com/jhipster/generator-jhipster/tree/v9.0.0-beta.0/generators/gatling#logging-tips">Logging tips</a>
  */
 public class VisitGatlingTest extends Simulation {
 
@@ -68,10 +68,10 @@ public class VisitGatlingTest extends Simulation {
                         .body(
                             StringBody(
                                 "{" +
-                                "\"visitDate\": \"2020-01-01T00:00:00.000Z\"" +
-                                ", \"description\": \"SAMPLE_TEXT\"" +
-                                ", \"petId\": 0" +
-                                "}"
+                                    "\"visitDate\": \"2020-01-01T00:00:00.000Z\"" +
+                                    ", \"description\": \"SAMPLE_TEXT\"" +
+                                    ", \"petId\": 0" +
+                                    "}"
                             )
                         )
                         .asJson()

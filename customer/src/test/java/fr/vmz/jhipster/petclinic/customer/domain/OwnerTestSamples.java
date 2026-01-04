@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class OwnerTestSamples {
 
     private static final Random random = new Random();
-    private static final AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+    private static final AtomicLong longCount = new AtomicLong(random.nextInt() + (2L * Integer.MAX_VALUE));
 
     public static Owner getOwnerSample1() {
         return new Owner().id(1L).firstName("firstName1").lastName("lastName1").address("address1").city("city1").telephone("telephone1");
