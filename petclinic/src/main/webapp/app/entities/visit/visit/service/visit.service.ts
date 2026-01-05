@@ -1,13 +1,13 @@
-import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
 
 import dayjs from 'dayjs/esm';
+import { Observable, map } from 'rxjs';
 
-import { isPresent } from 'app/core/util/operators';
 import { DATE_FORMAT } from 'app/config/input.constants';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
+import { isPresent } from 'app/core/util/operators';
 import { IVisit, NewVisit } from '../visit.model';
 
 export type PartialUpdateVisit = Partial<IVisit> & Pick<IVisit, 'id'>;
@@ -31,7 +31,6 @@ export class VisitService {
   protected readonly applicationConfigService = inject(ApplicationConfigService);
 
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/visits', 'visit');
-  protected resourceCompositeUrl = this.applicationConfigService.getEndpointFor('api/composite/visits');
 
   create(visit: NewVisit): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(visit);
@@ -41,32 +40,32 @@ export class VisitService {
   update(visit: IVisit): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(visit);
     return this.http
-      .put<RestVisit>(`${this.resourceUrl}/${this.getVisitIdentifier(visit)}`, copy, { observe: 'response' })
+      .put<RestVisit>(`${this.resourceUrl}/${encodeURIComponent(this.getVisitIdentifier(visit))}`, copy, { observe: 'response' })
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
   partialUpdate(visit: PartialUpdateVisit): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(visit);
     return this.http
-      .patch<RestVisit>(`${this.resourceUrl}/${this.getVisitIdentifier(visit)}`, copy, { observe: 'response' })
+      .patch<RestVisit>(`${this.resourceUrl}/${encodeURIComponent(this.getVisitIdentifier(visit))}`, copy, { observe: 'response' })
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
   find(id: number): Observable<EntityResponseType> {
     return this.http
-      .get<RestVisit>(`${this.resourceUrl}/${id}`, { observe: 'response' })
+      .get<RestVisit>(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' })
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
   query(req?: any): Observable<EntityArrayResponseType> {
     const options = createRequestOption(req);
     return this.http
-      .get<RestVisit[]>(this.resourceCompositeUrl, { params: options, observe: 'response' })
+      .get<RestVisit[]>(this.resourceUrl, { params: options, observe: 'response' })
       .pipe(map(res => this.convertResponseArrayFromServer(res)));
   }
 
   delete(id: number): Observable<HttpResponse<{}>> {
-    return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    return this.http.delete(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   getVisitIdentifier(visit: Pick<IVisit, 'id'>): number {

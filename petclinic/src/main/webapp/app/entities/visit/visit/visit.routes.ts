@@ -1,13 +1,14 @@
 import { Routes } from '@angular/router';
 
-import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
 import { ASC } from 'app/config/navigation.constants';
+import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
+
 import VisitResolve from './route/visit-routing-resolve.service';
 
 const visitRoute: Routes = [
   {
     path: '',
-    loadComponent: () => import('./list/visit.component').then(m => m.VisitComponent),
+    loadComponent: () => import('./list/visit').then(m => m.Visit),
     data: {
       defaultSort: `id,${ASC}`,
     },
@@ -15,7 +16,7 @@ const visitRoute: Routes = [
   },
   {
     path: ':id/view',
-    loadComponent: () => import('./detail/visit-detail.component').then(m => m.VisitDetailComponent),
+    loadComponent: () => import('./detail/visit-detail').then(m => m.VisitDetail),
     resolve: {
       visit: VisitResolve,
     },
@@ -23,7 +24,7 @@ const visitRoute: Routes = [
   },
   {
     path: 'new',
-    loadComponent: () => import('./update/visit-update.component').then(m => m.VisitUpdateComponent),
+    loadComponent: () => import('./update/visit-update').then(m => m.VisitUpdate),
     resolve: {
       visit: VisitResolve,
     },
@@ -31,7 +32,7 @@ const visitRoute: Routes = [
   },
   {
     path: ':id/edit',
-    loadComponent: () => import('./update/visit-update.component').then(m => m.VisitUpdateComponent),
+    loadComponent: () => import('./update/visit-update').then(m => m.VisitUpdate),
     resolve: {
       visit: VisitResolve,
     },

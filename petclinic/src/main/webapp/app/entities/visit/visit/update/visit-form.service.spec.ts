@@ -8,7 +8,6 @@ describe('Visit Form Service', () => {
   let service: VisitFormService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
     service = TestBed.inject(VisitFormService);
   });
 
@@ -45,7 +44,7 @@ describe('Visit Form Service', () => {
       it('should return NewVisit for default Visit initial value', () => {
         const formGroup = service.createVisitFormGroup(sampleWithNewData);
 
-        const visit = service.getVisit(formGroup) as any;
+        const visit = service.getVisit(formGroup);
 
         expect(visit).toMatchObject(sampleWithNewData);
       });
@@ -53,7 +52,7 @@ describe('Visit Form Service', () => {
       it('should return NewVisit for empty Visit initial value', () => {
         const formGroup = service.createVisitFormGroup();
 
-        const visit = service.getVisit(formGroup) as any;
+        const visit = service.getVisit(formGroup);
 
         expect(visit).toMatchObject({});
       });
@@ -61,7 +60,7 @@ describe('Visit Form Service', () => {
       it('should return IVisit', () => {
         const formGroup = service.createVisitFormGroup(sampleWithRequiredData);
 
-        const visit = service.getVisit(formGroup) as any;
+        const visit = service.getVisit(formGroup);
 
         expect(visit).toMatchObject(sampleWithRequiredData);
       });

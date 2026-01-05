@@ -27,10 +27,10 @@ export type VisitFormGroup = FormGroup<VisitFormGroupContent>;
 
 @Injectable({ providedIn: 'root' })
 export class VisitFormService {
-  createVisitFormGroup(visit: VisitFormGroupInput = { id: null }): VisitFormGroup {
+  createVisitFormGroup(visit?: VisitFormGroupInput): VisitFormGroup {
     const visitRawValue = {
       ...this.getFormDefaults(),
-      ...visit,
+      ...(visit ?? { id: null }),
     };
     return new FormGroup<VisitFormGroupContent>({
       id: new FormControl(
@@ -56,12 +56,10 @@ export class VisitFormService {
 
   resetForm(form: VisitFormGroup, visit: VisitFormGroupInput): void {
     const visitRawValue = { ...this.getFormDefaults(), ...visit };
-    form.reset(
-      {
-        ...visitRawValue,
-        id: { value: visitRawValue.id, disabled: true },
-      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
-    );
+    form.reset({
+      ...visitRawValue,
+      id: { value: visitRawValue.id, disabled: true },
+    });
   }
 
   private getFormDefaults(): VisitFormDefaults {

@@ -1,11 +1,12 @@
-import { inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
+import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, Router } from '@angular/router';
+
 import { EMPTY, Observable, of } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
-import { IVisit } from '../visit.model';
 import { VisitService } from '../service/visit.service';
+import { IVisit } from '../visit.model';
 
 const visitResolve = (route: ActivatedRouteSnapshot): Observable<null | IVisit> => {
   const id = route.params.id;

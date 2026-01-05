@@ -1,10 +1,11 @@
-import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+
 import { Observable } from 'rxjs';
 
-import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
+import { isPresent } from 'app/core/util/operators';
 import { ISpecialty, NewSpecialty } from '../specialty.model';
 
 export type PartialUpdateSpecialty = Partial<ISpecialty> & Pick<ISpecialty, 'id'>;
@@ -24,15 +25,19 @@ export class SpecialtyService {
   }
 
   update(specialty: ISpecialty): Observable<EntityResponseType> {
-    return this.http.put<ISpecialty>(`${this.resourceUrl}/${this.getSpecialtyIdentifier(specialty)}`, specialty, { observe: 'response' });
+    return this.http.put<ISpecialty>(`${this.resourceUrl}/${encodeURIComponent(this.getSpecialtyIdentifier(specialty))}`, specialty, {
+      observe: 'response',
+    });
   }
 
   partialUpdate(specialty: PartialUpdateSpecialty): Observable<EntityResponseType> {
-    return this.http.patch<ISpecialty>(`${this.resourceUrl}/${this.getSpecialtyIdentifier(specialty)}`, specialty, { observe: 'response' });
+    return this.http.patch<ISpecialty>(`${this.resourceUrl}/${encodeURIComponent(this.getSpecialtyIdentifier(specialty))}`, specialty, {
+      observe: 'response',
+    });
   }
 
   find(id: number): Observable<EntityResponseType> {
-    return this.http.get<ISpecialty>(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    return this.http.get<ISpecialty>(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   query(req?: any): Observable<EntityArrayResponseType> {
@@ -41,7 +46,7 @@ export class SpecialtyService {
   }
 
   delete(id: number): Observable<HttpResponse<{}>> {
-    return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    return this.http.delete(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   getSpecialtyIdentifier(specialty: Pick<ISpecialty, 'id'>): number {

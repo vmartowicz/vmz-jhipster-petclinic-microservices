@@ -29,10 +29,10 @@ export type OwnerFormGroup = FormGroup<OwnerFormGroupContent>;
 
 @Injectable({ providedIn: 'root' })
 export class OwnerFormService {
-  createOwnerFormGroup(owner: OwnerFormGroupInput = { id: null }): OwnerFormGroup {
+  createOwnerFormGroup(owner?: OwnerFormGroupInput): OwnerFormGroup {
     const ownerRawValue = {
       ...this.getFormDefaults(),
-      ...owner,
+      ...(owner ?? { id: null }),
     };
     return new FormGroup<OwnerFormGroupContent>({
       id: new FormControl(
@@ -66,12 +66,10 @@ export class OwnerFormService {
 
   resetForm(form: OwnerFormGroup, owner: OwnerFormGroupInput): void {
     const ownerRawValue = { ...this.getFormDefaults(), ...owner };
-    form.reset(
-      {
-        ...ownerRawValue,
-        id: { value: ownerRawValue.id, disabled: true },
-      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
-    );
+    form.reset({
+      ...ownerRawValue,
+      id: { value: ownerRawValue.id, disabled: true },
+    });
   }
 
   private getFormDefaults(): OwnerFormDefaults {

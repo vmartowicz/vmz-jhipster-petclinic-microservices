@@ -15,7 +15,7 @@ describe('Visit e2e test', () => {
   const visitPageUrlPattern = new RegExp('/visit(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const visitSample = { description: 'spotless', petId: 28637 };
+  const visitSample = { description: 'ick fully', petId: 23122 };
 
   let visit;
 
@@ -25,7 +25,6 @@ describe('Visit e2e test', () => {
 
   beforeEach(() => {
     cy.intercept('GET', '/services/visit/api/visits+(?*|)').as('entitiesRequest');
-    cy.intercept('GET', '/api/composite/visits+(?*|)').as('entitiesCompositeRequest');
     cy.intercept('POST', '/services/visit/api/visits').as('postEntityRequest');
     cy.intercept('DELETE', '/services/visit/api/visits/*').as('deleteEntityRequest');
   });
@@ -44,7 +43,7 @@ describe('Visit e2e test', () => {
   it('Visits menu should load Visits page', () => {
     cy.visit('/');
     cy.clickOnEntityMenuItem('visit');
-    cy.wait('@entitiesCompositeRequest').then(({ response }) => {
+    cy.wait('@entitiesRequest').then(({ response }) => {
       if (response?.body.length === 0) {
         cy.get(entityTableSelector).should('not.exist');
       } else {
@@ -59,7 +58,7 @@ describe('Visit e2e test', () => {
     describe('create button click', () => {
       beforeEach(() => {
         cy.visit(visitPageUrl);
-        cy.wait('@entitiesCompositeRequest');
+        cy.wait('@entitiesRequest');
       });
 
       it('should load create Visit page', () => {
@@ -68,7 +67,7 @@ describe('Visit e2e test', () => {
         cy.getEntityCreateUpdateHeading('Visit');
         cy.get(entityCreateSaveButtonSelector).should('exist');
         cy.get(entityCreateCancelButtonSelector).click();
-        cy.wait('@entitiesCompositeRequest').then(({ response }) => {
+        cy.wait('@entitiesRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
         cy.url().should('match', visitPageUrlPattern);
@@ -87,7 +86,7 @@ describe('Visit e2e test', () => {
           cy.intercept(
             {
               method: 'GET',
-              url: '/api/composite/visits+(?*|)',
+              url: '/services/visit/api/visits+(?*|)',
               times: 1,
             },
             {
@@ -109,7 +108,7 @@ describe('Visit e2e test', () => {
         cy.get(entityDetailsButtonSelector).first().click();
         cy.getEntityDetailsHeading('visit');
         cy.get(entityDetailsBackButtonSelector).click();
-        cy.wait('@entitiesCompositeRequest').then(({ response }) => {
+        cy.wait('@entitiesRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
         cy.url().should('match', visitPageUrlPattern);
@@ -120,7 +119,7 @@ describe('Visit e2e test', () => {
         cy.getEntityCreateUpdateHeading('Visit');
         cy.get(entityCreateSaveButtonSelector).should('exist');
         cy.get(entityCreateCancelButtonSelector).click();
-        cy.wait('@entitiesCompositeRequest').then(({ response }) => {
+        cy.wait('@entitiesRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
         cy.url().should('match', visitPageUrlPattern);
@@ -130,7 +129,7 @@ describe('Visit e2e test', () => {
         cy.get(entityEditButtonSelector).first().click();
         cy.getEntityCreateUpdateHeading('Visit');
         cy.get(entityCreateSaveButtonSelector).click();
-        cy.wait('@entitiesCompositeRequest').then(({ response }) => {
+        cy.wait('@entitiesRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
         cy.url().should('match', visitPageUrlPattern);
@@ -143,7 +142,7 @@ describe('Visit e2e test', () => {
         cy.wait('@deleteEntityRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(204);
         });
-        cy.wait('@entitiesCompositeRequest').then(({ response }) => {
+        cy.wait('@entitiesRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
         cy.url().should('match', visitPageUrlPattern);
@@ -155,7 +154,7 @@ describe('Visit e2e test', () => {
 
   describe('new Visit page', () => {
     beforeEach(() => {
-      cy.visit(`${visitPageUrl}`);
+      cy.visit(visitPageUrl);
       cy.get(entityCreateButtonSelector).click();
       cy.getEntityCreateUpdateHeading('Visit');
     });
@@ -165,11 +164,11 @@ describe('Visit e2e test', () => {
       cy.get(`[data-cy="visitDate"]`).blur();
       cy.get(`[data-cy="visitDate"]`).should('have.value', '2025-01-30');
 
-      cy.get(`[data-cy="description"]`).type('intervention antique');
-      cy.get(`[data-cy="description"]`).should('have.value', 'intervention antique');
+      cy.get(`[data-cy="description"]`).type('jaywalk');
+      cy.get(`[data-cy="description"]`).should('have.value', 'jaywalk');
 
-      cy.get(`[data-cy="petId"]`).type('23376');
-      cy.get(`[data-cy="petId"]`).should('have.value', '23376');
+      cy.get(`[data-cy="petId"]`).type('13183');
+      cy.get(`[data-cy="petId"]`).should('have.value', '13183');
 
       cy.get(entityCreateSaveButtonSelector).click();
 
@@ -177,7 +176,7 @@ describe('Visit e2e test', () => {
         expect(response?.statusCode).to.equal(201);
         visit = response.body;
       });
-      cy.wait('@entitiesCompositeRequest').then(({ response }) => {
+      cy.wait('@entitiesRequest').then(({ response }) => {
         expect(response?.statusCode).to.equal(200);
       });
       cy.url().should('match', visitPageUrlPattern);

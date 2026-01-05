@@ -54,7 +54,7 @@ class VetResourceIT {
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
     private static Random random = new Random();
-    private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+    private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2L * Integer.MAX_VALUE));
 
     @Autowired
     private ObjectMapper om;
@@ -520,6 +520,8 @@ class VetResourceIT {
         // Update the vet using partial update
         Vet partialUpdatedVet = new Vet();
         partialUpdatedVet.setId(vet.getId());
+
+        partialUpdatedVet.firstName(UPDATED_FIRST_NAME).lastName(UPDATED_LAST_NAME);
 
         restVetMockMvc
             .perform(

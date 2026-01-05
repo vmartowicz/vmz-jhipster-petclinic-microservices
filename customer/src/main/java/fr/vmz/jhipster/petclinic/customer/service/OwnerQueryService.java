@@ -68,7 +68,7 @@ public class OwnerQueryService extends QueryService<Owner> {
      * @return the matching {@link Specification} of the entity.
      */
     protected Specification<Owner> createSpecification(OwnerCriteria criteria) {
-        Specification<Owner> specification = Specification.where(null);
+        Specification<Owner> specification = Specification.unrestricted();
         if (criteria != null) {
             // This has to be called first, because the distinct method returns null
             specification = Specification.allOf(

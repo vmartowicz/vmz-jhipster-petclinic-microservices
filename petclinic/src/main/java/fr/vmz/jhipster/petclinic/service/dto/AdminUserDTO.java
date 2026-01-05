@@ -4,6 +4,7 @@ import fr.vmz.jhipster.petclinic.config.Constants;
 import fr.vmz.jhipster.petclinic.domain.Authority;
 import fr.vmz.jhipster.petclinic.domain.User;
 import jakarta.validation.constraints.*;
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Set;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
  */
 public class AdminUserDTO implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private Long id;

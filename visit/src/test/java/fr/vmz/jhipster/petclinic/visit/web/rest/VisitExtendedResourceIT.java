@@ -36,19 +36,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class VisitExtendedResourceIT {
 
     private static final LocalDate DEFAULT_VISIT_DATE = LocalDate.ofEpochDay(0L);
-    private static final LocalDate UPDATED_VISIT_DATE = LocalDate.now(ZoneId.systemDefault());
 
     private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
-    private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
 
     private static final Long DEFAULT_PET_ID = 1L;
     private static final Long UPDATED_PET_ID = 2L;
 
-    private static final String ENTITY_API_URL = "/api/visits";
-    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+    private static final String ENTITY_API_URL = "/api/v2/visits";
 
     private static Random random = new Random();
-    private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
     @Autowired
     private ObjectMapper om;
@@ -88,6 +84,7 @@ class VisitExtendedResourceIT {
             insertedVisit = null;
         }
     }
+
     @Test
     @Transactional
     void getAllVisitsByPetId() throws Exception {
@@ -96,7 +93,7 @@ class VisitExtendedResourceIT {
 
         // Get all the visitList by petIds
         restVisitMockMvc
-            .perform(get(ENTITY_API_URL + "/pets")
+            .perform(get(ENTITY_API_URL)
                 .param("petIds", DEFAULT_PET_ID +","+UPDATED_PET_ID))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))

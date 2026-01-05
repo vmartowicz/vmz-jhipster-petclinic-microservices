@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 
 import { IPetType } from '../pet-type.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../pet-type.test-samples';
@@ -100,8 +100,7 @@ describe('PetType Service', () => {
       it('should add a PetType to an empty array', () => {
         const petType: IPetType = sampleWithRequiredData;
         expectedResult = service.addPetTypeToCollectionIfMissing([], petType);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(petType);
+        expect(expectedResult).toEqual([petType]);
       });
 
       it('should not add a PetType to an array that contains it', () => {
@@ -135,16 +134,13 @@ describe('PetType Service', () => {
         const petType: IPetType = sampleWithRequiredData;
         const petType2: IPetType = sampleWithPartialData;
         expectedResult = service.addPetTypeToCollectionIfMissing([], petType, petType2);
-        expect(expectedResult).toHaveLength(2);
-        expect(expectedResult).toContain(petType);
-        expect(expectedResult).toContain(petType2);
+        expect(expectedResult).toEqual([petType, petType2]);
       });
 
       it('should accept null and undefined values', () => {
         const petType: IPetType = sampleWithRequiredData;
         expectedResult = service.addPetTypeToCollectionIfMissing([], null, petType, undefined);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(petType);
+        expect(expectedResult).toEqual([petType]);
       });
 
       it('should return initial array if no PetType is added', () => {

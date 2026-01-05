@@ -1,10 +1,11 @@
-import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+
 import { Observable } from 'rxjs';
 
-import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
+import { isPresent } from 'app/core/util/operators';
 import { IOwner, NewOwner } from '../owner.model';
 
 export type PartialUpdateOwner = Partial<IOwner> & Pick<IOwner, 'id'>;
@@ -24,15 +25,19 @@ export class OwnerService {
   }
 
   update(owner: IOwner): Observable<EntityResponseType> {
-    return this.http.put<IOwner>(`${this.resourceUrl}/${this.getOwnerIdentifier(owner)}`, owner, { observe: 'response' });
+    return this.http.put<IOwner>(`${this.resourceUrl}/${encodeURIComponent(this.getOwnerIdentifier(owner))}`, owner, {
+      observe: 'response',
+    });
   }
 
   partialUpdate(owner: PartialUpdateOwner): Observable<EntityResponseType> {
-    return this.http.patch<IOwner>(`${this.resourceUrl}/${this.getOwnerIdentifier(owner)}`, owner, { observe: 'response' });
+    return this.http.patch<IOwner>(`${this.resourceUrl}/${encodeURIComponent(this.getOwnerIdentifier(owner))}`, owner, {
+      observe: 'response',
+    });
   }
 
   find(id: number): Observable<EntityResponseType> {
-    return this.http.get<IOwner>(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    return this.http.get<IOwner>(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   query(req?: any): Observable<EntityArrayResponseType> {
@@ -41,7 +46,7 @@ export class OwnerService {
   }
 
   delete(id: number): Observable<HttpResponse<{}>> {
-    return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    return this.http.delete(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   getOwnerIdentifier(owner: Pick<IOwner, 'id'>): number {

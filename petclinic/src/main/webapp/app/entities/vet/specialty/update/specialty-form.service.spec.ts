@@ -8,7 +8,6 @@ describe('Specialty Form Service', () => {
   let service: SpecialtyFormService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
     service = TestBed.inject(SpecialtyFormService);
   });
 
@@ -43,7 +42,7 @@ describe('Specialty Form Service', () => {
       it('should return NewSpecialty for default Specialty initial value', () => {
         const formGroup = service.createSpecialtyFormGroup(sampleWithNewData);
 
-        const specialty = service.getSpecialty(formGroup) as any;
+        const specialty = service.getSpecialty(formGroup);
 
         expect(specialty).toMatchObject(sampleWithNewData);
       });
@@ -51,7 +50,7 @@ describe('Specialty Form Service', () => {
       it('should return NewSpecialty for empty Specialty initial value', () => {
         const formGroup = service.createSpecialtyFormGroup();
 
-        const specialty = service.getSpecialty(formGroup) as any;
+        const specialty = service.getSpecialty(formGroup);
 
         expect(specialty).toMatchObject({});
       });
@@ -59,7 +58,7 @@ describe('Specialty Form Service', () => {
       it('should return ISpecialty', () => {
         const formGroup = service.createSpecialtyFormGroup(sampleWithRequiredData);
 
-        const specialty = service.getSpecialty(formGroup) as any;
+        const specialty = service.getSpecialty(formGroup);
 
         expect(specialty).toMatchObject(sampleWithRequiredData);
       });

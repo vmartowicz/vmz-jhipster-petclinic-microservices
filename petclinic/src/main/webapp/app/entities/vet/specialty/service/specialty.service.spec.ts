@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 
 import { ISpecialty } from '../specialty.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../specialty.test-samples';
@@ -100,8 +100,7 @@ describe('Specialty Service', () => {
       it('should add a Specialty to an empty array', () => {
         const specialty: ISpecialty = sampleWithRequiredData;
         expectedResult = service.addSpecialtyToCollectionIfMissing([], specialty);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(specialty);
+        expect(expectedResult).toEqual([specialty]);
       });
 
       it('should not add a Specialty to an array that contains it', () => {
@@ -135,16 +134,13 @@ describe('Specialty Service', () => {
         const specialty: ISpecialty = sampleWithRequiredData;
         const specialty2: ISpecialty = sampleWithPartialData;
         expectedResult = service.addSpecialtyToCollectionIfMissing([], specialty, specialty2);
-        expect(expectedResult).toHaveLength(2);
-        expect(expectedResult).toContain(specialty);
-        expect(expectedResult).toContain(specialty2);
+        expect(expectedResult).toEqual([specialty, specialty2]);
       });
 
       it('should accept null and undefined values', () => {
         const specialty: ISpecialty = sampleWithRequiredData;
         expectedResult = service.addSpecialtyToCollectionIfMissing([], null, specialty, undefined);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(specialty);
+        expect(expectedResult).toEqual([specialty]);
       });
 
       it('should return initial array if no Specialty is added', () => {

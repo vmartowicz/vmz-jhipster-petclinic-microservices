@@ -37,7 +37,7 @@ public class PetResource {
 
     private static final String ENTITY_NAME = "customerPet";
 
-    @Value("${jhipster.clientApp.name}")
+    @Value("${jhipster.clientApp.name:customer}")
     private String applicationName;
 
     private final PetService petService;

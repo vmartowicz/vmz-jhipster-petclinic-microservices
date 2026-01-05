@@ -1,11 +1,12 @@
-import { inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
+import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, Router } from '@angular/router';
+
 import { EMPTY, Observable, of } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
-import { ISpecialty } from '../specialty.model';
 import { SpecialtyService } from '../service/specialty.service';
+import { ISpecialty } from '../specialty.model';
 
 const specialtyResolve = (route: ActivatedRouteSnapshot): Observable<null | ISpecialty> => {
   const id = route.params.id;

@@ -1,3 +1,2 @@
 org.springframework.test.context.ContextCustomizerFactory = \
-    fr.vmz.jhipster.petclinic.vet.config.\
-    SqlTestContainersSpringContextCustomizerFactory
+    fr.vmz.jhipster.petclinic.vet.config.SqlTestContainersSpringContextCustomizerFactory

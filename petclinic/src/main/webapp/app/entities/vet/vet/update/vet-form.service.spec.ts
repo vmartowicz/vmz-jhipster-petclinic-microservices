@@ -8,7 +8,6 @@ describe('Vet Form Service', () => {
   let service: VetFormService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
     service = TestBed.inject(VetFormService);
   });
 
@@ -45,7 +44,7 @@ describe('Vet Form Service', () => {
       it('should return NewVet for default Vet initial value', () => {
         const formGroup = service.createVetFormGroup(sampleWithNewData);
 
-        const vet = service.getVet(formGroup) as any;
+        const vet = service.getVet(formGroup);
 
         expect(vet).toMatchObject(sampleWithNewData);
       });
@@ -53,7 +52,7 @@ describe('Vet Form Service', () => {
       it('should return NewVet for empty Vet initial value', () => {
         const formGroup = service.createVetFormGroup();
 
-        const vet = service.getVet(formGroup) as any;
+        const vet = service.getVet(formGroup);
 
         expect(vet).toMatchObject({});
       });
@@ -61,7 +60,7 @@ describe('Vet Form Service', () => {
       it('should return IVet', () => {
         const formGroup = service.createVetFormGroup(sampleWithRequiredData);
 
-        const vet = service.getVet(formGroup) as any;
+        const vet = service.getVet(formGroup);
 
         expect(vet).toMatchObject(sampleWithRequiredData);
       });

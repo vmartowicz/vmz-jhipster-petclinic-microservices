@@ -1,10 +1,11 @@
-import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+
 import { Observable } from 'rxjs';
 
-import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
+import { isPresent } from 'app/core/util/operators';
 import { IVet, NewVet } from '../vet.model';
 
 export type PartialUpdateVet = Partial<IVet> & Pick<IVet, 'id'>;
@@ -24,15 +25,15 @@ export class VetService {
   }
 
   update(vet: IVet): Observable<EntityResponseType> {
-    return this.http.put<IVet>(`${this.resourceUrl}/${this.getVetIdentifier(vet)}`, vet, { observe: 'response' });
+    return this.http.put<IVet>(`${this.resourceUrl}/${encodeURIComponent(this.getVetIdentifier(vet))}`, vet, { observe: 'response' });
   }
 
   partialUpdate(vet: PartialUpdateVet): Observable<EntityResponseType> {
-    return this.http.patch<IVet>(`${this.resourceUrl}/${this.getVetIdentifier(vet)}`, vet, { observe: 'response' });
+    return this.http.patch<IVet>(`${this.resourceUrl}/${encodeURIComponent(this.getVetIdentifier(vet))}`, vet, { observe: 'response' });
   }
 
   find(id: number): Observable<EntityResponseType> {
-    return this.http.get<IVet>(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    return this.http.get<IVet>(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   query(req?: any): Observable<EntityArrayResponseType> {
@@ -41,7 +42,7 @@ export class VetService {
   }
 
   delete(id: number): Observable<HttpResponse<{}>> {
-    return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    return this.http.delete(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   getVetIdentifier(vet: Pick<IVet, 'id'>): number {

@@ -3,6 +3,7 @@ package fr.vmz.jhipster.petclinic.customer.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
 import org.hibernate.annotations.Cache;
@@ -17,6 +18,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Pet implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id

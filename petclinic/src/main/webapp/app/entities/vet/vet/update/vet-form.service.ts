@@ -27,10 +27,10 @@ export type VetFormGroup = FormGroup<VetFormGroupContent>;
 
 @Injectable({ providedIn: 'root' })
 export class VetFormService {
-  createVetFormGroup(vet: VetFormGroupInput = { id: null }): VetFormGroup {
+  createVetFormGroup(vet?: VetFormGroupInput): VetFormGroup {
     const vetRawValue = {
       ...this.getFormDefaults(),
-      ...vet,
+      ...(vet ?? { id: null }),
     };
     return new FormGroup<VetFormGroupContent>({
       id: new FormControl(
@@ -56,12 +56,10 @@ export class VetFormService {
 
   resetForm(form: VetFormGroup, vet: VetFormGroupInput): void {
     const vetRawValue = { ...this.getFormDefaults(), ...vet };
-    form.reset(
-      {
-        ...vetRawValue,
-        id: { value: vetRawValue.id, disabled: true },
-      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
-    );
+    form.reset({
+      ...vetRawValue,
+      id: { value: vetRawValue.id, disabled: true },
+    });
   }
 
   private getFormDefaults(): VetFormDefaults {

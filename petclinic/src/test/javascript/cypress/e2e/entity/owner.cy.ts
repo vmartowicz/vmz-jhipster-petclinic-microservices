@@ -15,7 +15,13 @@ describe('Owner e2e test', () => {
   const ownerPageUrlPattern = new RegExp('/owner(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const ownerSample = { firstName: 'Mellie', lastName: 'Moen', address: 'certainly', city: 'East Thelma', telephone: '1-960-207-8628' };
+  const ownerSample = {
+    firstName: 'Elta',
+    lastName: 'Ratke',
+    address: 'sesame festival netsuke',
+    city: 'Lake Maximo',
+    telephone: '1-861-415-2267',
+  };
 
   let owner;
 
@@ -154,26 +160,26 @@ describe('Owner e2e test', () => {
 
   describe('new Owner page', () => {
     beforeEach(() => {
-      cy.visit(`${ownerPageUrl}`);
+      cy.visit(ownerPageUrl);
       cy.get(entityCreateButtonSelector).click();
       cy.getEntityCreateUpdateHeading('Owner');
     });
 
     it('should create an instance of Owner', () => {
-      cy.get(`[data-cy="firstName"]`).type('Lou');
-      cy.get(`[data-cy="firstName"]`).should('have.value', 'Lou');
+      cy.get(`[data-cy="firstName"]`).type('Rolando');
+      cy.get(`[data-cy="firstName"]`).should('have.value', 'Rolando');
 
-      cy.get(`[data-cy="lastName"]`).type('Thompson');
-      cy.get(`[data-cy="lastName"]`).should('have.value', 'Thompson');
+      cy.get(`[data-cy="lastName"]`).type('Crist');
+      cy.get(`[data-cy="lastName"]`).should('have.value', 'Crist');
 
-      cy.get(`[data-cy="address"]`).type('strict despite');
-      cy.get(`[data-cy="address"]`).should('have.value', 'strict despite');
+      cy.get(`[data-cy="address"]`).type('quirkily');
+      cy.get(`[data-cy="address"]`).should('have.value', 'quirkily');
 
-      cy.get(`[data-cy="city"]`).type('Glendale');
-      cy.get(`[data-cy="city"]`).should('have.value', 'Glendale');
+      cy.get(`[data-cy="city"]`).type('Rosemead');
+      cy.get(`[data-cy="city"]`).should('have.value', 'Rosemead');
 
-      cy.get(`[data-cy="telephone"]`).type('(445) 521-2230 x0443');
-      cy.get(`[data-cy="telephone"]`).should('have.value', '(445) 521-2230 x0443');
+      cy.get(`[data-cy="telephone"]`).type('585-528-1864');
+      cy.get(`[data-cy="telephone"]`).should('have.value', '585-528-1864');
 
       cy.get(entityCreateSaveButtonSelector).click();
 

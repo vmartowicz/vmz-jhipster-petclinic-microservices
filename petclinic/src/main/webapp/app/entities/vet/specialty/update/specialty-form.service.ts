@@ -26,10 +26,10 @@ export type SpecialtyFormGroup = FormGroup<SpecialtyFormGroupContent>;
 
 @Injectable({ providedIn: 'root' })
 export class SpecialtyFormService {
-  createSpecialtyFormGroup(specialty: SpecialtyFormGroupInput = { id: null }): SpecialtyFormGroup {
+  createSpecialtyFormGroup(specialty?: SpecialtyFormGroupInput): SpecialtyFormGroup {
     const specialtyRawValue = {
       ...this.getFormDefaults(),
-      ...specialty,
+      ...(specialty ?? { id: null }),
     };
     return new FormGroup<SpecialtyFormGroupContent>({
       id: new FormControl(
@@ -52,12 +52,10 @@ export class SpecialtyFormService {
 
   resetForm(form: SpecialtyFormGroup, specialty: SpecialtyFormGroupInput): void {
     const specialtyRawValue = { ...this.getFormDefaults(), ...specialty };
-    form.reset(
-      {
-        ...specialtyRawValue,
-        id: { value: specialtyRawValue.id, disabled: true },
-      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
-    );
+    form.reset({
+      ...specialtyRawValue,
+      id: { value: specialtyRawValue.id, disabled: true },
+    });
   }
 
   private getFormDefaults(): SpecialtyFormDefaults {

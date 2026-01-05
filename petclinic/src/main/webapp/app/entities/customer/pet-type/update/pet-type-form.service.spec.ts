@@ -8,7 +8,6 @@ describe('PetType Form Service', () => {
   let service: PetTypeFormService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
     service = TestBed.inject(PetTypeFormService);
   });
 
@@ -41,7 +40,7 @@ describe('PetType Form Service', () => {
       it('should return NewPetType for default PetType initial value', () => {
         const formGroup = service.createPetTypeFormGroup(sampleWithNewData);
 
-        const petType = service.getPetType(formGroup) as any;
+        const petType = service.getPetType(formGroup);
 
         expect(petType).toMatchObject(sampleWithNewData);
       });
@@ -49,7 +48,7 @@ describe('PetType Form Service', () => {
       it('should return NewPetType for empty PetType initial value', () => {
         const formGroup = service.createPetTypeFormGroup();
 
-        const petType = service.getPetType(formGroup) as any;
+        const petType = service.getPetType(formGroup);
 
         expect(petType).toMatchObject({});
       });
@@ -57,7 +56,7 @@ describe('PetType Form Service', () => {
       it('should return IPetType', () => {
         const formGroup = service.createPetTypeFormGroup(sampleWithRequiredData);
 
-        const petType = service.getPetType(formGroup) as any;
+        const petType = service.getPetType(formGroup);
 
         expect(petType).toMatchObject(sampleWithRequiredData);
       });

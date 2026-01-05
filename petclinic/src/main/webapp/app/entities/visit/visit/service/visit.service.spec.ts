@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 
 import { DATE_FORMAT } from 'app/config/input.constants';
 import { IVisit } from '../visit.model';
@@ -102,8 +102,7 @@ describe('Visit Service', () => {
       it('should add a Visit to an empty array', () => {
         const visit: IVisit = sampleWithRequiredData;
         expectedResult = service.addVisitToCollectionIfMissing([], visit);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(visit);
+        expect(expectedResult).toEqual([visit]);
       });
 
       it('should not add a Visit to an array that contains it', () => {
@@ -137,16 +136,13 @@ describe('Visit Service', () => {
         const visit: IVisit = sampleWithRequiredData;
         const visit2: IVisit = sampleWithPartialData;
         expectedResult = service.addVisitToCollectionIfMissing([], visit, visit2);
-        expect(expectedResult).toHaveLength(2);
-        expect(expectedResult).toContain(visit);
-        expect(expectedResult).toContain(visit2);
+        expect(expectedResult).toEqual([visit, visit2]);
       });
 
       it('should accept null and undefined values', () => {
         const visit: IVisit = sampleWithRequiredData;
         expectedResult = service.addVisitToCollectionIfMissing([], null, visit, undefined);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(visit);
+        expect(expectedResult).toEqual([visit]);
       });
 
       it('should return initial array if no Visit is added', () => {

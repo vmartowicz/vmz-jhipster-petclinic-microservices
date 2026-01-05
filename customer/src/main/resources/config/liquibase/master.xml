@@ -26,7 +26,4 @@
     <include file="config/liquibase/changelog/20250130211720_added_entity_constraints_Pet.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
     <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->
-    <include file="config/liquibase/changelog/20250130211520_added_data_PetType.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20250130211620_added_data_Owner.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20250130211720_added_data_Pet.xml" relativeToChangelogFile="false"/>
 </databaseChangeLog>

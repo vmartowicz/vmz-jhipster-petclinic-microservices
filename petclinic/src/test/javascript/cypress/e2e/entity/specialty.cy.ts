@@ -15,7 +15,7 @@ describe('Specialty e2e test', () => {
   const specialtyPageUrlPattern = new RegExp('/specialty(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const specialtySample = { name: 'youthful' };
+  const specialtySample = { name: 'partially second wedding' };
 
   let specialty;
 
@@ -154,14 +154,14 @@ describe('Specialty e2e test', () => {
 
   describe('new Specialty page', () => {
     beforeEach(() => {
-      cy.visit(`${specialtyPageUrl}`);
+      cy.visit(specialtyPageUrl);
       cy.get(entityCreateButtonSelector).click();
       cy.getEntityCreateUpdateHeading('Specialty');
     });
 
     it('should create an instance of Specialty', () => {
-      cy.get(`[data-cy="name"]`).type('jubilant worse');
-      cy.get(`[data-cy="name"]`).should('have.value', 'jubilant worse');
+      cy.get(`[data-cy="name"]`).type('until unless pish');
+      cy.get(`[data-cy="name"]`).should('have.value', 'until unless pish');
 
       cy.get(entityCreateSaveButtonSelector).click();
 
