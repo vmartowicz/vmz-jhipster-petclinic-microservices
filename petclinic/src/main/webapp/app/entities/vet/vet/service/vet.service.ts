@@ -1,48 +1,59 @@
-import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpResponse, httpResource } from '@angular/common/http';
+import { Service, computed, inject, signal } from '@angular/core';
 
 import { Observable } from 'rxjs';
 
-import { ApplicationConfigService } from 'app/core/config/application-config.service';
-import { createRequestOption } from 'app/core/request/request-util';
-import { isPresent } from 'app/core/util/operators';
+import { microserviceContextPath, serverApiUrl } from 'app/config';
+import { createRequestOption } from 'app/core/request';
 import { IVet, NewVet } from '../vet.model';
 
 export type PartialUpdateVet = Partial<IVet> & Pick<IVet, 'id'>;
 
-export type EntityResponseType = HttpResponse<IVet>;
-export type EntityArrayResponseType = HttpResponse<IVet[]>;
+@Service()
+export class VetsService {
+  readonly vetsParams = signal<Record<string, string | number | boolean | readonly (string | number | boolean)[]> | undefined>(undefined);
+  readonly vetsResource = httpResource<IVet[]>(() => {
+    const params = this.vetsParams();
+    if (!params) {
+      return undefined;
+    }
+    return { url: this.resourceUrl, params };
+  });
+  /**
+   * This signal holds the list of vet that have been fetched. It is updated when the vetsResource emits a new value.
+   * In case of error while fetching the vets, the signal is set to an empty array.
+   */
+  readonly vets = computed(() => (this.vetsResource.hasValue() ? this.vetsResource.value() : []));
+  protected readonly resourceUrl = `${serverApiUrl}${microserviceContextPath}vet/api/vets`;
+}
 
-@Injectable({ providedIn: 'root' })
-export class VetService {
+@Service()
+export class VetService extends VetsService {
   protected readonly http = inject(HttpClient);
-  protected readonly applicationConfigService = inject(ApplicationConfigService);
 
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/vets', 'vet');
-
-  create(vet: NewVet): Observable<EntityResponseType> {
-    return this.http.post<IVet>(this.resourceUrl, vet, { observe: 'response' });
+  create(vet: NewVet): Observable<IVet> {
+    return this.http.post<IVet>(this.resourceUrl, vet);
   }
 
-  update(vet: IVet): Observable<EntityResponseType> {
-    return this.http.put<IVet>(`${this.resourceUrl}/${encodeURIComponent(this.getVetIdentifier(vet))}`, vet, { observe: 'response' });
+  update(vet: IVet): Observable<IVet> {
+    return this.http.put<IVet>(`${this.resourceUrl}/${encodeURIComponent(this.getVetIdentifier(vet))}`, vet);
   }
 
-  partialUpdate(vet: PartialUpdateVet): Observable<EntityResponseType> {
-    return this.http.patch<IVet>(`${this.resourceUrl}/${encodeURIComponent(this.getVetIdentifier(vet))}`, vet, { observe: 'response' });
+  partialUpdate(vet: PartialUpdateVet): Observable<IVet> {
+    return this.http.patch<IVet>(`${this.resourceUrl}/${encodeURIComponent(this.getVetIdentifier(vet))}`, vet);
   }
 
-  find(id: number): Observable<EntityResponseType> {
-    return this.http.get<IVet>(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
+  find(id: number): Observable<IVet> {
+    return this.http.get<IVet>(`${this.resourceUrl}/${encodeURIComponent(id)}`);
   }
 
-  query(req?: any): Observable<EntityArrayResponseType> {
+  query(req?: any): Observable<HttpResponse<IVet[]>> {
     const options = createRequestOption(req);
     return this.http.get<IVet[]>(this.resourceUrl, { params: options, observe: 'response' });
   }
 
-  delete(id: number): Observable<HttpResponse<{}>> {
-    return this.http.delete(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
+  delete(id: number): Observable<undefined> {
+    return this.http.delete<undefined>(`${this.resourceUrl}/${encodeURIComponent(id)}`);
   }
 
   getVetIdentifier(vet: Pick<IVet, 'id'>): number {
@@ -54,7 +65,7 @@ export class VetService {
   }
 
   addVetToCollectionIfMissing<Type extends Pick<IVet, 'id'>>(vetCollection: Type[], ...vetsToCheck: (Type | null | undefined)[]): Type[] {
-    const vets: Type[] = vetsToCheck.filter(isPresent);
+    const vets: Type[] = vetsToCheck.filter(vetItem => vetItem !== null && vetItem !== undefined);
     if (vets.length > 0) {
       const vetCollectionIdentifiers = vetCollection.map(vetItem => this.getVetIdentifier(vetItem));
       const vetsToAdd = vets.filter(vetItem => {

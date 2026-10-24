@@ -12,12 +12,17 @@ import {
 
 describe('Specialty e2e test', () => {
   const specialtyPageUrl = '/specialty';
-  const specialtyPageUrlPattern = new RegExp('/specialty(\\?.*)?$');
-  const username = Cypress.env('E2E_USERNAME') ?? 'user';
-  const password = Cypress.env('E2E_PASSWORD') ?? 'user';
+  let username: string;
+  let password: string;
   const specialtySample = { name: 'partially second wedding' };
 
   let specialty;
+
+  before(() => {
+    cy.credentials().then(credentials => {
+      ({ username, password } = credentials);
+    });
+  });
 
   beforeEach(() => {
     cy.login(username, password);
@@ -51,10 +56,15 @@ describe('Specialty e2e test', () => {
       }
     });
     cy.getEntityHeading('Specialty').should('exist');
-    cy.url().should('match', specialtyPageUrlPattern);
+    cy.location('pathname').should('eq', specialtyPageUrl);
   });
 
   describe('Specialty page', () => {
+    it('should have translated page title', () => {
+      cy.visit(specialtyPageUrl);
+      cy.getEntityHeading('Specialty').should('not.contain', 'petclinicApp.vetSpecialty.home.title');
+    });
+
     describe('create button click', () => {
       beforeEach(() => {
         cy.visit(specialtyPageUrl);
@@ -63,14 +73,14 @@ describe('Specialty e2e test', () => {
 
       it('should load create Specialty page', () => {
         cy.get(entityCreateButtonSelector).click();
-        cy.url().should('match', new RegExp('/specialty/new$'));
+        cy.location('pathname').should('eq', `${specialtyPageUrl}/new`);
         cy.getEntityCreateUpdateHeading('Specialty');
         cy.get(entityCreateSaveButtonSelector).should('exist');
         cy.get(entityCreateCancelButtonSelector).click();
         cy.wait('@entitiesRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
-        cy.url().should('match', specialtyPageUrlPattern);
+        cy.location('pathname').should('eq', specialtyPageUrl);
       });
     });
 
@@ -111,7 +121,7 @@ describe('Specialty e2e test', () => {
         cy.wait('@entitiesRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
-        cy.url().should('match', specialtyPageUrlPattern);
+        cy.location('pathname').should('eq', specialtyPageUrl);
       });
 
       it('edit button click should load edit Specialty page and go back', () => {
@@ -122,7 +132,7 @@ describe('Specialty e2e test', () => {
         cy.wait('@entitiesRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
-        cy.url().should('match', specialtyPageUrlPattern);
+        cy.location('pathname').should('eq', specialtyPageUrl);
       });
 
       it('edit button click should load edit Specialty page and save', () => {
@@ -132,7 +142,7 @@ describe('Specialty e2e test', () => {
         cy.wait('@entitiesRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
-        cy.url().should('match', specialtyPageUrlPattern);
+        cy.location('pathname').should('eq', specialtyPageUrl);
       });
 
       it('last delete button click should delete instance of Specialty', () => {
@@ -145,7 +155,7 @@ describe('Specialty e2e test', () => {
         cy.wait('@entitiesRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
-        cy.url().should('match', specialtyPageUrlPattern);
+        cy.location('pathname').should('eq', specialtyPageUrl);
 
         specialty = undefined;
       });
@@ -172,7 +182,7 @@ describe('Specialty e2e test', () => {
       cy.wait('@entitiesRequest').then(({ response }) => {
         expect(response?.statusCode).to.equal(200);
       });
-      cy.url().should('match', specialtyPageUrlPattern);
+      cy.location('pathname').should('eq', specialtyPageUrl);
     });
   });
 });

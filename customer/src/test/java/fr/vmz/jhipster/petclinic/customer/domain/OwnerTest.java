@@ -31,19 +31,19 @@ class OwnerTest {
         Pet petBack = getPetRandomSampleGenerator();
 
         owner.addPets(petBack);
-        assertThat(owner.getPets()).containsOnly(petBack);
+        assertThat(owner.getPetses()).containsOnly(petBack);
         assertThat(petBack.getOwner()).isEqualTo(owner);
 
         owner.removePets(petBack);
-        assertThat(owner.getPets()).doesNotContain(petBack);
+        assertThat(owner.getPetses()).doesNotContain(petBack);
         assertThat(petBack.getOwner()).isNull();
 
-        owner.pets(new HashSet<>(Set.of(petBack)));
-        assertThat(owner.getPets()).containsOnly(petBack);
+        owner.petses(new HashSet<>(Set.of(petBack)));
+        assertThat(owner.getPetses()).containsOnly(petBack);
         assertThat(petBack.getOwner()).isEqualTo(owner);
 
-        owner.setPets(new HashSet<>());
-        assertThat(owner.getPets()).doesNotContain(petBack);
+        owner.setPetses(new HashSet<>());
+        assertThat(owner.getPetses()).doesNotContain(petBack);
         assertThat(petBack.getOwner()).isNull();
     }
 }

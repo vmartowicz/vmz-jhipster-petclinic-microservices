@@ -12,12 +12,17 @@ import {
 
 describe('Pet e2e test', () => {
   const petPageUrl = '/pet';
-  const petPageUrlPattern = new RegExp('/pet(\\?.*)?$');
-  const username = Cypress.env('E2E_USERNAME') ?? 'user';
-  const password = Cypress.env('E2E_PASSWORD') ?? 'user';
+  let username: string;
+  let password: string;
   const petSample = { name: 'er sick' };
 
   let pet;
+
+  before(() => {
+    cy.credentials().then(credentials => {
+      ({ username, password } = credentials);
+    });
+  });
 
   beforeEach(() => {
     cy.login(username, password);
@@ -51,10 +56,15 @@ describe('Pet e2e test', () => {
       }
     });
     cy.getEntityHeading('Pet').should('exist');
-    cy.url().should('match', petPageUrlPattern);
+    cy.location('pathname').should('eq', petPageUrl);
   });
 
   describe('Pet page', () => {
+    it('should have translated page title', () => {
+      cy.visit(petPageUrl);
+      cy.getEntityHeading('Pet').should('not.contain', 'petclinicApp.customerPet.home.title');
+    });
+
     describe('create button click', () => {
       beforeEach(() => {
         cy.visit(petPageUrl);
@@ -63,14 +73,14 @@ describe('Pet e2e test', () => {
 
       it('should load create Pet page', () => {
         cy.get(entityCreateButtonSelector).click();
-        cy.url().should('match', new RegExp('/pet/new$'));
+        cy.location('pathname').should('eq', `${petPageUrl}/new`);
         cy.getEntityCreateUpdateHeading('Pet');
         cy.get(entityCreateSaveButtonSelector).should('exist');
         cy.get(entityCreateCancelButtonSelector).click();
         cy.wait('@entitiesRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
-        cy.url().should('match', petPageUrlPattern);
+        cy.location('pathname').should('eq', petPageUrl);
       });
     });
 
@@ -111,7 +121,7 @@ describe('Pet e2e test', () => {
         cy.wait('@entitiesRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
-        cy.url().should('match', petPageUrlPattern);
+        cy.location('pathname').should('eq', petPageUrl);
       });
 
       it('edit button click should load edit Pet page and go back', () => {
@@ -122,7 +132,7 @@ describe('Pet e2e test', () => {
         cy.wait('@entitiesRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
-        cy.url().should('match', petPageUrlPattern);
+        cy.location('pathname').should('eq', petPageUrl);
       });
 
       it('edit button click should load edit Pet page and save', () => {
@@ -132,7 +142,7 @@ describe('Pet e2e test', () => {
         cy.wait('@entitiesRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
-        cy.url().should('match', petPageUrlPattern);
+        cy.location('pathname').should('eq', petPageUrl);
       });
 
       it('last delete button click should delete instance of Pet', () => {
@@ -145,7 +155,7 @@ describe('Pet e2e test', () => {
         cy.wait('@entitiesRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
-        cy.url().should('match', petPageUrlPattern);
+        cy.location('pathname').should('eq', petPageUrl);
 
         pet = undefined;
       });
@@ -176,7 +186,7 @@ describe('Pet e2e test', () => {
       cy.wait('@entitiesRequest').then(({ response }) => {
         expect(response?.statusCode).to.equal(200);
       });
-      cy.url().should('match', petPageUrlPattern);
+      cy.location('pathname').should('eq', petPageUrl);
     });
   });
 });

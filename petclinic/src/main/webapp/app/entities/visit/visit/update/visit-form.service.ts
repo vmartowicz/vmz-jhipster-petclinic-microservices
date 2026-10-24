@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { IVisit, NewVisit } from '../visit.model';
@@ -25,13 +25,14 @@ type VisitFormGroupContent = {
 
 export type VisitFormGroup = FormGroup<VisitFormGroupContent>;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class VisitFormService {
   createVisitFormGroup(visit?: VisitFormGroupInput): VisitFormGroup {
     const visitRawValue = {
       ...this.getFormDefaults(),
       ...(visit ?? { id: null }),
     };
+
     return new FormGroup<VisitFormGroupContent>({
       id: new FormControl(
         { value: visitRawValue.id, disabled: true },
@@ -51,7 +52,7 @@ export class VisitFormService {
   }
 
   getVisit(form: VisitFormGroup): IVisit | NewVisit {
-    return form.getRawValue() as IVisit | NewVisit;
+    return form.getRawValue();
   }
 
   resetForm(form: VisitFormGroup, visit: VisitFormGroupInput): void {

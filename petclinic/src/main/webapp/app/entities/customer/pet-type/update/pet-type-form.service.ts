@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { IPetType, NewPetType } from '../pet-type.model';
@@ -23,13 +23,14 @@ type PetTypeFormGroupContent = {
 
 export type PetTypeFormGroup = FormGroup<PetTypeFormGroupContent>;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class PetTypeFormService {
   createPetTypeFormGroup(petType?: PetTypeFormGroupInput): PetTypeFormGroup {
     const petTypeRawValue = {
       ...this.getFormDefaults(),
       ...(petType ?? { id: null }),
     };
+
     return new FormGroup<PetTypeFormGroupContent>({
       id: new FormControl(
         { value: petTypeRawValue.id, disabled: true },
@@ -45,7 +46,7 @@ export class PetTypeFormService {
   }
 
   getPetType(form: PetTypeFormGroup): IPetType | NewPetType {
-    return form.getRawValue() as IPetType | NewPetType;
+    return form.getRawValue();
   }
 
   resetForm(form: PetTypeFormGroup, petType: PetTypeFormGroupInput): void {

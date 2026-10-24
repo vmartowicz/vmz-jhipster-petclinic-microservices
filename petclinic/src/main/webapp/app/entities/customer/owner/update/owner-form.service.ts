@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { IOwner, NewOwner } from '../owner.model';
@@ -27,13 +27,14 @@ type OwnerFormGroupContent = {
 
 export type OwnerFormGroup = FormGroup<OwnerFormGroupContent>;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class OwnerFormService {
   createOwnerFormGroup(owner?: OwnerFormGroupInput): OwnerFormGroup {
     const ownerRawValue = {
       ...this.getFormDefaults(),
       ...(owner ?? { id: null }),
     };
+
     return new FormGroup<OwnerFormGroupContent>({
       id: new FormControl(
         { value: ownerRawValue.id, disabled: true },
@@ -61,7 +62,7 @@ export class OwnerFormService {
   }
 
   getOwner(form: OwnerFormGroup): IOwner | NewOwner {
-    return form.getRawValue() as IOwner | NewOwner;
+    return form.getRawValue();
   }
 
   resetForm(form: OwnerFormGroup, owner: OwnerFormGroupInput): void {

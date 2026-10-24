@@ -51,7 +51,7 @@ public class SpecialtyResource {
      * {@code POST  /specialties} : Create a new specialty.
      *
      * @param specialtyDTO the specialtyDTO to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new specialtyDTO, or with status {@code 400 (Bad Request)} if the specialty has already an ID.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new specialtyDTO, or with status {@code 400 (Bad Request)} if the specialty already has an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
@@ -115,7 +115,7 @@ public class SpecialtyResource {
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody SpecialtyDTO specialtyDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update Specialty partially : {}, {}", id, specialtyDTO);
+        LOG.debug("REST request to partially update Specialty : {}, {}", id, specialtyDTO);
         if (specialtyDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -136,10 +136,10 @@ public class SpecialtyResource {
     }
 
     /**
-     * {@code GET  /specialties} : get all the specialties.
+     * {@code GET  /specialties} : get all the Specialties.
      *
      * @param pageable the pagination information.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of specialties in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of Specialties in body.
      */
     @GetMapping("")
     public ResponseEntity<List<SpecialtyDTO>> getAllSpecialties(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {

@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 
 import { ParseLinks } from './parse-links.service';
@@ -11,19 +12,19 @@ describe('Parse links service test', () => {
 
   describe('parse', () => {
     it('should throw an error when passed an empty string', () => {
-      expect(function () {
+      expect(() => {
         service.parse('');
       }).toThrow(new Error('input must not be of zero length'));
     });
 
     it('should throw an error when passed without comma', () => {
-      expect(function () {
+      expect(() => {
         service.parse('test');
       }).toThrow(new Error('section could not be split on ";"'));
     });
 
     it('should throw an error when passed without semicolon', () => {
-      expect(function () {
+      expect(() => {
         service.parse('test,test2');
       }).toThrow(new Error('section could not be split on ";"'));
     });
@@ -35,19 +36,19 @@ describe('Parse links service test', () => {
   });
   describe('parseAll', () => {
     it('should throw an error when passed an empty string', () => {
-      expect(function () {
+      expect(() => {
         service.parseAll('');
       }).toThrow(new Error('input must not be of zero length'));
     });
 
     it('should throw an error when passed without comma', () => {
-      expect(function () {
+      expect(() => {
         service.parseAll('test');
       }).toThrow(new Error('section could not be split on ";"'));
     });
 
     it('should throw an error when passed without semicolon', () => {
-      expect(function () {
+      expect(() => {
         service.parseAll('test,test2');
       }).toThrow(new Error('section could not be split on ";"'));
     });

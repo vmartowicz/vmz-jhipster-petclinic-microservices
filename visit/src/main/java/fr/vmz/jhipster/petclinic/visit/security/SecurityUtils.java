@@ -1,8 +1,9 @@
 package fr.vmz.jhipster.petclinic.visit.security;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -33,7 +34,8 @@ public final class SecurityUtils {
     }
 
     private static String extractPrincipal(Authentication authentication) {
-        if (authentication == null) {
+        // AnonymousAuthenticationToken has a String principal that would fall through below
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
             return null;
         } else if (authentication.getPrincipal() instanceof UserDetails springSecurityUser) {
             return springSecurityUser.getUsername();
@@ -52,9 +54,16 @@ public final class SecurityUtils {
      */
     public static Optional<String> getCurrentUserJWT() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
-        return Optional.ofNullable(securityContext.getAuthentication())
-            .filter(authentication -> authentication.getCredentials() instanceof String)
-            .map(authentication -> (String) authentication.getCredentials());
+        return Optional.ofNullable(securityContext.getAuthentication()).map(SecurityUtils::extractCredentials);
+    }
+
+    private static String extractCredentials(Authentication authentication) {
+        if (authentication.getCredentials() instanceof String token) {
+            return token;
+        } else if (authentication.getCredentials() instanceof Jwt jwt) {
+            return jwt.getTokenValue();
+        }
+        return null;
     }
 
     /**
@@ -75,9 +84,7 @@ public final class SecurityUtils {
      */
     public static boolean hasCurrentUserAnyOfAuthorities(String... authorities) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return (
-            authentication != null && getAuthorities(authentication).anyMatch(authority -> Arrays.asList(authorities).contains(authority))
-        );
+        return authentication != null && getAuthorities(authentication).anyMatch(authority -> List.of(authorities).contains(authority));
     }
 
     /**

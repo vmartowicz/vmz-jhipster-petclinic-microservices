@@ -34,10 +34,10 @@ spring:
       enabled: true
       additional-exclude: static/**,.h2.server.properties
     livereload:
-      enabled: false # we use Webpack dev server + BrowserSync for livereload
+      enabled: false # we use bundler for livereload
   docker:
     compose:
-      enabled: false
+      enabled: true
       profiles:
         active: dev
   jackson:
@@ -70,14 +70,10 @@ spring:
   mail:
     host: localhost
     port: 25
-    username:
-    password:
   messages:
     cache-duration: PT1S # 1 second, see the ISO 8601 standard
   r2dbc:
     url: r2dbc:h2:file:///./target/h2db/db/petclinic;DB_CLOSE_DELAY=-1
-    username: petclinic
-    password:
   thymeleaf:
     cache: false
 
@@ -112,8 +108,6 @@ jhipster:
   security:
     authentication:
       jwt:
-        # This token must be encoded using Base64 and be at least 256 bits long (you can type `openssl rand -base64 64` on your command line to generate a 512 bits one)
-        base64-secret: NzYzMzdkYjA2MWIyNWIyNDM3NzhkOWFhNTJjN2Y5MTQxMjM5YTY1NzJlNzMwOTZkYjJlN2VlN2U0MGYzY2ViMTRhNzdmMTZmNTM2YmE3NDg4YmRjNDZiNDE2ZWMxM2UxMWI0M2ZhYTYyM2U1Mjg3NWE3Nzg5NzA4NThlNTJkNTg=
         # Token is valid 24 hours
         token-validity-in-seconds: 86400
         token-validity-in-seconds-for-remember-me: 2592000

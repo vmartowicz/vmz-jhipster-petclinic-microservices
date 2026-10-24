@@ -71,15 +71,17 @@ public class OwnerQueryService extends QueryService<Owner> {
         Specification<Owner> specification = Specification.unrestricted();
         if (criteria != null) {
             // This has to be called first, because the distinct method returns null
-            specification = Specification.allOf(
-                Boolean.TRUE.equals(criteria.getDistinct()) ? distinct(criteria.getDistinct()) : null,
-                buildRangeSpecification(criteria.getId(), Owner_.id),
-                buildStringSpecification(criteria.getFirstName(), Owner_.firstName),
-                buildStringSpecification(criteria.getLastName(), Owner_.lastName),
-                buildStringSpecification(criteria.getAddress(), Owner_.address),
-                buildStringSpecification(criteria.getCity(), Owner_.city),
-                buildStringSpecification(criteria.getTelephone(), Owner_.telephone),
-                buildSpecification(criteria.getPetsId(), root -> root.join(Owner_.pets, JoinType.LEFT).get(Pet_.id))
+            specification = specification.and(
+                Specification.allOf(
+                    Boolean.TRUE.equals(criteria.getDistinct()) ? distinct(criteria.getDistinct()) : Specification.unrestricted(),
+                    buildRangeSpecification(criteria.getId(), Owner_.id),
+                    buildStringSpecification(criteria.getFirstName(), Owner_.firstName),
+                    buildStringSpecification(criteria.getLastName(), Owner_.lastName),
+                    buildStringSpecification(criteria.getAddress(), Owner_.address),
+                    buildStringSpecification(criteria.getCity(), Owner_.city),
+                    buildStringSpecification(criteria.getTelephone(), Owner_.telephone),
+                    buildSpecification(criteria.getPetsId(), root -> root.join(Owner_.petses, JoinType.LEFT).get(Pet_.id))
+                )
             );
         }
         return specification;

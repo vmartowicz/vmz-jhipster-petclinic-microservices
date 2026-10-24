@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { combineLatest } from 'rxjs';
 
-import SharedModule from 'app/shared/shared.module';
+import { TranslateDirective } from 'app/shared/language';
 
 import { JvmMemory } from './blocks/jvm-memory/jvm-memory';
 import { JvmThreads } from './blocks/jvm-threads/jvm-threads';
@@ -18,9 +19,9 @@ import { MetricsService } from './metrics.service';
 @Component({
   selector: 'jhi-metrics',
   templateUrl: './metrics.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    SharedModule,
+    TranslateDirective,
+    FontAwesomeModule,
     JvmMemory,
     JvmThreads,
     MetricsCache,
@@ -32,12 +33,11 @@ import { MetricsService } from './metrics.service';
   ],
 })
 export default class Metrics implements OnInit {
-  metrics = signal<MetricsModel | undefined>(undefined);
-  threads = signal<Thread[] | undefined>(undefined);
-  updatingMetrics = signal(true);
+  readonly metrics = signal<MetricsModel | undefined>(undefined);
+  readonly threads = signal<Thread[] | undefined>(undefined);
+  readonly updatingMetrics = signal(true);
 
   private readonly metricsService = inject(MetricsService);
-  private readonly changeDetector = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.refresh();
@@ -49,11 +49,11 @@ export default class Metrics implements OnInit {
       this.metrics.set(metrics);
       this.threads.set(threadDump.threads);
       this.updatingMetrics.set(false);
-      this.changeDetector.markForCheck();
     });
   }
 
   metricsKeyExistsAndObjectNotEmpty(key: keyof MetricsModel): boolean {
-    return Boolean(this.metrics()?.[key] && JSON.stringify(this.metrics()?.[key]) !== '{}');
+    const value = this.metrics()?.[key];
+    return Boolean(value && Object.keys(value).length > 0);
   }
 }

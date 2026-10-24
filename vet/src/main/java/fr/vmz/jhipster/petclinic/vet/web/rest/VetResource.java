@@ -56,7 +56,7 @@ public class VetResource {
      * {@code POST  /vets} : Create a new vet.
      *
      * @param vetDTO the vetDTO to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new vetDTO, or with status {@code 400 (Bad Request)} if the vet has already an ID.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new vetDTO, or with status {@code 400 (Bad Request)} if the vet already has an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
@@ -118,7 +118,7 @@ public class VetResource {
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody VetDTO vetDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update Vet partially : {}, {}", id, vetDTO);
+        LOG.debug("REST request to partially update Vet : {}, {}", id, vetDTO);
         if (vetDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -139,11 +139,11 @@ public class VetResource {
     }
 
     /**
-     * {@code GET  /vets} : get all the vets.
+     * {@code GET  /vets} : get all the Vets.
      *
      * @param pageable the pagination information.
      * @param criteria the criteria which the requested entities should match.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of vets in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of Vets in body.
      */
     @GetMapping("")
     public ResponseEntity<List<VetDTO>> getAllVets(

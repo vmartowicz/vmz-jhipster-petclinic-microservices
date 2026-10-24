@@ -223,7 +223,7 @@ public class UserService {
      *
      * @param firstName first name of user.
      * @param lastName  last name of user.
-     * @param email     email id of user.
+     * @param email     email of user.
      * @param langKey   language key.
      * @param imageUrl  image URL of user.
      * @return a completed {@link Mono}.
@@ -257,13 +257,11 @@ public class UserService {
                 user.setLastModifiedBy(login);
                 // Saving the relationship can be done in an entity callback
                 // once https://github.com/spring-projects/spring-data-r2dbc/issues/215 is done
-                return userRepository
-                    .save(user)
-                    .flatMap(savedUser ->
-                        Flux.fromIterable(user.getAuthorities())
-                            .flatMap(authority -> userRepository.saveUserAuthority(savedUser.getId(), authority.getName()))
-                            .then(Mono.just(savedUser))
-                    );
+                return userRepository.save(user).flatMap(savedUser ->
+                    Flux.fromIterable(user.getAuthorities())
+                        .flatMap(authority -> userRepository.saveUserAuthority(savedUser.getId(), authority.getName()))
+                        .then(Mono.just(savedUser))
+                );
             });
     }
 

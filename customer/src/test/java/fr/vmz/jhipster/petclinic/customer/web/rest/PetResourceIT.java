@@ -8,7 +8,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.vmz.jhipster.petclinic.customer.IntegrationTest;
 import fr.vmz.jhipster.petclinic.customer.domain.Owner;
 import fr.vmz.jhipster.petclinic.customer.domain.Pet;
@@ -19,7 +18,6 @@ import fr.vmz.jhipster.petclinic.customer.service.dto.PetDTO;
 import fr.vmz.jhipster.petclinic.customer.service.mapper.PetMapper;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
@@ -30,13 +28,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Integration tests for the {@link PetResource} REST controller.
@@ -51,14 +50,14 @@ class PetResourceIT {
     private static final String UPDATED_NAME = "BBBBBBBBBB";
 
     private static final LocalDate DEFAULT_BIRTH_DATE = LocalDate.ofEpochDay(0L);
-    private static final LocalDate UPDATED_BIRTH_DATE = LocalDate.now(ZoneId.systemDefault());
+    private static final LocalDate UPDATED_BIRTH_DATE = LocalDate.parse("2025-02-01");
     private static final LocalDate SMALLER_BIRTH_DATE = LocalDate.ofEpochDay(-1L);
 
     private static final String ENTITY_API_URL = "/api/pets";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
-    private static Random random = new Random();
-    private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2L * Integer.MAX_VALUE));
+    private static final Random random = new Random();
+    private static final AtomicLong longCount = new AtomicLong(random.nextInt() + 2L * Integer.MAX_VALUE);
 
     @Autowired
     private ObjectMapper om;
@@ -369,7 +368,7 @@ class PetResourceIT {
             petRepository.saveAndFlush(pet);
             type = PetTypeResourceIT.createEntity();
         } else {
-            type = TestUtil.findAll(em, PetType.class).get(0);
+            type = TestUtil.findAll(em, PetType.class).getFirst();
         }
         em.persist(type);
         em.flush();
@@ -391,7 +390,7 @@ class PetResourceIT {
             petRepository.saveAndFlush(pet);
             owner = OwnerResourceIT.createEntity();
         } else {
-            owner = TestUtil.findAll(em, Owner.class).get(0);
+            owner = TestUtil.findAll(em, Owner.class).getFirst();
         }
         em.persist(owner);
         em.flush();

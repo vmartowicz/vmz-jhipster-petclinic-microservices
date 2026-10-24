@@ -1,12 +1,12 @@
-import { HttpResponse } from '@angular/common/http';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
-import { Observable } from 'rxjs';
-import { finalize } from 'rxjs/operators';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { Observable, finalize } from 'rxjs';
 
-import SharedModule from 'app/shared/shared.module';
+import { AlertError } from 'app/shared/alert';
+import { TranslateDirective } from 'app/shared/language';
 import { IPetType } from '../pet-type.model';
 import { PetTypeService } from '../service/pet-type.service';
 
@@ -15,10 +15,10 @@ import { PetTypeFormGroup, PetTypeFormService } from './pet-type-form.service';
 @Component({
   selector: 'jhi-pet-type-update',
   templateUrl: './pet-type-update.html',
-  imports: [SharedModule, ReactiveFormsModule],
+  imports: [TranslateDirective, FontAwesomeModule, AlertError, ReactiveFormsModule],
 })
 export class PetTypeUpdate implements OnInit {
-  isSaving = false;
+  readonly isSaving = signal(false);
   petType: IPetType | null = null;
 
   protected petTypeService = inject(PetTypeService);
@@ -42,7 +42,7 @@ export class PetTypeUpdate implements OnInit {
   }
 
   save(): void {
-    this.isSaving = true;
+    this.isSaving.set(true);
     const petType = this.petTypeFormService.getPetType(this.editForm);
     if (petType.id === null) {
       this.subscribeToSaveResponse(this.petTypeService.create(petType));
@@ -51,7 +51,7 @@ export class PetTypeUpdate implements OnInit {
     }
   }
 
-  protected subscribeToSaveResponse(result: Observable<HttpResponse<IPetType>>): void {
+  protected subscribeToSaveResponse(result: Observable<IPetType | null>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(),
       error: () => this.onSaveError(),
@@ -67,7 +67,7 @@ export class PetTypeUpdate implements OnInit {
   }
 
   protected onSaveFinalize(): void {
-    this.isSaving = false;
+    this.isSaving.set(false);
   }
 
   protected updateForm(petType: IPetType): void {

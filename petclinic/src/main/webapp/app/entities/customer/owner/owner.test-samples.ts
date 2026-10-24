@@ -2,37 +2,37 @@ import { IOwner, NewOwner } from './owner.model';
 
 export const sampleWithRequiredData: IOwner = {
   id: 3581,
-  firstName: 'Bertrand',
-  lastName: 'Hoeger',
-  address: 'couch',
-  city: 'North Kacieside',
-  telephone: '1-983-289-0297',
+  firstName: 'Gregoria',
+  lastName: 'Erdman',
+  address: 'obediently',
+  city: 'Charlottesville',
+  telephone: '1-830-890-2979 x7402',
 };
 
 export const sampleWithPartialData: IOwner = {
   id: 12097,
-  firstName: 'Gerardo',
-  lastName: 'Swaniawski',
-  address: 'braid dreamily',
-  city: 'Mableville',
-  telephone: '959.871.0739',
+  firstName: 'Scarlett',
+  lastName: 'Prosacco',
+  address: 'ick huzzah delectable',
+  city: 'Port Alexieborough',
+  telephone: '412-580-9810 x52299',
 };
 
 export const sampleWithFullData: IOwner = {
   id: 26949,
-  firstName: 'Janice',
-  lastName: 'Brakus',
-  address: 'readily',
-  city: 'Haagborough',
-  telephone: '920.647.6559',
+  firstName: 'August',
+  lastName: 'Barton',
+  address: 'honestly when evenly',
+  city: 'Pocatello',
+  telephone: '1-422-319-2578 x483',
 };
 
 export const sampleWithNewData: NewOwner = {
-  firstName: 'Dallin',
-  lastName: "O'Kon",
-  address: 'despite',
-  city: 'Lake Camronstead',
-  telephone: '1-277-592-9009 x1385',
+  firstName: 'Mae',
+  lastName: 'Shanahan',
+  address: 'consequently youthfully',
+  city: 'Fort Yasmine',
+  telephone: '485-389-3348 x278',
   id: null,
 };
 

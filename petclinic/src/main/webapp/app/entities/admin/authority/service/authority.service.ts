@@ -1,38 +1,51 @@
-import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpResponse, httpResource } from '@angular/common/http';
+import { Service, computed, inject, signal } from '@angular/core';
 
 import { Observable } from 'rxjs';
 
-import { ApplicationConfigService } from 'app/core/config/application-config.service';
-import { createRequestOption } from 'app/core/request/request-util';
-import { isPresent } from 'app/core/util/operators';
+import { serverApiUrl } from 'app/config';
+import { createRequestOption } from 'app/core/request';
 import { IAuthority, NewAuthority } from '../authority.model';
 
-export type EntityResponseType = HttpResponse<IAuthority>;
-export type EntityArrayResponseType = HttpResponse<IAuthority[]>;
+@Service()
+export class AuthoritiesService {
+  readonly authoritiesParams = signal<Record<string, string | number | boolean | readonly (string | number | boolean)[]> | undefined>(
+    undefined,
+  );
+  readonly authoritiesResource = httpResource<IAuthority[]>(() => {
+    const params = this.authoritiesParams();
+    if (!params) {
+      return undefined;
+    }
+    return { url: this.resourceUrl, params };
+  });
+  /**
+   * This signal holds the list of authority that have been fetched. It is updated when the authoritiesResource emits a new value.
+   * In case of error while fetching the authorities, the signal is set to an empty array.
+   */
+  readonly authorities = computed(() => (this.authoritiesResource.hasValue() ? this.authoritiesResource.value() : []));
+  protected readonly resourceUrl = `${serverApiUrl}api/authorities`;
+}
 
-@Injectable({ providedIn: 'root' })
-export class AuthorityService {
+@Service()
+export class AuthorityService extends AuthoritiesService {
   protected readonly http = inject(HttpClient);
-  protected readonly applicationConfigService = inject(ApplicationConfigService);
 
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/authorities');
-
-  create(authority: NewAuthority): Observable<EntityResponseType> {
-    return this.http.post<IAuthority>(this.resourceUrl, authority, { observe: 'response' });
+  create(authority: NewAuthority): Observable<IAuthority> {
+    return this.http.post<IAuthority>(this.resourceUrl, authority);
   }
 
-  find(id: string): Observable<EntityResponseType> {
-    return this.http.get<IAuthority>(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
+  find(name: string): Observable<IAuthority> {
+    return this.http.get<IAuthority>(`${this.resourceUrl}/${encodeURIComponent(name)}`);
   }
 
-  query(req?: any): Observable<EntityArrayResponseType> {
+  query(req?: any): Observable<HttpResponse<IAuthority[]>> {
     const options = createRequestOption(req);
     return this.http.get<IAuthority[]>(this.resourceUrl, { params: options, observe: 'response' });
   }
 
-  delete(id: string): Observable<HttpResponse<{}>> {
-    return this.http.delete(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
+  delete(name: string): Observable<undefined> {
+    return this.http.delete<undefined>(`${this.resourceUrl}/${encodeURIComponent(name)}`);
   }
 
   getAuthorityIdentifier(authority: Pick<IAuthority, 'name'>): string {
@@ -47,7 +60,7 @@ export class AuthorityService {
     authorityCollection: Type[],
     ...authoritiesToCheck: (Type | null | undefined)[]
   ): Type[] {
-    const authorities: Type[] = authoritiesToCheck.filter(isPresent);
+    const authorities: Type[] = authoritiesToCheck.filter(authorityItem => authorityItem !== null && authorityItem !== undefined);
     if (authorities.length > 0) {
       const authorityCollectionIdentifiers = authorityCollection.map(authorityItem => this.getAuthorityIdentifier(authorityItem));
       const authoritiesToAdd = authorities.filter(authorityItem => {

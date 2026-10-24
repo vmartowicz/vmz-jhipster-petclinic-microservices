@@ -3,12 +3,13 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
-import { Observable } from 'rxjs';
-import { finalize, map } from 'rxjs/operators';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { Observable, finalize, map } from 'rxjs';
 
 import { VetService } from 'app/entities/vet/vet/service/vet.service';
 import { IVet } from 'app/entities/vet/vet/vet.model';
-import SharedModule from 'app/shared/shared.module';
+import { AlertError } from 'app/shared/alert';
+import { TranslateDirective } from 'app/shared/language';
 import { SpecialtyService } from '../service/specialty.service';
 import { ISpecialty } from '../specialty.model';
 
@@ -17,10 +18,10 @@ import { SpecialtyFormGroup, SpecialtyFormService } from './specialty-form.servi
 @Component({
   selector: 'jhi-specialty-update',
   templateUrl: './specialty-update.html',
-  imports: [SharedModule, ReactiveFormsModule],
+  imports: [TranslateDirective, FontAwesomeModule, AlertError, ReactiveFormsModule],
 })
 export class SpecialtyUpdate implements OnInit {
-  isSaving = false;
+  readonly isSaving = signal(false);
   specialty: ISpecialty | null = null;
 
   vetsSharedCollection = signal<IVet[]>([]);
@@ -51,7 +52,7 @@ export class SpecialtyUpdate implements OnInit {
   }
 
   save(): void {
-    this.isSaving = true;
+    this.isSaving.set(true);
     const specialty = this.specialtyFormService.getSpecialty(this.editForm);
     if (specialty.id === null) {
       this.subscribeToSaveResponse(this.specialtyService.create(specialty));
@@ -60,7 +61,7 @@ export class SpecialtyUpdate implements OnInit {
     }
   }
 
-  protected subscribeToSaveResponse(result: Observable<HttpResponse<ISpecialty>>): void {
+  protected subscribeToSaveResponse(result: Observable<ISpecialty | null>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(),
       error: () => this.onSaveError(),
@@ -76,23 +77,21 @@ export class SpecialtyUpdate implements OnInit {
   }
 
   protected onSaveFinalize(): void {
-    this.isSaving = false;
+    this.isSaving.set(false);
   }
 
   protected updateForm(specialty: ISpecialty): void {
     this.specialty = specialty;
     this.specialtyFormService.resetForm(this.editForm, specialty);
 
-    this.vetsSharedCollection.set(
-      this.vetService.addVetToCollectionIfMissing<IVet>(this.vetsSharedCollection(), ...(specialty.vets ?? [])),
-    );
+    this.vetsSharedCollection.update(vets => this.vetService.addVetToCollectionIfMissing<IVet>(vets, ...(specialty.vetses ?? [])));
   }
 
   protected loadRelationshipsOptions(): void {
     this.vetService
       .query()
       .pipe(map((res: HttpResponse<IVet[]>) => res.body ?? []))
-      .pipe(map((vets: IVet[]) => this.vetService.addVetToCollectionIfMissing<IVet>(vets, ...(this.specialty?.vets ?? []))))
+      .pipe(map((vets: IVet[]) => this.vetService.addVetToCollectionIfMissing<IVet>(vets, ...(this.specialty?.vetses ?? []))))
       .subscribe((vets: IVet[]) => this.vetsSharedCollection.set(vets));
   }
 }

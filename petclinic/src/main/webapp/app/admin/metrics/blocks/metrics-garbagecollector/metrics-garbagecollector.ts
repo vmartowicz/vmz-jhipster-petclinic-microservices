@@ -1,21 +1,24 @@
+import { DecimalPipe } from '@angular/common';
 import { Component, input } from '@angular/core';
 
+import { NgbProgressbar } from '@ng-bootstrap/ng-bootstrap/progressbar';
+
 import { GarbageCollector } from 'app/admin/metrics/metrics.model';
-import SharedModule from 'app/shared/shared.module';
+import { TranslateDirective } from 'app/shared/language';
 
 @Component({
   selector: 'jhi-metrics-garbagecollector',
   templateUrl: './metrics-garbagecollector.html',
-  imports: [SharedModule],
+  imports: [NgbProgressbar, DecimalPipe, TranslateDirective],
 })
 export class MetricsGarbageCollector {
   /**
    * Object containing garbage collector related metrics
    */
-  garbageCollectorMetrics = input<GarbageCollector>();
+  readonly garbageCollectorMetrics = input<GarbageCollector>();
 
   /**
    * Boolean field saying if the metrics are in the process of being updated
    */
-  updating = input<boolean>();
+  readonly updating = input<boolean>();
 }

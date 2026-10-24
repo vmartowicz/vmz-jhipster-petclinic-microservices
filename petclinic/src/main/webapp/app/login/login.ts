@@ -2,19 +2,21 @@ import { AfterViewInit, Component, ElementRef, OnInit, inject, signal, viewChild
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
-import { AccountService } from 'app/core/auth/account.service';
+import { TranslatePipe } from '@ngx-translate/core';
+
+import { AccountService } from 'app/core/auth';
 import { LoginService } from 'app/login/login.service';
-import SharedModule from 'app/shared/shared.module';
+import { TranslateDirective } from 'app/shared/language';
 
 @Component({
   selector: 'jhi-login',
-  imports: [SharedModule, ReactiveFormsModule, RouterLink],
+  imports: [TranslateDirective, TranslatePipe, ReactiveFormsModule, RouterLink],
   templateUrl: './login.html',
 })
-export default class LoginComponent implements OnInit, AfterViewInit {
-  username = viewChild.required<ElementRef>('username');
+export default class Login implements OnInit, AfterViewInit {
+  readonly username = viewChild.required<ElementRef>('username');
 
-  authenticationError = signal(false);
+  readonly authenticationError = signal(false);
 
   loginForm = new FormGroup({
     username: new FormControl('', { nonNullable: true, validators: [Validators.required] }),

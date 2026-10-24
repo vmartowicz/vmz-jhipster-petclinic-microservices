@@ -21,7 +21,7 @@ public class Authority implements Serializable, Persistable<String> {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @NotNull(message = "must not be null")
+    @NotNull
     @Size(max = 50)
     @Id
     @Column("name")

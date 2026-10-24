@@ -1,52 +1,71 @@
 import { HttpHeaders } from '@angular/common/http';
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, effect, inject, signal, untracked } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Data, ParamMap, Router, RouterLink } from '@angular/router';
 
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Observable, Subscription, combineLatest, filter, tap } from 'rxjs';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal';
+import { NgbPagination } from '@ng-bootstrap/ng-bootstrap/pagination';
+import { combineLatest, filter, map, tap } from 'rxjs';
 
-import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
-import { ITEMS_PER_PAGE, PAGE_HEADER, TOTAL_COUNT_RESPONSE_HEADER } from 'app/config/pagination.constants';
+import { DEFAULT_SORT_DATA, ITEMS_PER_PAGE, ITEM_DELETED_EVENT, PAGE_HEADER, SORT, TOTAL_COUNT_RESPONSE_HEADER } from 'app/config';
+import { Alert, AlertError } from 'app/shared/alert';
+import { TranslateDirective } from 'app/shared/language';
 import { ItemCount } from 'app/shared/pagination';
-import SharedModule from 'app/shared/shared.module';
 import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
 import { SpecialtyDeleteDialog } from '../delete/specialty-delete-dialog';
-import { EntityArrayResponseType, SpecialtyService } from '../service/specialty.service';
+import { SpecialtyService } from '../service/specialty.service';
 import { ISpecialty } from '../specialty.model';
 
 @Component({
   selector: 'jhi-specialty',
   templateUrl: './specialty.html',
-  imports: [RouterLink, FormsModule, SharedModule, SortDirective, SortByDirective, ItemCount],
+  imports: [RouterLink, FontAwesomeModule, AlertError, Alert, SortDirective, SortByDirective, TranslateDirective, NgbPagination, ItemCount],
 })
-export class Specialty implements OnInit {
-  subscription: Subscription | null = null;
-  specialties = signal<ISpecialty[]>([]);
-  isLoading = false;
+export class Specialty {
+  readonly specialties = signal<ISpecialty[]>([]);
 
   sortState = sortStateSignal({});
 
-  itemsPerPage = ITEMS_PER_PAGE;
-  totalItems = 0;
-  page = 1;
+  readonly itemsPerPage = signal(ITEMS_PER_PAGE);
+  readonly totalItems = signal(0);
+  readonly page = signal(1);
 
   readonly router = inject(Router);
   protected readonly specialtyService = inject(SpecialtyService);
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  readonly isLoading = this.specialtyService.specialtiesResource.isLoading;
   protected readonly activatedRoute = inject(ActivatedRoute);
+  protected readonly activatedRouteState = toSignal(
+    combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data]).pipe(
+      map(([queryParamMap, data]) => ({ queryParamMap, data })),
+    ),
+    { initialValue: { queryParamMap: this.activatedRoute.snapshot.queryParamMap, data: this.activatedRoute.snapshot.data } },
+  );
   protected readonly sortService = inject(SortService);
   protected modalService = inject(NgbModal);
 
-  trackId = (item: ISpecialty): number => this.specialtyService.getSpecialtyIdentifier(item);
-
-  ngOnInit(): void {
-    this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
-      .pipe(
-        tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
-        tap(() => this.load()),
-      )
-      .subscribe();
+  constructor() {
+    effect(() => {
+      const headers = this.specialtyService.specialtiesResource.headers();
+      if (headers) {
+        this.fillComponentAttributesFromResponseHeader(headers);
+      }
+    });
+    effect(() => {
+      this.specialties.set(this.fillComponentAttributesFromResponseBody([...this.specialtyService.specialties()]));
+    });
+    effect(() => {
+      const activatedRouteState = this.activatedRouteState();
+      untracked(() => {
+        // Only watch for route changes. Other signals should be ignored.
+        this.fillComponentAttributeFromRoute(activatedRouteState.queryParamMap, activatedRouteState.data);
+        this.load();
+      });
+    });
   }
+
+  trackId = (item: ISpecialty): number => this.specialtyService.getSpecialtyIdentifier(item);
 
   delete(specialty: ISpecialty): void {
     const modalRef = this.modalService.open(SpecialtyDeleteDialog, { size: 'lg', backdrop: 'static' });
@@ -61,11 +80,11 @@ export class Specialty implements OnInit {
   }
 
   load(): void {
-    this.queryBackend().subscribe((res: EntityArrayResponseType) => this.onResponseSuccess(res));
+    this.queryBackend();
   }
 
   navigateToWithComponentValues(event: SortState): void {
-    this.handleNavigation(this.page, event);
+    this.handleNavigation(this.page(), event);
   }
 
   navigateToPage(page: number): void {
@@ -74,41 +93,32 @@ export class Specialty implements OnInit {
 
   protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
     const page = params.get(PAGE_HEADER);
-    this.page = +(page ?? 1);
+    this.page.set(+(page ?? 1));
     this.sortState.set(this.sortService.parseSortParam(params.get(SORT) ?? data[DEFAULT_SORT_DATA]));
   }
 
-  protected onResponseSuccess(response: EntityArrayResponseType): void {
-    this.fillComponentAttributesFromResponseHeader(response.headers);
-    const dataFromBody = this.fillComponentAttributesFromResponseBody(response.body);
-    this.specialties.set(dataFromBody);
-  }
-
-  protected fillComponentAttributesFromResponseBody(data: ISpecialty[] | null): ISpecialty[] {
-    return data ?? [];
+  protected fillComponentAttributesFromResponseBody(data: ISpecialty[]): ISpecialty[] {
+    return data;
   }
 
   protected fillComponentAttributesFromResponseHeader(headers: HttpHeaders): void {
-    this.totalItems = Number(headers.get(TOTAL_COUNT_RESPONSE_HEADER));
+    this.totalItems.set(Number(headers.get(TOTAL_COUNT_RESPONSE_HEADER)));
   }
 
-  protected queryBackend(): Observable<EntityArrayResponseType> {
-    const { page } = this;
-
-    this.isLoading = true;
-    const pageToLoad: number = page;
+  protected queryBackend(): void {
+    const pageToLoad: number = this.page();
     const queryObject: any = {
       page: pageToLoad - 1,
-      size: this.itemsPerPage,
+      size: this.itemsPerPage(),
       sort: this.sortService.buildSortParam(this.sortState()),
     };
-    return this.specialtyService.query(queryObject).pipe(tap(() => (this.isLoading = false)));
+    this.specialtyService.specialtiesParams.set(queryObject);
   }
 
   protected handleNavigation(page: number, sortState: SortState): void {
     const queryParamsObj = {
       page,
-      size: this.itemsPerPage,
+      size: this.itemsPerPage(),
       sort: this.sortService.buildSortParam(sortState),
     };
 

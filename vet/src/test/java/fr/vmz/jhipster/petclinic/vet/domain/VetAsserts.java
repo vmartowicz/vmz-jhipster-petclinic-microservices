@@ -60,6 +60,6 @@ public class VetAsserts {
     public static void assertVetUpdatableRelationshipsEquals(Vet expected, Vet actual) {
         assertThat(actual)
             .as("Verify Vet relationships")
-            .satisfies(a -> assertThat(a.getSpecialties()).as("check specialties").isEqualTo(expected.getSpecialties()));
+            .satisfies(a -> assertThat(a.getSpecialtieses()).as("check specialtieses").isEqualTo(expected.getSpecialtieses()));
     }
 }

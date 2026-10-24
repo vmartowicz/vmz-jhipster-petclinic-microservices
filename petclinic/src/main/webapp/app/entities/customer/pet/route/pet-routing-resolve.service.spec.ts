@@ -1,10 +1,10 @@
-import { HttpResponse, provideHttpClient } from '@angular/common/http';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, ActivatedRouteSnapshot, Router, convertToParamMap } from '@angular/router';
 
-import { of } from 'rxjs';
+import { lastValueFrom, of, throwError } from 'rxjs';
 
-import { IPet } from '../pet.model';
 import { PetService } from '../service/pet.service';
 
 import petResolve from './pet-routing-resolve.service';
@@ -17,7 +17,6 @@ describe('Pet routing resolve service', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        provideHttpClient(),
         {
           provide: ActivatedRoute,
           useValue: {
@@ -29,7 +28,7 @@ describe('Pet routing resolve service', () => {
       ],
     });
     mockRouter = TestBed.inject(Router);
-    jest.spyOn(mockRouter, 'navigate');
+    vi.spyOn(mockRouter, 'navigate');
     mockActivatedRouteSnapshot = TestBed.inject(ActivatedRoute).snapshot;
     service = TestBed.inject(PetService);
   });
@@ -37,7 +36,7 @@ describe('Pet routing resolve service', () => {
   describe('resolve', () => {
     it('should return IPet returned by find', async () => {
       // GIVEN
-      service.find = jest.fn(id => of(new HttpResponse({ body: { id } })));
+      service.find = vi.fn(id => of({ id }));
       mockActivatedRouteSnapshot.params = { id: 123 };
 
       // WHEN
@@ -57,7 +56,7 @@ describe('Pet routing resolve service', () => {
 
     it('should return null if id is not provided', async () => {
       // GIVEN
-      service.find = jest.fn();
+      service.find = vi.fn();
       mockActivatedRouteSnapshot.params = {};
 
       // WHEN
@@ -67,7 +66,7 @@ describe('Pet routing resolve service', () => {
             next(result) {
               // THEN
               expect(service.find).not.toHaveBeenCalled();
-              expect(result).toEqual(null);
+              expect(result).toBeNull();
               resolve();
             },
           });
@@ -77,21 +76,31 @@ describe('Pet routing resolve service', () => {
 
     it('should route to 404 page if data not found in server', async () => {
       // GIVEN
-      jest.spyOn(service, 'find').mockReturnValue(of(new HttpResponse<IPet>({ body: null })));
+      vi.spyOn(service, 'find').mockReturnValue(throwError(() => new HttpErrorResponse({ status: 404, statusText: 'Not Found' })));
       mockActivatedRouteSnapshot.params = { id: 123 };
 
       // WHEN
-      await new Promise<void>(resolve => {
-        TestBed.runInInjectionContext(() => {
-          petResolve(mockActivatedRouteSnapshot).subscribe({
-            complete() {
-              // THEN
-              expect(service.find).toHaveBeenCalledWith(123);
-              expect(mockRouter.navigate).toHaveBeenCalledWith(['404']);
-              resolve();
-            },
-          });
-        });
+      await TestBed.runInInjectionContext(async () => {
+        await expect(lastValueFrom(petResolve(mockActivatedRouteSnapshot))).rejects.toThrow('no elements in sequence');
+        // THEN
+        expect(service.find).toHaveBeenCalledWith(123);
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['404']);
+      });
+    });
+
+    it('should route to error page if server returns an error other than 404', async () => {
+      // GIVEN
+      vi.spyOn(service, 'find').mockReturnValue(
+        throwError(() => new HttpErrorResponse({ status: 500, statusText: 'Internal Server Error' })),
+      );
+      mockActivatedRouteSnapshot.params = { id: 123 };
+
+      // WHEN
+      await TestBed.runInInjectionContext(async () => {
+        await expect(lastValueFrom(petResolve(mockActivatedRouteSnapshot))).rejects.toThrow('no elements in sequence');
+        // THEN
+        expect(service.find).toHaveBeenCalledWith(123);
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['error']);
       });
     });
   });

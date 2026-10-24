@@ -1,7 +1,8 @@
-import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
 
 import Health from './health';
@@ -15,8 +16,7 @@ describe('Health', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
-      providers: [provideHttpClient()],
+      providers: [provideTranslateService()],
     });
   });
 
@@ -39,27 +39,27 @@ describe('Health', () => {
     it('should call refresh on init', () => {
       // GIVEN
       const health: HealthModel = { status: 'UP', components: { mail: { status: 'UP', details: { mailDetail: 'mail' } } } };
-      jest.spyOn(service, 'checkHealth').mockReturnValue(of(health));
+      vi.spyOn(service, 'checkHealth').mockReturnValue(of(health));
 
       // WHEN
       comp.ngOnInit();
 
       // THEN
       expect(service.checkHealth).toHaveBeenCalled();
-      expect(comp.health).toEqual(health);
+      expect(comp.health()).toEqual(health);
     });
 
     it('should handle a 503 on refreshing health data', () => {
       // GIVEN
       const health: HealthModel = { status: 'DOWN', components: { mail: { status: 'DOWN' } } };
-      jest.spyOn(service, 'checkHealth').mockReturnValue(throwError(() => new HttpErrorResponse({ status: 503, error: health })));
+      vi.spyOn(service, 'checkHealth').mockReturnValue(throwError(() => new HttpErrorResponse({ status: 503, error: health })));
 
       // WHEN
       comp.refresh();
 
       // THEN
       expect(service.checkHealth).toHaveBeenCalled();
-      expect(comp.health).toEqual(health);
+      expect(comp.health()).toEqual(health);
     });
   });
 });

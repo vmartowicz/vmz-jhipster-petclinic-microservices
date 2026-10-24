@@ -56,7 +56,7 @@ public class VisitResource {
      * {@code POST  /visits} : Create a new visit.
      *
      * @param visit the visit to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new visit, or with status {@code 400 (Bad Request)} if the visit has already an ID.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new visit, or with status {@code 400 (Bad Request)} if the visit already has an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
@@ -118,7 +118,7 @@ public class VisitResource {
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody Visit visit
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update Visit partially : {}, {}", id, visit);
+        LOG.debug("REST request to partially update Visit : {}, {}", id, visit);
         if (visit.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -139,11 +139,11 @@ public class VisitResource {
     }
 
     /**
-     * {@code GET  /visits} : get all the visits.
+     * {@code GET  /visits} : get all the Visits.
      *
      * @param pageable the pagination information.
      * @param criteria the criteria which the requested entities should match.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of visits in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of Visits in body.
      */
     @GetMapping("")
     public ResponseEntity<List<Visit>> getAllVisits(

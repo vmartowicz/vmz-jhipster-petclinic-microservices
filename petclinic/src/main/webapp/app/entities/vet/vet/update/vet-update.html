@@ -10,7 +10,7 @@
 
         @if (editForm.controls.id.value !== null) {
           <div class="mb-3">
-            <label class="form-label" for="field_id" jhiTranslate="petclinicApp.vetVet.id">ID</label>
+            <label class="form-label" for="field_id" jhiTranslate="global.field.id">ID</label>
             <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
           </div>
         }
@@ -21,10 +21,10 @@
           <input type="text" class="form-control" name="firstName" id="field_firstName" data-cy="firstName" formControlName="firstName" />
           @if (firstNameRef.invalid && (firstNameRef.dirty || firstNameRef.touched)) {
             <div>
-              @if (editForm.get('firstName')?.errors?.required) {
+              @if (firstNameRef.errors?.required) {
                 <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
               }
-              @if (editForm.get('firstName')?.errors?.maxlength) {
+              @if (firstNameRef.errors?.maxlength) {
                 <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '30' }"
                   >This field cannot be longer than 30 characters.</small
                 >
@@ -39,10 +39,10 @@
           <input type="text" class="form-control" name="lastName" id="field_lastName" data-cy="lastName" formControlName="lastName" />
           @if (lastNameRef.invalid && (lastNameRef.dirty || lastNameRef.touched)) {
             <div>
-              @if (editForm.get('lastName')?.errors?.required) {
+              @if (lastNameRef.errors?.required) {
                 <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
               }
-              @if (editForm.get('lastName')?.errors?.maxlength) {
+              @if (lastNameRef.errors?.maxlength) {
                 <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '30' }"
                   >This field cannot be longer than 30 characters.</small
                 >
@@ -52,14 +52,14 @@
         </div>
 
         <div class="mb-3">
-          <label for="field_specialties" jhiTranslate="petclinicApp.vetVet.specialties">Specialties</label>
+          <label for="field_specialtieses" jhiTranslate="petclinicApp.vetVet.specialties">Specialties</label>
           <select
-            class="form-control"
-            id="field_specialties"
+            class="form-select"
+            id="field_specialtieses"
             data-cy="specialties"
             multiple
-            name="specialties"
-            formControlName="specialties"
+            name="specialtieses"
+            formControlName="specialtieses"
             [compareWith]="compareSpecialty"
           >
             @for (specialtyOption of specialtiesSharedCollection(); track $index) {
@@ -78,7 +78,7 @@
           type="submit"
           id="save-entity"
           data-cy="entityCreateSaveButton"
-          [disabled]="editForm.invalid || isSaving"
+          [disabled]="editForm.invalid || isSaving()"
           class="btn btn-primary"
         >
           <fa-icon icon="save" />&nbsp;<span jhiTranslate="entity.action.save">Save</span>

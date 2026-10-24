@@ -1,10 +1,10 @@
 # visit
 
-This application was generated using JHipster 9.0.0-beta.0, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0](https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0).
+This application was generated using JHipster 9.4.0, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v9.4.0](https://www.jhipster.tech/documentation-archive/v9.4.0).
 
 This is a "microservice" application intended to be part of a microservice architecture, please refer to the [Doing microservices with JHipster][] page of the documentation for more information.
 
-This application is configured for Service Discovery and Configuration with Consul. On launch, it will refuse to start if it is not able to connect to Consul at [http://localhost:8500](http://localhost:8500). For more information, read our documentation on [Service Discovery and Configuration with Consul][].
+This application is configured for Service Discovery and Configuration with Consul. On launch, it will refuse to start if it is not able to connect to Consul at [http://localhost:8500](http://localhost:8500). For more information, read our documentation on [Consul][https://www.jhipster.tech/documentation-archive/v9.4.0/consul/).
 
 ## Project Structure
 
@@ -25,7 +25,7 @@ In the project root, JHipster generates configuration files for tools like git, 
 
 To start your application in the dev profile, run:
 
-```
+```bash
 ./mvnw
 ```
 
@@ -37,13 +37,13 @@ For further instructions on how to develop with JHipster, have a look at [Using 
 
 To build the final jar and optimize the visit application for production, run:
 
-```
+```bash
 ./mvnw -Pprod clean verify
 ```
 
 To ensure everything worked, run:
 
-```
+```bash
 java -jar target/*.jar
 ```
 
@@ -53,7 +53,7 @@ Refer to [Using JHipster in production][] for more details.
 
 To package your application as a war in order to deploy it to an application server, run:
 
-```
+```bash
 ./mvnw -Pprod,war clean verify
 ```
 
@@ -61,7 +61,7 @@ To package your application as a war in order to deploy it to an application ser
 
 JHipster Control Center can help you manage and control your application(s). You can start a local control center server (accessible on http://localhost:7419) with:
 
-```
+```bash
 docker compose -f src/main/docker/jhipster-control-center.yml up
 ```
 
@@ -71,17 +71,17 @@ docker compose -f src/main/docker/jhipster-control-center.yml up
 
 To launch your application's tests, run:
 
-```
+```bash
 ./mvnw verify
 ```
 
 ### Gatling
 
-Performance tests are run by [Gatling][] and written in Scala. They're located in [src/test/java/gatling/simulations](src/test/java/gatling/simulations).
+Performance tests are run by [Gatling](https://gatling.io/) and written in Scala. They're located in [src/test/java/gatling/simulations](src/test/java/gatling/simulations).
 
 You can execute all Gatling tests with
 
-```
+```bash
 ./mvnw gatling:test
 ```
 
@@ -91,7 +91,7 @@ You can execute all Gatling tests with
 
 Sonar is used to analyse code quality. You can start a local Sonar server (accessible on http://localhost:9001) with:
 
-```
+```bash
 docker compose -f src/main/docker/sonar.yml up -d
 ```
 
@@ -101,19 +101,19 @@ You can run a Sonar analysis with using the [sonar-scanner](https://docs.sonarqu
 
 Then, run a Sonar analysis:
 
-```
+```bash
 ./mvnw -Pprod clean verify sonar:sonar -Dsonar.login=admin -Dsonar.password=admin
 ```
 
 If you need to re-run the Sonar phase, please be sure to specify at least the `initialize` phase since Sonar properties are loaded from the sonar-project.properties file.
 
-```
+```bash
 ./mvnw initialize sonar:sonar -Dsonar.login=admin -Dsonar.password=admin
 ```
 
 Additionally, Instead of passing `sonar.password` and `sonar.login` as CLI arguments, these parameters can be configured from [sonar-project.properties](sonar-project.properties) as shown below:
 
-```
+```bash
 sonar.login=admin
 sonar.password=admin
 ```
@@ -126,17 +126,17 @@ JHipster generates a number of Docker Compose configuration files in the [src/ma
 
 For example, to start required services in Docker containers, run:
 
-```
+```bash
 docker compose -f src/main/docker/services.yml up -d
 ```
 
 To stop and remove the containers, run:
 
-```
+```bash
 docker compose -f src/main/docker/services.yml down
 ```
 
-[Spring Docker Compose Integration](https://docs.spring.io/spring-boot/reference/features/dev-services.html) is enabled by default. It's possible to disable it in application.yml:
+[Spring Docker Compose Integration](https://docs.spring.io/spring-boot/reference/features/dev-services.html) is enabled by default. It's possible to disable it in `application.yml`:
 
 ```yaml
 spring:
@@ -149,38 +149,40 @@ spring:
 You can also fully dockerize your application and all the services that it depends on.
 To achieve this, first build a Docker image of your app by running:
 
-```sh
+```bash
 npm run java:docker
 ```
 
-Or build an arm64 Docker image when using an arm64 processor os like MacOS with M1 processor family running:
+Or build an arm64 Docker image when using an arm64 processor OS, i.e., Apple Silicon chips (M*), running:
 
-```sh
+```bash
 npm run java:docker:arm64
 ```
 
 Then run:
 
-```sh
+```bash
 docker compose -f src/main/docker/app.yml up -d
 ```
 
-For more information refer to [Using Docker and Docker-Compose][], this page also contains information on the Docker Compose sub-generator (`jhipster docker-compose`), which is able to generate Docker configurations for one or several JHipster applications.
+For more information refer to [Docker and Docker-Compose](https://www.jhipster.tech/documentation-archive/v9.4.0/docker-compose/), this page also contains information on the Docker Compose sub-generator (`jhipster docker-compose`), which is able to generate Docker configurations for one or several JHipster applications.
 
 ## Continuous Integration (optional)
 
-To configure CI for your project, run the ci-cd sub-generator (`jhipster ci-cd`), this will let you generate configuration files for a number of Continuous Integration systems. Consult the [Setting up Continuous Integration][] page for more information.
+To configure CI for your project, run the ci-cd sub-generator (`jhipster ci-cd`), this will let you generate configuration files for a number of Continuous Integration systems. Consult the [Setting up Continuous Integration](https://www.jhipster.tech/documentation-archive/v9.4.0/setting-up-ci/) page for more information.
 
-[JHipster Homepage and latest documentation]: https://www.jhipster.tech/
-[JHipster 9.0.0-beta.0 archive]: https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0
-[Doing microservices with JHipster]: https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/microservices-architecture/
-[Using JHipster in development]: https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/development/
-[Service Discovery and Configuration with Consul]: https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/microservices-architecture/#consul
-[Using Docker and Docker-Compose]: https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/docker-compose
-[Using JHipster in production]: https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/production/
-[Running tests page]: https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/running-tests/
-[Code quality page]: https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/code-quality/
-[Setting up Continuous Integration]: https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/setting-up-ci/
-[Node.js]: https://nodejs.org/
-[NPM]: https://www.npmjs.com/
-[Gatling]: https://gatling.io/
+## References
+
+- [JHipster Homepage and latest documentation](https://www.jhipster.tech/)
+- [JHipster 9.4.0 archive](https://www.jhipster.tech/documentation-archive/v9.4.0)
+- [Doing microservices with JHipster](https://www.jhipster.tech/documentation-archive/v9.4.0/microservices-architecture/)
+- [Using JHipster in development](https://www.jhipster.tech/documentation-archive/v9.4.0/development/)
+- [Using Docker and Docker-Compose](https://www.jhipster.tech/documentation-archive/v9.4.0/docker-compose)
+- [Using JHipster in production](https://www.jhipster.tech/documentation-archive/v9.4.0/production/)
+- [Running tests page](https://www.jhipster.tech/documentation-archive/v9.4.0/running-tests/)
+- [Code quality page](https://www.jhipster.tech/documentation-archive/v9.4.0/code-quality/)
+- [Setting up Continuous Integration](https://www.jhipster.tech/documentation-archive/v9.4.0/setting-up-ci/)
+- [Node.js](https://nodejs.org/)
+- [NPM](https://www.npmjs.com/)
+- [Service Discovery and Configuration with Consul](https://www.jhipster.tech/documentation-archive/v9.4.0/microservices-architecture/#consul)
+- [Gatling](https://gatling.io/)

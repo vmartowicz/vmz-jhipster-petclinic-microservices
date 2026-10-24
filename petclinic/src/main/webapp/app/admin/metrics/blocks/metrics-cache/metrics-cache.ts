@@ -1,25 +1,25 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { DecimalPipe, KeyValuePipe } from '@angular/common';
+import { Component, input } from '@angular/core';
 
 import { CacheMetrics } from 'app/admin/metrics/metrics.model';
-import { filterNaN } from 'app/core/util/operators';
-import SharedModule from 'app/shared/shared.module';
+import { filterNaN } from 'app/core/util';
+import { TranslateDirective } from 'app/shared/language';
 
 @Component({
   selector: 'jhi-metrics-cache',
   templateUrl: './metrics-cache.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SharedModule],
+  imports: [KeyValuePipe, DecimalPipe, TranslateDirective],
 })
 export class MetricsCache {
   /**
    * Object containing all cache related metrics
    */
-  cacheMetrics = input<Record<string, CacheMetrics>>();
+  readonly cacheMetrics = input<Record<string, CacheMetrics>>();
 
   /**
    * Boolean field saying if the metrics are in the process of being updated
    */
-  updating = input<boolean>();
+  readonly updating = input<boolean>();
 
-  filterNaN = (n: number): number => filterNaN(n);
+  filterNaN = filterNaN;
 }

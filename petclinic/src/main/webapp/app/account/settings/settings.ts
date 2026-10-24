@@ -1,22 +1,22 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
-import { LANGUAGES } from 'app/config/language.constants';
-import { Account } from 'app/core/auth/account.model';
-import { AccountService } from 'app/core/auth/account.service';
-import SharedModule from 'app/shared/shared.module';
+import { LANGUAGES } from 'app/config';
+import { Account, AccountService } from 'app/core/auth';
+import { AlertError } from 'app/shared/alert';
+import { FindLanguageFromKeyPipe, TranslateDirective } from 'app/shared/language';
 
 const initialAccount: Account = {} as Account;
 
 @Component({
   selector: 'jhi-settings',
-  imports: [SharedModule, ReactiveFormsModule],
+  imports: [TranslateDirective, TranslatePipe, FindLanguageFromKeyPipe, AlertError, ReactiveFormsModule],
   templateUrl: './settings.html',
 })
 export default class Settings implements OnInit {
-  success = signal(false);
+  readonly success = signal(false);
   languages = LANGUAGES;
 
   settingsForm = new FormGroup({
@@ -33,7 +33,6 @@ export default class Settings implements OnInit {
       validators: [Validators.required, Validators.minLength(5), Validators.maxLength(254), Validators.email],
     }),
     langKey: new FormControl(initialAccount.langKey, { nonNullable: true }),
-
     activated: new FormControl(initialAccount.activated, { nonNullable: true }),
     authorities: new FormControl(initialAccount.authorities, { nonNullable: true }),
     imageUrl: new FormControl(initialAccount.imageUrl, { nonNullable: true }),

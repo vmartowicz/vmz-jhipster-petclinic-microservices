@@ -1,12 +1,13 @@
-import { HttpResponse } from '@angular/common/http';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
-import { Observable } from 'rxjs';
-import { finalize } from 'rxjs/operators';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgbInputDatepicker } from '@ng-bootstrap/ng-bootstrap/datepicker';
+import { Observable, finalize } from 'rxjs';
 
-import SharedModule from 'app/shared/shared.module';
+import { AlertError } from 'app/shared/alert';
+import { TranslateDirective } from 'app/shared/language';
 import { VisitService } from '../service/visit.service';
 import { IVisit } from '../visit.model';
 
@@ -15,10 +16,10 @@ import { VisitFormGroup, VisitFormService } from './visit-form.service';
 @Component({
   selector: 'jhi-visit-update',
   templateUrl: './visit-update.html',
-  imports: [SharedModule, ReactiveFormsModule],
+  imports: [TranslateDirective, FontAwesomeModule, AlertError, ReactiveFormsModule, NgbInputDatepicker],
 })
 export class VisitUpdate implements OnInit {
-  isSaving = false;
+  readonly isSaving = signal(false);
   visit: IVisit | null = null;
 
   protected visitService = inject(VisitService);
@@ -42,7 +43,7 @@ export class VisitUpdate implements OnInit {
   }
 
   save(): void {
-    this.isSaving = true;
+    this.isSaving.set(true);
     const visit = this.visitFormService.getVisit(this.editForm);
     if (visit.id === null) {
       this.subscribeToSaveResponse(this.visitService.create(visit));
@@ -51,7 +52,7 @@ export class VisitUpdate implements OnInit {
     }
   }
 
-  protected subscribeToSaveResponse(result: Observable<HttpResponse<IVisit>>): void {
+  protected subscribeToSaveResponse(result: Observable<IVisit | null>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(),
       error: () => this.onSaveError(),
@@ -67,7 +68,7 @@ export class VisitUpdate implements OnInit {
   }
 
   protected onSaveFinalize(): void {
-    this.isSaving = false;
+    this.isSaving.set(false);
   }
 
   protected updateForm(visit: IVisit): void {

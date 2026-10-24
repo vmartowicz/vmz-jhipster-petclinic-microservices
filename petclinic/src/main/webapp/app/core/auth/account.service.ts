@@ -1,41 +1,36 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, Signal, inject, signal } from '@angular/core';
+import { Service, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, ReplaySubject, of } from 'rxjs';
-import { catchError, shareReplay, tap } from 'rxjs/operators';
+import { Observable, catchError, of, shareReplay, tap } from 'rxjs';
 
-import { Account } from 'app/core/auth/account.model';
-import { StateStorageService } from 'app/core/auth/state-storage.service';
-import { ApplicationConfigService } from '../config/application-config.service';
+import { serverApiUrl } from 'app/config';
 
-@Injectable({ providedIn: 'root' })
+import { Account } from './account.model';
+import { StateStorageService } from './state-storage.service';
+
+@Service()
 export class AccountService {
   private readonly userIdentity = signal<Account | null>(null);
-  private readonly authenticationState = new ReplaySubject<Account | null>(1);
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  readonly account = this.userIdentity.asReadonly();
   private accountCache$?: Observable<Account> | null;
 
   private readonly translateService = inject(TranslateService);
   private readonly http = inject(HttpClient);
   private readonly stateStorageService = inject(StateStorageService);
   private readonly router = inject(Router);
-  private readonly applicationConfigService = inject(ApplicationConfigService);
 
   save(account: Account): Observable<{}> {
-    return this.http.post(this.applicationConfigService.getEndpointFor('api/account'), account);
+    return this.http.post(`${serverApiUrl}api/account`, account);
   }
 
   authenticate(identity: Account | null): void {
     this.userIdentity.set(identity);
-    this.authenticationState.next(this.userIdentity());
     if (!identity) {
       this.accountCache$ = null;
     }
-  }
-
-  trackCurrentAccount(): Signal<Account | null> {
-    return this.userIdentity.asReadonly();
   }
 
   hasAnyAuthority(authorities: string[] | string): boolean {
@@ -74,12 +69,8 @@ export class AccountService {
     return this.userIdentity() !== null;
   }
 
-  getAuthenticationState(): Observable<Account | null> {
-    return this.authenticationState.asObservable();
-  }
-
   private fetch(): Observable<Account> {
-    return this.http.get<Account>(this.applicationConfigService.getEndpointFor('api/account'));
+    return this.http.get<Account>(`${serverApiUrl}api/account`);
   }
 
   private navigateToStoredUrl(): void {

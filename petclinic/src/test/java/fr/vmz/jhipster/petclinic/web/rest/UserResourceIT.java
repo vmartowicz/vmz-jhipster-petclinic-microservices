@@ -2,14 +2,13 @@ package fr.vmz.jhipster.petclinic.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.vmz.jhipster.petclinic.IntegrationTest;
 import fr.vmz.jhipster.petclinic.config.Constants;
 import fr.vmz.jhipster.petclinic.domain.User;
 import fr.vmz.jhipster.petclinic.repository.AuthorityRepository;
-import fr.vmz.jhipster.petclinic.repository.EntityManager;
 import fr.vmz.jhipster.petclinic.repository.UserRepository;
 import fr.vmz.jhipster.petclinic.security.AuthoritiesConstants;
+import fr.vmz.jhipster.petclinic.service.UserService;
 import fr.vmz.jhipster.petclinic.service.dto.AdminUserDTO;
 import fr.vmz.jhipster.petclinic.service.mapper.UserMapper;
 import java.util.*;
@@ -19,10 +18,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Integration tests for the {@link UserResource} REST controller.
@@ -59,18 +60,23 @@ class UserResourceIT {
     private UserRepository userRepository;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private AuthorityRepository authorityRepository;
 
     @Autowired
     private UserMapper userMapper;
 
     @Autowired
-    private EntityManager em;
+    private R2dbcEntityTemplate template;
 
     @Autowired
     private WebTestClient webTestClient;
 
     private User user;
+
+    private Long numberOfUsers;
 
     /**
      * Create a User.
@@ -95,7 +101,7 @@ class UserResourceIT {
     /**
      * Delete all the users from the database.
      */
-    public static void deleteEntities(EntityManager em) {}
+    public static void deleteEntities(R2dbcEntityTemplate template) {}
 
     /**
      * Setups the database with one user.
@@ -109,13 +115,18 @@ class UserResourceIT {
 
     @BeforeEach
     void initTest() {
+        numberOfUsers = userRepository.count().block();
         user = initTestUser();
     }
 
     @AfterEach
     void cleanupAndCheck() {
-        userRepository.deleteAllUserAuthorities().block();
-        userRepository.deleteAll().block();
+        userService.deleteUser(DEFAULT_LOGIN).block();
+        userService.deleteUser(UPDATED_LOGIN).block();
+        userService.deleteUser(user.getLogin()).block();
+        userService.deleteUser("anotherlogin").block();
+        assertThat(userRepository.count().block()).isEqualTo(numberOfUsers);
+        numberOfUsers = null;
     }
 
     @Test
@@ -129,7 +140,7 @@ class UserResourceIT {
         userDTO.setActivated(true);
         userDTO.setImageUrl(DEFAULT_IMAGEURL);
         userDTO.setLangKey(DEFAULT_LANGKEY);
-        userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+        userDTO.setAuthorities(Set.of(AuthoritiesConstants.USER));
 
         var returnedUserDTO = webTestClient
             .post()
@@ -166,7 +177,7 @@ class UserResourceIT {
         userDTO.setActivated(true);
         userDTO.setImageUrl(DEFAULT_IMAGEURL);
         userDTO.setLangKey(DEFAULT_LANGKEY);
-        userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+        userDTO.setAuthorities(Set.of(AuthoritiesConstants.USER));
 
         // An entity with an existing ID cannot be created, so this API call must fail
         webTestClient
@@ -196,7 +207,7 @@ class UserResourceIT {
         userDTO.setActivated(true);
         userDTO.setImageUrl(DEFAULT_IMAGEURL);
         userDTO.setLangKey(DEFAULT_LANGKEY);
-        userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+        userDTO.setAuthorities(Set.of(AuthoritiesConstants.USER));
 
         // Create the User
         webTestClient
@@ -226,7 +237,7 @@ class UserResourceIT {
         userDTO.setActivated(true);
         userDTO.setImageUrl(DEFAULT_IMAGEURL);
         userDTO.setLangKey(DEFAULT_LANGKEY);
-        userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+        userDTO.setAuthorities(Set.of(AuthoritiesConstants.USER));
 
         // Create the User
         webTestClient
@@ -324,7 +335,7 @@ class UserResourceIT {
         userDTO.setCreatedDate(updatedUser.getCreatedDate());
         userDTO.setLastModifiedBy(updatedUser.getLastModifiedBy());
         userDTO.setLastModifiedDate(updatedUser.getLastModifiedDate());
-        userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+        userDTO.setAuthorities(Set.of(AuthoritiesConstants.USER));
 
         webTestClient
             .put()
@@ -373,7 +384,7 @@ class UserResourceIT {
         userDTO.setCreatedDate(updatedUser.getCreatedDate());
         userDTO.setLastModifiedBy(updatedUser.getLastModifiedBy());
         userDTO.setLastModifiedDate(updatedUser.getLastModifiedDate());
-        userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+        userDTO.setAuthorities(Set.of(AuthoritiesConstants.USER));
 
         webTestClient
             .put()
@@ -434,7 +445,7 @@ class UserResourceIT {
         userDTO.setCreatedDate(updatedUser.getCreatedDate());
         userDTO.setLastModifiedBy(updatedUser.getLastModifiedBy());
         userDTO.setLastModifiedDate(updatedUser.getLastModifiedDate());
-        userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+        userDTO.setAuthorities(Set.of(AuthoritiesConstants.USER));
 
         webTestClient
             .put()
@@ -479,7 +490,7 @@ class UserResourceIT {
         userDTO.setCreatedDate(updatedUser.getCreatedDate());
         userDTO.setLastModifiedBy(updatedUser.getLastModifiedBy());
         userDTO.setLastModifiedDate(updatedUser.getLastModifiedDate());
-        userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+        userDTO.setAuthorities(Set.of(AuthoritiesConstants.USER));
 
         webTestClient
             .put()

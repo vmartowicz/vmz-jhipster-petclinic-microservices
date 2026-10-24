@@ -71,12 +71,14 @@ public class VetQueryService extends QueryService<Vet> {
         Specification<Vet> specification = Specification.unrestricted();
         if (criteria != null) {
             // This has to be called first, because the distinct method returns null
-            specification = Specification.allOf(
-                Boolean.TRUE.equals(criteria.getDistinct()) ? distinct(criteria.getDistinct()) : null,
-                buildRangeSpecification(criteria.getId(), Vet_.id),
-                buildStringSpecification(criteria.getFirstName(), Vet_.firstName),
-                buildStringSpecification(criteria.getLastName(), Vet_.lastName),
-                buildSpecification(criteria.getSpecialtiesId(), root -> root.join(Vet_.specialties, JoinType.LEFT).get(Specialty_.id))
+            specification = specification.and(
+                Specification.allOf(
+                    Boolean.TRUE.equals(criteria.getDistinct()) ? distinct(criteria.getDistinct()) : Specification.unrestricted(),
+                    buildRangeSpecification(criteria.getId(), Vet_.id),
+                    buildStringSpecification(criteria.getFirstName(), Vet_.firstName),
+                    buildStringSpecification(criteria.getLastName(), Vet_.lastName),
+                    buildSpecification(criteria.getSpecialtiesId(), root -> root.join(Vet_.specialtieses, JoinType.LEFT).get(Specialty_.id))
+                )
             );
         }
         return specification;

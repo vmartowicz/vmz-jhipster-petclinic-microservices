@@ -1,7 +1,10 @@
+import { JsonPipe, KeyValuePipe } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-import SharedModule from 'app/shared/shared.module';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
+import { TranslateDirective } from 'app/shared/language';
 import { SortByDirective, SortDirective, SortService, sortStateSignal } from 'app/shared/sort';
 
 import { Bean, PropertySource } from './configuration.model';
@@ -10,14 +13,14 @@ import { ConfigurationService } from './configuration.service';
 @Component({
   selector: 'jhi-configuration',
   templateUrl: './configuration.html',
-  imports: [SharedModule, FormsModule, SortDirective, SortByDirective],
+  imports: [FontAwesomeModule, FormsModule, SortDirective, SortByDirective, KeyValuePipe, JsonPipe, TranslateDirective],
 })
 export default class Configuration implements OnInit {
-  allBeans = signal<Bean[] | undefined>(undefined);
-  beansFilter = signal<string>('');
-  propertySources = signal<PropertySource[]>([]);
+  readonly allBeans = signal<Bean[] | undefined>(undefined);
+  readonly beansFilter = signal('');
+  readonly propertySources = signal<PropertySource[]>([]);
   sortState = sortStateSignal({ predicate: 'prefix', order: 'asc' });
-  beans = computed(() => {
+  readonly beans = computed(() => {
     let data = this.allBeans() ?? [];
     const beansFilter = this.beansFilter();
     if (beansFilter) {

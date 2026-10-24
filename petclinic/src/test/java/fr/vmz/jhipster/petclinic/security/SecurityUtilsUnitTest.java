@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,7 +21,7 @@ import reactor.util.context.Context;
 class SecurityUtilsUnitTest {
 
     @Test
-    void testgetCurrentUserLogin() {
+    void testGetCurrentUserLogin() {
         String login = SecurityUtils.getCurrentUserLogin()
             .contextWrite(ReactiveSecurityContextHolder.withAuthentication(new UsernamePasswordAuthenticationToken("admin", "admin")))
             .block();
@@ -28,11 +29,35 @@ class SecurityUtilsUnitTest {
     }
 
     @Test
-    void testgetCurrentUserJWT() {
+    void testGetCurrentUserLoginForAnonymousUser() {
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(AuthoritiesConstants.ANONYMOUS));
+        String login = SecurityUtils.getCurrentUserLogin()
+            .contextWrite(
+                ReactiveSecurityContextHolder.withAuthentication(new AnonymousAuthenticationToken("key", "anonymousUser", authorities))
+            )
+            .block();
+        assertThat(login).isNull();
+    }
+
+    @Test
+    void testGetCurrentUserJWT() {
         String jwt = SecurityUtils.getCurrentUserJWT()
             .contextWrite(ReactiveSecurityContextHolder.withAuthentication(new UsernamePasswordAuthenticationToken("admin", "token")))
             .block();
         assertThat(jwt).isEqualTo("token");
+    }
+
+    @Test
+    void testGetCurrentUserJWTFromJwtCredentials() {
+        var now = Instant.now();
+        var jwt = Jwt.withTokenValue("token").issuedAt(now).expiresAt(now.plusSeconds(60)).header("Test", "test").build();
+
+        String currentUserJwt = SecurityUtils.getCurrentUserJWT()
+            .contextWrite(ReactiveSecurityContextHolder.withAuthentication(new UsernamePasswordAuthenticationToken("admin", jwt)))
+            .block();
+
+        assertThat(currentUserJwt).isEqualTo("token");
     }
 
     @Test

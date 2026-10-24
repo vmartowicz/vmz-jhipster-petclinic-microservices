@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { IVet, NewVet } from '../vet.model';
@@ -14,24 +14,25 @@ type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>
  */
 type VetFormGroupInput = IVet | PartialWithRequiredKeyOf<NewVet>;
 
-type VetFormDefaults = Pick<NewVet, 'id' | 'specialties'>;
+type VetFormDefaults = Pick<NewVet, 'id' | 'specialtieses'>;
 
 type VetFormGroupContent = {
   id: FormControl<IVet['id'] | NewVet['id']>;
   firstName: FormControl<IVet['firstName']>;
   lastName: FormControl<IVet['lastName']>;
-  specialties: FormControl<IVet['specialties']>;
+  specialtieses: FormControl<IVet['specialtieses']>;
 };
 
 export type VetFormGroup = FormGroup<VetFormGroupContent>;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class VetFormService {
   createVetFormGroup(vet?: VetFormGroupInput): VetFormGroup {
     const vetRawValue = {
       ...this.getFormDefaults(),
       ...(vet ?? { id: null }),
     };
+
     return new FormGroup<VetFormGroupContent>({
       id: new FormControl(
         { value: vetRawValue.id, disabled: true },
@@ -46,12 +47,12 @@ export class VetFormService {
       lastName: new FormControl(vetRawValue.lastName, {
         validators: [Validators.required, Validators.maxLength(30)],
       }),
-      specialties: new FormControl(vetRawValue.specialties ?? []),
+      specialtieses: new FormControl(vetRawValue.specialtieses ?? []),
     });
   }
 
   getVet(form: VetFormGroup): IVet | NewVet {
-    return form.getRawValue() as IVet | NewVet;
+    return form.getRawValue();
   }
 
   resetForm(form: VetFormGroup, vet: VetFormGroupInput): void {
@@ -65,7 +66,7 @@ export class VetFormService {
   private getFormDefaults(): VetFormDefaults {
     return {
       id: null,
-      specialties: [],
+      specialtieses: [],
     };
   }
 }

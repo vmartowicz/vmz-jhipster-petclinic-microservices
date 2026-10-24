@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { ISpecialty, NewSpecialty } from '../specialty.model';
@@ -14,23 +14,24 @@ type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>
  */
 type SpecialtyFormGroupInput = ISpecialty | PartialWithRequiredKeyOf<NewSpecialty>;
 
-type SpecialtyFormDefaults = Pick<NewSpecialty, 'id' | 'vets'>;
+type SpecialtyFormDefaults = Pick<NewSpecialty, 'id' | 'vetses'>;
 
 type SpecialtyFormGroupContent = {
   id: FormControl<ISpecialty['id'] | NewSpecialty['id']>;
   name: FormControl<ISpecialty['name']>;
-  vets: FormControl<ISpecialty['vets']>;
+  vetses: FormControl<ISpecialty['vetses']>;
 };
 
 export type SpecialtyFormGroup = FormGroup<SpecialtyFormGroupContent>;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class SpecialtyFormService {
   createSpecialtyFormGroup(specialty?: SpecialtyFormGroupInput): SpecialtyFormGroup {
     const specialtyRawValue = {
       ...this.getFormDefaults(),
       ...(specialty ?? { id: null }),
     };
+
     return new FormGroup<SpecialtyFormGroupContent>({
       id: new FormControl(
         { value: specialtyRawValue.id, disabled: true },
@@ -42,12 +43,12 @@ export class SpecialtyFormService {
       name: new FormControl(specialtyRawValue.name, {
         validators: [Validators.required, Validators.maxLength(80)],
       }),
-      vets: new FormControl(specialtyRawValue.vets ?? []),
+      vetses: new FormControl(specialtyRawValue.vetses ?? []),
     });
   }
 
   getSpecialty(form: SpecialtyFormGroup): ISpecialty | NewSpecialty {
-    return form.getRawValue() as ISpecialty | NewSpecialty;
+    return form.getRawValue();
   }
 
   resetForm(form: SpecialtyFormGroup, specialty: SpecialtyFormGroupInput): void {
@@ -61,7 +62,7 @@ export class SpecialtyFormService {
   private getFormDefaults(): SpecialtyFormDefaults {
     return {
       id: null,
-      vets: [],
+      vetses: [],
     };
   }
 }

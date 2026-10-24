@@ -33,10 +33,10 @@ public class Specialty implements Serializable {
     @Column(name = "name", length = 80, nullable = false)
     private String name;
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "specialties")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "specialtieses")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnoreProperties(value = { "specialties" }, allowSetters = true)
-    private Set<Vet> vets = new HashSet<>();
+    @JsonIgnoreProperties(value = { "specialtieses" }, allowSetters = true)
+    private Set<Vet> vetses = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -66,34 +66,34 @@ public class Specialty implements Serializable {
         this.name = name;
     }
 
-    public Set<Vet> getVets() {
-        return this.vets;
+    public Set<Vet> getVetses() {
+        return this.vetses;
     }
 
-    public void setVets(Set<Vet> vets) {
-        if (this.vets != null) {
-            this.vets.forEach(i -> i.removeSpecialties(this));
+    public void setVetses(Set<Vet> vets) {
+        if (this.vetses != null) {
+            this.vetses.forEach(i -> i.removeSpecialties(this));
         }
         if (vets != null) {
             vets.forEach(i -> i.addSpecialties(this));
         }
-        this.vets = vets;
+        this.vetses = vets;
     }
 
-    public Specialty vets(Set<Vet> vets) {
-        this.setVets(vets);
+    public Specialty vetses(Set<Vet> vets) {
+        this.setVetses(vets);
         return this;
     }
 
     public Specialty addVets(Vet vet) {
-        this.vets.add(vet);
-        vet.getSpecialties().add(this);
+        this.vetses.add(vet);
+        vet.getSpecialtieses().add(this);
         return this;
     }
 
     public Specialty removeVets(Vet vet) {
-        this.vets.remove(vet);
-        vet.getSpecialties().remove(this);
+        this.vetses.remove(vet);
+        vet.getSpecialtieses().remove(this);
         return this;
     }
 
