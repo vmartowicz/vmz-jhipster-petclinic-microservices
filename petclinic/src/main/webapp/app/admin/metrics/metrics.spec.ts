@@ -1,24 +1,21 @@
-import { provideHttpClient } from '@angular/common/http';
-import { ChangeDetectorRef } from '@angular/core';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 
 import Metrics from './metrics';
-import { MetricsModel, Thread, ThreadDump } from './metrics.model';
+import { MetricsModel, Thread } from './metrics.model';
 import { MetricsService } from './metrics.service';
 
 describe('Metrics', () => {
   let comp: Metrics;
   let fixture: ComponentFixture<Metrics>;
   let service: MetricsService;
-  let changeDetector: ChangeDetectorRef;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
-      providers: [provideHttpClient()],
+      providers: [provideTranslateService()],
     });
   });
 
@@ -26,10 +23,9 @@ describe('Metrics', () => {
     fixture = TestBed.createComponent(Metrics);
     comp = fixture.componentInstance;
     service = TestBed.inject(MetricsService);
-    changeDetector = fixture.debugElement.injector.get(ChangeDetectorRef);
   });
 
-  describe('refresh', () => {
+  describe('ngOnInit', () => {
     it('should call refresh on init', () => {
       // GIVEN
       const metrics = {
@@ -44,11 +40,10 @@ describe('Metrics', () => {
           },
         },
       } as unknown as MetricsModel;
-      const threadDump = { threads: [{ threadName: 'thread 1' } as Thread] } as ThreadDump;
+      const threadDump = { threads: [{ threadName: 'thread 1' } as Thread] };
 
-      jest.spyOn(service, 'getMetrics').mockReturnValue(of(metrics));
-      jest.spyOn(service, 'threadDump').mockReturnValue(of(threadDump));
-      jest.spyOn(changeDetector.constructor.prototype, 'markForCheck');
+      vi.spyOn(service, 'getMetrics').mockReturnValue(of(metrics));
+      vi.spyOn(service, 'threadDump').mockReturnValue(of(threadDump));
 
       // WHEN
       comp.ngOnInit();
@@ -58,7 +53,6 @@ describe('Metrics', () => {
       expect(comp.metrics()).toEqual(metrics);
       expect(comp.threads()).toEqual(threadDump.threads);
       expect(comp.updatingMetrics()).toBeFalsy();
-      expect(changeDetector.constructor.prototype.markForCheck).toHaveBeenCalled();
     });
   });
 

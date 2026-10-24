@@ -34,10 +34,10 @@ spring:
       enabled: true
       additional-exclude: static/**,.h2.server.properties
     livereload:
-      enabled: false # we use Webpack dev server + BrowserSync for livereload
+      enabled: false # we use bundler for livereload
   docker:
     compose:
-      enabled: false
+      enabled: true
       profiles:
         active: dev
   jackson:
@@ -62,8 +62,6 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:h2:file:./target/h2db/db/vet;DB_CLOSE_DELAY=-1
-    username: vet
-    password:
     hikari:
       poolName: Hikari
       auto-commit: false
@@ -107,8 +105,6 @@ jhipster:
   security:
     authentication:
       jwt:
-        # This token must be encoded using Base64 and be at least 256 bits long (you can type `openssl rand -base64 64` on your command line to generate a 512 bits one)
-        base64-secret: ZjIwMzZmNTE2M2Y1MTBiZmZiYjllMDNhNTZhMDkzNDYwY2I0ZGRhMWQ3YWE0ZjgzZTA5NDZjN2M2NGJhOTY3MGIwYThjNGJiOWQyMjRmYzljMjlkZWZiOGY1ZGMwYzNhNmE1ZjgzMDgyODFhNDNiMzk2YTNkOWZiMzYzZGQ1NDU=
         # Token is valid 24 hours
         token-validity-in-seconds: 86400
         token-validity-in-seconds-for-remember-me: 2592000

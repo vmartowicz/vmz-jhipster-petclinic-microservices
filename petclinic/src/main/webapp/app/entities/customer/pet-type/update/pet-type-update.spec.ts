@@ -1,9 +1,9 @@
-import { HttpResponse, provideHttpClient } from '@angular/common/http';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { Subject, from, of } from 'rxjs';
 
 import { IPetType } from '../pet-type.model';
@@ -21,9 +21,8 @@ describe('PetType Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
       providers: [
-        provideHttpClient(),
+        provideTranslateService(),
         provideHttpClientTesting(),
         {
           provide: ActivatedRoute,
@@ -56,67 +55,67 @@ describe('PetType Management Update Component', () => {
   describe('save', () => {
     it('should call update service on save for existing entity', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<IPetType>>();
+      const saveSubject = new Subject<IPetType>();
       const petType = { id: 13878 };
-      jest.spyOn(petTypeFormService, 'getPetType').mockReturnValue(petType);
-      jest.spyOn(petTypeService, 'update').mockReturnValue(saveSubject);
-      jest.spyOn(comp, 'previousState');
+      vi.spyOn(petTypeFormService, 'getPetType').mockReturnValue(petType);
+      vi.spyOn(petTypeService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ petType });
       comp.ngOnInit();
 
       // WHEN
       comp.save();
-      expect(comp.isSaving).toEqual(true);
-      saveSubject.next(new HttpResponse({ body: petType }));
+      expect(comp.isSaving()).toEqual(true);
+      saveSubject.next(petType);
       saveSubject.complete();
 
       // THEN
       expect(petTypeFormService.getPetType).toHaveBeenCalled();
       expect(comp.previousState).toHaveBeenCalled();
       expect(petTypeService.update).toHaveBeenCalledWith(expect.objectContaining(petType));
-      expect(comp.isSaving).toEqual(false);
+      expect(comp.isSaving()).toEqual(false);
     });
 
     it('should call create service on save for new entity', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<IPetType>>();
+      const saveSubject = new Subject<IPetType>();
       const petType = { id: 13878 };
-      jest.spyOn(petTypeFormService, 'getPetType').mockReturnValue({ id: null });
-      jest.spyOn(petTypeService, 'create').mockReturnValue(saveSubject);
-      jest.spyOn(comp, 'previousState');
+      vi.spyOn(petTypeFormService, 'getPetType').mockReturnValue({ id: null });
+      vi.spyOn(petTypeService, 'create').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ petType: null });
       comp.ngOnInit();
 
       // WHEN
       comp.save();
-      expect(comp.isSaving).toEqual(true);
-      saveSubject.next(new HttpResponse({ body: petType }));
+      expect(comp.isSaving()).toEqual(true);
+      saveSubject.next(petType);
       saveSubject.complete();
 
       // THEN
       expect(petTypeFormService.getPetType).toHaveBeenCalled();
       expect(petTypeService.create).toHaveBeenCalled();
-      expect(comp.isSaving).toEqual(false);
+      expect(comp.isSaving()).toEqual(false);
       expect(comp.previousState).toHaveBeenCalled();
     });
 
     it('should set isSaving to false on error', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<IPetType>>();
+      const saveSubject = new Subject<IPetType>();
       const petType = { id: 13878 };
-      jest.spyOn(petTypeService, 'update').mockReturnValue(saveSubject);
-      jest.spyOn(comp, 'previousState');
+      vi.spyOn(petTypeService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ petType });
       comp.ngOnInit();
 
       // WHEN
       comp.save();
-      expect(comp.isSaving).toEqual(true);
+      expect(comp.isSaving()).toEqual(true);
       saveSubject.error('This is an error!');
 
       // THEN
       expect(petTypeService.update).toHaveBeenCalled();
-      expect(comp.isSaving).toEqual(false);
+      expect(comp.isSaving()).toEqual(false);
       expect(comp.previousState).not.toHaveBeenCalled();
     });
   });

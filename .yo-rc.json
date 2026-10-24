@@ -2,6 +2,7 @@
   "generator-jhipster": {
     "appsFolders": ["petclinic", "customer", "vet", "visit"],
     "baseName": "workspaces",
+    "defaultCommand": "workspaces",
     "deploymentType": "none",
     "directoryPath": "./",
     "jhipsterVersion": "9.0.0-beta.0"

@@ -8,7 +8,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.vmz.jhipster.petclinic.vet.IntegrationTest;
 import fr.vmz.jhipster.petclinic.vet.domain.Specialty;
 import fr.vmz.jhipster.petclinic.vet.domain.Vet;
@@ -27,13 +26,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Integration tests for the {@link VetResource} REST controller.
@@ -53,8 +53,8 @@ class VetResourceIT {
     private static final String ENTITY_API_URL = "/api/vets";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
-    private static Random random = new Random();
-    private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2L * Integer.MAX_VALUE));
+    private static final Random random = new Random();
+    private static final AtomicLong longCount = new AtomicLong(random.nextInt() + 2L * Integer.MAX_VALUE);
 
     @Autowired
     private ObjectMapper om;
@@ -362,7 +362,7 @@ class VetResourceIT {
             vetRepository.saveAndFlush(vet);
             specialties = SpecialtyResourceIT.createEntity();
         } else {
-            specialties = TestUtil.findAll(em, Specialty.class).get(0);
+            specialties = TestUtil.findAll(em, Specialty.class).getFirst();
         }
         em.persist(specialties);
         em.flush();

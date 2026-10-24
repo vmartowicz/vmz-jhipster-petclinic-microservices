@@ -1,24 +1,24 @@
-import { Component, Injector, OnInit, Signal, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { Account } from 'app/core/auth/account.model';
-import { AccountService } from 'app/core/auth/account.service';
-import SharedModule from 'app/shared/shared.module';
+import { TranslatePipe } from '@ngx-translate/core';
+
+import { AccountService } from 'app/core/auth';
+import { TranslateDirective } from 'app/shared/language';
 
 import PasswordStrengthBar from './password-strength-bar/password-strength-bar';
 import { PasswordService } from './password.service';
 
 @Component({
   selector: 'jhi-password',
-  imports: [SharedModule, ReactiveFormsModule, PasswordStrengthBar],
+  imports: [TranslateDirective, TranslatePipe, ReactiveFormsModule, PasswordStrengthBar],
   templateUrl: './password.html',
 })
-export default class Password implements OnInit {
-  doNotMatch = signal(false);
-  error = signal(false);
-  success = signal(false);
-  account?: Signal<Account | undefined | null>;
+export default class Password {
+  readonly doNotMatch = signal(false);
+  readonly error = signal(false);
+  readonly success = signal(false);
+  readonly account = inject(AccountService).account;
   passwordForm = new FormGroup({
     currentPassword: new FormControl('', { nonNullable: true, validators: Validators.required }),
     newPassword: new FormControl('', {
@@ -32,13 +32,6 @@ export default class Password implements OnInit {
   });
 
   private readonly passwordService = inject(PasswordService);
-  private readonly accountService = inject(AccountService);
-  private readonly injector = inject(Injector);
-
-  ngOnInit(): void {
-    const account$ = this.accountService.identity();
-    this.account = toSignal(account$, { injector: this.injector });
-  }
 
   changePassword(): void {
     this.error.set(false);

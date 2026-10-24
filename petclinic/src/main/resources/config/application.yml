@@ -124,7 +124,7 @@ spring:
               predicates:
                 - name: Path
                   args:
-                    pattern: "'/services/'+serviceId.toLowerCase()+'/**'"
+                    pattern: "'/services/'+serviceId+'/**'"
               filters:
                 - StripPrefix=2
           httpclient:
@@ -144,7 +144,7 @@ spring:
     active: '@spring.profiles.active@'
     group:
       dev:
-        - dev
+        - secret-samples
         - api-docs
         # Uncomment to activate TLS for the dev profile
         #- tls

@@ -4,6 +4,7 @@ import fr.vmz.jhipster.petclinic.visit.domain.Visit;
 import fr.vmz.jhipster.petclinic.visit.repository.VisitRepository;
 import fr.vmz.jhipster.petclinic.visit.service.VisitService;
 import java.util.Optional;
+import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -43,15 +44,9 @@ public class VisitServiceImpl implements VisitService {
         return visitRepository
             .findById(visit.getId())
             .map(existingVisit -> {
-                if (visit.getVisitDate() != null) {
-                    existingVisit.setVisitDate(visit.getVisitDate());
-                }
-                if (visit.getDescription() != null) {
-                    existingVisit.setDescription(visit.getDescription());
-                }
-                if (visit.getPetId() != null) {
-                    existingVisit.setPetId(visit.getPetId());
-                }
+                updateIfPresent(existingVisit::setVisitDate, visit.getVisitDate());
+                updateIfPresent(existingVisit::setDescription, visit.getDescription());
+                updateIfPresent(existingVisit::setPetId, visit.getPetId());
 
                 return existingVisit;
             })
@@ -69,5 +64,11 @@ public class VisitServiceImpl implements VisitService {
     public void delete(Long id) {
         LOG.debug("Request to delete Visit : {}", id);
         visitRepository.deleteById(id);
+    }
+
+    private <T> void updateIfPresent(Consumer<T> setter, T value) {
+        if (value != null) {
+            setter.accept(value);
+        }
     }
 }

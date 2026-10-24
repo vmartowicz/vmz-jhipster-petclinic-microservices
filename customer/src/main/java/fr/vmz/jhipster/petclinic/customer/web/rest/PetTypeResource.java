@@ -51,7 +51,7 @@ public class PetTypeResource {
      * {@code POST  /pet-types} : Create a new petType.
      *
      * @param petTypeDTO the petTypeDTO to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new petTypeDTO, or with status {@code 400 (Bad Request)} if the petType has already an ID.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new petTypeDTO, or with status {@code 400 (Bad Request)} if the petType already has an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
@@ -115,7 +115,7 @@ public class PetTypeResource {
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody PetTypeDTO petTypeDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update PetType partially : {}, {}", id, petTypeDTO);
+        LOG.debug("REST request to partially update PetType : {}, {}", id, petTypeDTO);
         if (petTypeDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -136,10 +136,10 @@ public class PetTypeResource {
     }
 
     /**
-     * {@code GET  /pet-types} : get all the petTypes.
+     * {@code GET  /pet-types} : get all the Pet Types.
      *
      * @param pageable the pagination information.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of petTypes in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of Pet Types in body.
      */
     @GetMapping("")
     public ResponseEntity<List<PetTypeDTO>> getAllPetTypes(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {

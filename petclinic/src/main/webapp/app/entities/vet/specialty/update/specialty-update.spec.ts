@@ -1,9 +1,10 @@
-import { HttpResponse, provideHttpClient } from '@angular/common/http';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { HttpResponse } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { Subject, from, of } from 'rxjs';
 
 import { VetService } from 'app/entities/vet/vet/service/vet.service';
@@ -24,9 +25,8 @@ describe('Specialty Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
       providers: [
-        provideHttpClient(),
+        provideTranslateService(),
         provideHttpClientTesting(),
         {
           provide: ActivatedRoute,
@@ -49,14 +49,14 @@ describe('Specialty Management Update Component', () => {
   describe('ngOnInit', () => {
     it('should call Vet query and add missing value', () => {
       const specialty: ISpecialty = { id: 20679 };
-      const vets: IVet[] = [{ id: 31928 }];
-      specialty.vets = vets;
+      const vetses: IVet[] = [{ id: 31928 }];
+      specialty.vetses = vetses;
 
       const vetCollection: IVet[] = [{ id: 31928 }];
-      jest.spyOn(vetService, 'query').mockReturnValue(of(new HttpResponse({ body: vetCollection })));
-      const additionalVets = [...vets];
+      vi.spyOn(vetService, 'query').mockReturnValue(of(new HttpResponse({ body: vetCollection })));
+      const additionalVets = [...vetses];
       const expectedCollection: IVet[] = [...additionalVets, ...vetCollection];
-      jest.spyOn(vetService, 'addVetToCollectionIfMissing').mockReturnValue(expectedCollection);
+      vi.spyOn(vetService, 'addVetToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ specialty });
       comp.ngOnInit();
@@ -72,7 +72,7 @@ describe('Specialty Management Update Component', () => {
     it('should update editForm', () => {
       const specialty: ISpecialty = { id: 20679 };
       const vets: IVet = { id: 31928 };
-      specialty.vets = [vets];
+      specialty.vetses = [vets];
 
       activatedRoute.data = of({ specialty });
       comp.ngOnInit();
@@ -85,67 +85,67 @@ describe('Specialty Management Update Component', () => {
   describe('save', () => {
     it('should call update service on save for existing entity', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<ISpecialty>>();
+      const saveSubject = new Subject<ISpecialty>();
       const specialty = { id: 29362 };
-      jest.spyOn(specialtyFormService, 'getSpecialty').mockReturnValue(specialty);
-      jest.spyOn(specialtyService, 'update').mockReturnValue(saveSubject);
-      jest.spyOn(comp, 'previousState');
+      vi.spyOn(specialtyFormService, 'getSpecialty').mockReturnValue(specialty);
+      vi.spyOn(specialtyService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ specialty });
       comp.ngOnInit();
 
       // WHEN
       comp.save();
-      expect(comp.isSaving).toEqual(true);
-      saveSubject.next(new HttpResponse({ body: specialty }));
+      expect(comp.isSaving()).toEqual(true);
+      saveSubject.next(specialty);
       saveSubject.complete();
 
       // THEN
       expect(specialtyFormService.getSpecialty).toHaveBeenCalled();
       expect(comp.previousState).toHaveBeenCalled();
       expect(specialtyService.update).toHaveBeenCalledWith(expect.objectContaining(specialty));
-      expect(comp.isSaving).toEqual(false);
+      expect(comp.isSaving()).toEqual(false);
     });
 
     it('should call create service on save for new entity', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<ISpecialty>>();
+      const saveSubject = new Subject<ISpecialty>();
       const specialty = { id: 29362 };
-      jest.spyOn(specialtyFormService, 'getSpecialty').mockReturnValue({ id: null });
-      jest.spyOn(specialtyService, 'create').mockReturnValue(saveSubject);
-      jest.spyOn(comp, 'previousState');
+      vi.spyOn(specialtyFormService, 'getSpecialty').mockReturnValue({ id: null });
+      vi.spyOn(specialtyService, 'create').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ specialty: null });
       comp.ngOnInit();
 
       // WHEN
       comp.save();
-      expect(comp.isSaving).toEqual(true);
-      saveSubject.next(new HttpResponse({ body: specialty }));
+      expect(comp.isSaving()).toEqual(true);
+      saveSubject.next(specialty);
       saveSubject.complete();
 
       // THEN
       expect(specialtyFormService.getSpecialty).toHaveBeenCalled();
       expect(specialtyService.create).toHaveBeenCalled();
-      expect(comp.isSaving).toEqual(false);
+      expect(comp.isSaving()).toEqual(false);
       expect(comp.previousState).toHaveBeenCalled();
     });
 
     it('should set isSaving to false on error', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<ISpecialty>>();
+      const saveSubject = new Subject<ISpecialty>();
       const specialty = { id: 29362 };
-      jest.spyOn(specialtyService, 'update').mockReturnValue(saveSubject);
-      jest.spyOn(comp, 'previousState');
+      vi.spyOn(specialtyService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ specialty });
       comp.ngOnInit();
 
       // WHEN
       comp.save();
-      expect(comp.isSaving).toEqual(true);
+      expect(comp.isSaving()).toEqual(true);
       saveSubject.error('This is an error!');
 
       // THEN
       expect(specialtyService.update).toHaveBeenCalled();
-      expect(comp.isSaving).toEqual(false);
+      expect(comp.isSaving()).toEqual(false);
       expect(comp.previousState).not.toHaveBeenCalled();
     });
   });
@@ -155,7 +155,7 @@ describe('Specialty Management Update Component', () => {
       it('should forward to vetService', () => {
         const entity = { id: 31928 };
         const entity2 = { id: 5685 };
-        jest.spyOn(vetService, 'compareVet');
+        vi.spyOn(vetService, 'compareVet');
         comp.compareVet(entity, entity2);
         expect(vetService.compareVet).toHaveBeenCalledWith(entity, entity2);
       });

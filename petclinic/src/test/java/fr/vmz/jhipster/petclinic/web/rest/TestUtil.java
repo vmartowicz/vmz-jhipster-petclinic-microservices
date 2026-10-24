@@ -7,17 +7,16 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.List;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
-import org.springframework.cglib.proxy.MethodProxy;
 
 /**
  * Utility class for testing REST controllers.
@@ -33,9 +32,7 @@ public final class TestUtil {
      */
     public static byte[] createByteArray(int size, String data) {
         byte[] byteArray = new byte[size];
-        for (int i = 0; i < size; i++) {
-            byteArray[i] = Byte.parseByte(data, 2);
-        }
+        Arrays.fill(byteArray, Byte.parseByte(data, 2));
         return byteArray;
     }
 
@@ -102,22 +99,15 @@ public final class TestUtil {
         }
 
         private static BigDecimal asDecimal(Number item) {
-            if (item == null) {
-                return null;
-            }
-            if (item instanceof BigDecimal) {
-                return (BigDecimal) item;
-            } else if (item instanceof Long) {
-                return BigDecimal.valueOf((Long) item);
-            } else if (item instanceof Integer) {
-                return BigDecimal.valueOf((Integer) item);
-            } else if (item instanceof Double) {
-                return BigDecimal.valueOf((Double) item);
-            } else if (item instanceof Float) {
-                return BigDecimal.valueOf((Float) item);
-            } else {
-                return BigDecimal.valueOf(item.doubleValue());
-            }
+            return switch (item) {
+                case null -> null;
+                case BigDecimal bigDecimal -> bigDecimal;
+                case Long l -> BigDecimal.valueOf(l);
+                case Integer i -> BigDecimal.valueOf(i);
+                case Double v -> BigDecimal.valueOf(v);
+                case Float v -> BigDecimal.valueOf(v);
+                default -> BigDecimal.valueOf(item.doubleValue());
+            };
         }
     }
 
@@ -145,7 +135,7 @@ public final class TestUtil {
         // Test with an instance of the same class
         T domainObject2 = clazz.getConstructor().newInstance();
         assertThat(domainObject1).isNotEqualTo(domainObject2);
-        // HashCodes are equals because the objects are not persisted yet
+        // HashCodes are equal because the objects are not persisted yet
         assertThat(domainObject1).hasSameHashCodeAs(domainObject2);
     }
 
@@ -170,14 +160,12 @@ public final class TestUtil {
         Enhancer e = new Enhancer();
         e.setSuperclass(original.getClass());
         e.setCallback(
-            new MethodInterceptor() {
-                public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-                    Object val = update.getClass().getMethod(method.getName(), method.getParameterTypes()).invoke(update, args);
-                    if (val == null) {
-                        return original.getClass().getMethod(method.getName(), method.getParameterTypes()).invoke(original, args);
-                    }
-                    return val;
+            (MethodInterceptor) (obj, method, args, proxy) -> {
+                Object val = update.getClass().getMethod(method.getName(), method.getParameterTypes()).invoke(update, args);
+                if (val == null) {
+                    return original.getClass().getMethod(method.getName(), method.getParameterTypes()).invoke(original, args);
                 }
+                return val;
             }
         );
         return (T) e.create();

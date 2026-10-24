@@ -39,7 +39,7 @@ public class Pet implements Serializable {
     private PetType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "pets" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "petses" }, allowSetters = true)
     private Owner owner;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here

@@ -1,9 +1,9 @@
-import { HttpResponse, provideHttpClient } from '@angular/common/http';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { Subject, from, of } from 'rxjs';
 
 import { IOwner } from '../owner.model';
@@ -21,9 +21,8 @@ describe('Owner Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
       providers: [
-        provideHttpClient(),
+        provideTranslateService(),
         provideHttpClientTesting(),
         {
           provide: ActivatedRoute,
@@ -56,67 +55,67 @@ describe('Owner Management Update Component', () => {
   describe('save', () => {
     it('should call update service on save for existing entity', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<IOwner>>();
+      const saveSubject = new Subject<IOwner>();
       const owner = { id: 25615 };
-      jest.spyOn(ownerFormService, 'getOwner').mockReturnValue(owner);
-      jest.spyOn(ownerService, 'update').mockReturnValue(saveSubject);
-      jest.spyOn(comp, 'previousState');
+      vi.spyOn(ownerFormService, 'getOwner').mockReturnValue(owner);
+      vi.spyOn(ownerService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ owner });
       comp.ngOnInit();
 
       // WHEN
       comp.save();
-      expect(comp.isSaving).toEqual(true);
-      saveSubject.next(new HttpResponse({ body: owner }));
+      expect(comp.isSaving()).toEqual(true);
+      saveSubject.next(owner);
       saveSubject.complete();
 
       // THEN
       expect(ownerFormService.getOwner).toHaveBeenCalled();
       expect(comp.previousState).toHaveBeenCalled();
       expect(ownerService.update).toHaveBeenCalledWith(expect.objectContaining(owner));
-      expect(comp.isSaving).toEqual(false);
+      expect(comp.isSaving()).toEqual(false);
     });
 
     it('should call create service on save for new entity', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<IOwner>>();
+      const saveSubject = new Subject<IOwner>();
       const owner = { id: 25615 };
-      jest.spyOn(ownerFormService, 'getOwner').mockReturnValue({ id: null });
-      jest.spyOn(ownerService, 'create').mockReturnValue(saveSubject);
-      jest.spyOn(comp, 'previousState');
+      vi.spyOn(ownerFormService, 'getOwner').mockReturnValue({ id: null });
+      vi.spyOn(ownerService, 'create').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ owner: null });
       comp.ngOnInit();
 
       // WHEN
       comp.save();
-      expect(comp.isSaving).toEqual(true);
-      saveSubject.next(new HttpResponse({ body: owner }));
+      expect(comp.isSaving()).toEqual(true);
+      saveSubject.next(owner);
       saveSubject.complete();
 
       // THEN
       expect(ownerFormService.getOwner).toHaveBeenCalled();
       expect(ownerService.create).toHaveBeenCalled();
-      expect(comp.isSaving).toEqual(false);
+      expect(comp.isSaving()).toEqual(false);
       expect(comp.previousState).toHaveBeenCalled();
     });
 
     it('should set isSaving to false on error', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<IOwner>>();
+      const saveSubject = new Subject<IOwner>();
       const owner = { id: 25615 };
-      jest.spyOn(ownerService, 'update').mockReturnValue(saveSubject);
-      jest.spyOn(comp, 'previousState');
+      vi.spyOn(ownerService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ owner });
       comp.ngOnInit();
 
       // WHEN
       comp.save();
-      expect(comp.isSaving).toEqual(true);
+      expect(comp.isSaving()).toEqual(true);
       saveSubject.error('This is an error!');
 
       // THEN
       expect(ownerService.update).toHaveBeenCalled();
-      expect(comp.isSaving).toEqual(false);
+      expect(comp.isSaving()).toEqual(false);
       expect(comp.previousState).not.toHaveBeenCalled();
     });
   });

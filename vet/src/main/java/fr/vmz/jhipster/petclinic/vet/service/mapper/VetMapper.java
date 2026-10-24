@@ -13,7 +13,7 @@ import org.mapstruct.*;
  */
 @Mapper(componentModel = "spring")
 public interface VetMapper extends EntityMapper<VetDTO, Vet> {
-    @Mapping(target = "specialties", source = "specialties", qualifiedByName = "specialtyNameSet")
+    @Mapping(target = "specialtieses", source = "specialtieses", qualifiedByName = "specialtyNameSet")
     VetDTO toDto(Vet s);
 
     @Mapping(target = "removeSpecialties", ignore = true)

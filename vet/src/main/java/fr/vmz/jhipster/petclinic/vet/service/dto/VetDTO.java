@@ -22,7 +22,7 @@ public class VetDTO implements Serializable {
     @Size(max = 30)
     private String lastName;
 
-    private Set<SpecialtyDTO> specialties = new HashSet<>();
+    private Set<SpecialtyDTO> specialtieses = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -48,12 +48,12 @@ public class VetDTO implements Serializable {
         this.lastName = lastName;
     }
 
-    public Set<SpecialtyDTO> getSpecialties() {
-        return specialties;
+    public Set<SpecialtyDTO> getSpecialtieses() {
+        return specialtieses;
     }
 
-    public void setSpecialties(Set<SpecialtyDTO> specialties) {
-        this.specialties = specialties;
+    public void setSpecialtieses(Set<SpecialtyDTO> specialtieses) {
+        this.specialtieses = specialtieses;
     }
 
     @Override
@@ -84,7 +84,7 @@ public class VetDTO implements Serializable {
             "id=" + getId() +
             ", firstName='" + getFirstName() + "'" +
             ", lastName='" + getLastName() + "'" +
-            ", specialties=" + getSpecialties() +
+            ", specialtieses=" + getSpecialtieses() +
             "}";
     }
 }

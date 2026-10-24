@@ -1,52 +1,61 @@
-import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpResponse, httpResource } from '@angular/common/http';
+import { Service, computed, inject, signal } from '@angular/core';
 
 import { Observable } from 'rxjs';
 
-import { ApplicationConfigService } from 'app/core/config/application-config.service';
-import { createRequestOption } from 'app/core/request/request-util';
-import { isPresent } from 'app/core/util/operators';
+import { microserviceContextPath, serverApiUrl } from 'app/config';
+import { createRequestOption } from 'app/core/request';
 import { IPetType, NewPetType } from '../pet-type.model';
 
 export type PartialUpdatePetType = Partial<IPetType> & Pick<IPetType, 'id'>;
 
-export type EntityResponseType = HttpResponse<IPetType>;
-export type EntityArrayResponseType = HttpResponse<IPetType[]>;
+@Service()
+export class PetTypesService {
+  readonly petTypesParams = signal<Record<string, string | number | boolean | readonly (string | number | boolean)[]> | undefined>(
+    undefined,
+  );
+  readonly petTypesResource = httpResource<IPetType[]>(() => {
+    const params = this.petTypesParams();
+    if (!params) {
+      return undefined;
+    }
+    return { url: this.resourceUrl, params };
+  });
+  /**
+   * This signal holds the list of petType that have been fetched. It is updated when the petTypesResource emits a new value.
+   * In case of error while fetching the petTypes, the signal is set to an empty array.
+   */
+  readonly petTypes = computed(() => (this.petTypesResource.hasValue() ? this.petTypesResource.value() : []));
+  protected readonly resourceUrl = `${serverApiUrl}${microserviceContextPath}customer/api/pet-types`;
+}
 
-@Injectable({ providedIn: 'root' })
-export class PetTypeService {
+@Service()
+export class PetTypeService extends PetTypesService {
   protected readonly http = inject(HttpClient);
-  protected readonly applicationConfigService = inject(ApplicationConfigService);
 
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/pet-types', 'customer');
-
-  create(petType: NewPetType): Observable<EntityResponseType> {
-    return this.http.post<IPetType>(this.resourceUrl, petType, { observe: 'response' });
+  create(petType: NewPetType): Observable<IPetType> {
+    return this.http.post<IPetType>(this.resourceUrl, petType);
   }
 
-  update(petType: IPetType): Observable<EntityResponseType> {
-    return this.http.put<IPetType>(`${this.resourceUrl}/${encodeURIComponent(this.getPetTypeIdentifier(petType))}`, petType, {
-      observe: 'response',
-    });
+  update(petType: IPetType): Observable<IPetType> {
+    return this.http.put<IPetType>(`${this.resourceUrl}/${encodeURIComponent(this.getPetTypeIdentifier(petType))}`, petType);
   }
 
-  partialUpdate(petType: PartialUpdatePetType): Observable<EntityResponseType> {
-    return this.http.patch<IPetType>(`${this.resourceUrl}/${encodeURIComponent(this.getPetTypeIdentifier(petType))}`, petType, {
-      observe: 'response',
-    });
+  partialUpdate(petType: PartialUpdatePetType): Observable<IPetType> {
+    return this.http.patch<IPetType>(`${this.resourceUrl}/${encodeURIComponent(this.getPetTypeIdentifier(petType))}`, petType);
   }
 
-  find(id: number): Observable<EntityResponseType> {
-    return this.http.get<IPetType>(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
+  find(id: number): Observable<IPetType> {
+    return this.http.get<IPetType>(`${this.resourceUrl}/${encodeURIComponent(id)}`);
   }
 
-  query(req?: any): Observable<EntityArrayResponseType> {
+  query(req?: any): Observable<HttpResponse<IPetType[]>> {
     const options = createRequestOption(req);
     return this.http.get<IPetType[]>(this.resourceUrl, { params: options, observe: 'response' });
   }
 
-  delete(id: number): Observable<HttpResponse<{}>> {
-    return this.http.delete(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
+  delete(id: number): Observable<undefined> {
+    return this.http.delete<undefined>(`${this.resourceUrl}/${encodeURIComponent(id)}`);
   }
 
   getPetTypeIdentifier(petType: Pick<IPetType, 'id'>): number {
@@ -61,7 +70,7 @@ export class PetTypeService {
     petTypeCollection: Type[],
     ...petTypesToCheck: (Type | null | undefined)[]
   ): Type[] {
-    const petTypes: Type[] = petTypesToCheck.filter(isPresent);
+    const petTypes: Type[] = petTypesToCheck.filter(petTypeItem => petTypeItem !== null && petTypeItem !== undefined);
     if (petTypes.length > 0) {
       const petTypeCollectionIdentifiers = petTypeCollection.map(petTypeItem => this.getPetTypeIdentifier(petTypeItem));
       const petTypesToAdd = petTypes.filter(petTypeItem => {

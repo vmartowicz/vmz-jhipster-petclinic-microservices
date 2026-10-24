@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 
 import { sampleWithNewData, sampleWithRequiredData } from '../vet.test-samples';
@@ -21,7 +22,7 @@ describe('Vet Form Service', () => {
             id: expect.any(Object),
             firstName: expect.any(Object),
             lastName: expect.any(Object),
-            specialties: expect.any(Object),
+            specialtieses: expect.any(Object),
           }),
         );
       });
@@ -34,7 +35,7 @@ describe('Vet Form Service', () => {
             id: expect.any(Object),
             firstName: expect.any(Object),
             lastName: expect.any(Object),
-            specialties: expect.any(Object),
+            specialtieses: expect.any(Object),
           }),
         );
       });

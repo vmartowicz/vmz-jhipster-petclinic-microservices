@@ -5,11 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.vmz.jhipster.petclinic.IntegrationTest;
 import fr.vmz.jhipster.petclinic.domain.Authority;
 import fr.vmz.jhipster.petclinic.repository.AuthorityRepository;
-import fr.vmz.jhipster.petclinic.repository.EntityManager;
 import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
@@ -17,10 +15,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Integration tests for the {@link AuthorityResource} REST controller.
@@ -40,7 +40,7 @@ class AuthorityResourceIT {
     private AuthorityRepository authorityRepository;
 
     @Autowired
-    private EntityManager em;
+    private R2dbcEntityTemplate template;
 
     @Autowired
     private WebTestClient webTestClient;
@@ -69,9 +69,9 @@ class AuthorityResourceIT {
         return new Authority().name(UUID.randomUUID().toString());
     }
 
-    public static void deleteEntities(EntityManager em) {
+    public static void deleteEntities(R2dbcEntityTemplate template) {
         try {
-            em.deleteAll(Authority.class).block();
+            template.delete(Authority.class).all().block();
         } catch (Exception e) {
             // It can fail, if other entities are still referring this - it will be removed later.
         }
@@ -88,7 +88,7 @@ class AuthorityResourceIT {
             authorityRepository.delete(insertedAuthority).block();
             insertedAuthority = null;
         }
-        deleteEntities(em);
+        deleteEntities(template);
     }
 
     @Test
@@ -158,7 +158,7 @@ class AuthorityResourceIT {
 
         assertThat(authorityList).isNotNull();
         assertThat(authorityList).hasSize(1);
-        Authority testAuthority = authorityList.get(0);
+        Authority testAuthority = authorityList.getFirst();
 
         // Test fails because reactive api returns an empty object instead of null
         // assertAuthorityAllPropertiesEquals(authority, testAuthority);

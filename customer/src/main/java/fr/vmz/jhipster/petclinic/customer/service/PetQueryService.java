@@ -69,15 +69,24 @@ public class PetQueryService extends QueryService<Pet> {
      */
     protected Specification<Pet> createSpecification(PetCriteria criteria) {
         Specification<Pet> specification = Specification.unrestricted();
+        specification = specification.and((root, query, builder) -> {
+            if (Long.class != query.getResultType()) {
+                root.fetch(Pet_.type, JoinType.LEFT);
+                root.fetch(Pet_.owner, JoinType.LEFT);
+            }
+            return null;
+        });
         if (criteria != null) {
             // This has to be called first, because the distinct method returns null
-            specification = Specification.allOf(
-                Boolean.TRUE.equals(criteria.getDistinct()) ? distinct(criteria.getDistinct()) : null,
-                buildRangeSpecification(criteria.getId(), Pet_.id),
-                buildStringSpecification(criteria.getName(), Pet_.name),
-                buildRangeSpecification(criteria.getBirthDate(), Pet_.birthDate),
-                buildSpecification(criteria.getTypeId(), root -> root.join(Pet_.type, JoinType.LEFT).get(PetType_.id)),
-                buildSpecification(criteria.getOwnerId(), root -> root.join(Pet_.owner, JoinType.LEFT).get(Owner_.id))
+            specification = specification.and(
+                Specification.allOf(
+                    Boolean.TRUE.equals(criteria.getDistinct()) ? distinct(criteria.getDistinct()) : Specification.unrestricted(),
+                    buildRangeSpecification(criteria.getId(), Pet_.id),
+                    buildStringSpecification(criteria.getName(), Pet_.name),
+                    buildRangeSpecification(criteria.getBirthDate(), Pet_.birthDate),
+                    buildSpecification(criteria.getTypeId(), root -> root.join(Pet_.type, JoinType.LEFT).get(PetType_.id)),
+                    buildSpecification(criteria.getOwnerId(), root -> root.join(Pet_.owner, JoinType.LEFT).get(Owner_.id))
+                )
             );
         }
         return specification;

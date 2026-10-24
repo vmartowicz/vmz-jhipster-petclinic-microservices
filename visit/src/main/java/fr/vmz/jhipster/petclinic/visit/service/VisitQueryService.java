@@ -65,12 +65,14 @@ public class VisitQueryService extends QueryService<Visit> {
         Specification<Visit> specification = Specification.unrestricted();
         if (criteria != null) {
             // This has to be called first, because the distinct method returns null
-            specification = Specification.allOf(
-                Boolean.TRUE.equals(criteria.getDistinct()) ? distinct(criteria.getDistinct()) : null,
-                buildRangeSpecification(criteria.getId(), Visit_.id),
-                buildRangeSpecification(criteria.getVisitDate(), Visit_.visitDate),
-                buildStringSpecification(criteria.getDescription(), Visit_.description),
-                buildRangeSpecification(criteria.getPetId(), Visit_.petId)
+            specification = specification.and(
+                Specification.allOf(
+                    Boolean.TRUE.equals(criteria.getDistinct()) ? distinct(criteria.getDistinct()) : Specification.unrestricted(),
+                    buildRangeSpecification(criteria.getId(), Visit_.id),
+                    buildRangeSpecification(criteria.getVisitDate(), Visit_.visitDate),
+                    buildStringSpecification(criteria.getDescription(), Visit_.description),
+                    buildRangeSpecification(criteria.getPetId(), Visit_.petId)
+                )
             );
         }
         return specification;

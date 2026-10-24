@@ -56,7 +56,7 @@ public class Owner implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "type", "owner" }, allowSetters = true)
-    private Set<Pet> pets = new HashSet<>();
+    private Set<Pet> petses = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -138,33 +138,33 @@ public class Owner implements Serializable {
         this.telephone = telephone;
     }
 
-    public Set<Pet> getPets() {
-        return this.pets;
+    public Set<Pet> getPetses() {
+        return this.petses;
     }
 
-    public void setPets(Set<Pet> pets) {
-        if (this.pets != null) {
-            this.pets.forEach(i -> i.setOwner(null));
+    public void setPetses(Set<Pet> pets) {
+        if (this.petses != null) {
+            this.petses.forEach(i -> i.setOwner(null));
         }
         if (pets != null) {
             pets.forEach(i -> i.setOwner(this));
         }
-        this.pets = pets;
+        this.petses = pets;
     }
 
-    public Owner pets(Set<Pet> pets) {
-        this.setPets(pets);
+    public Owner petses(Set<Pet> pets) {
+        this.setPetses(pets);
         return this;
     }
 
     public Owner addPets(Pet pet) {
-        this.pets.add(pet);
+        this.petses.add(pet);
         pet.setOwner(this);
         return this;
     }
 
     public Owner removePets(Pet pet) {
-        this.pets.remove(pet);
+        this.petses.remove(pet);
         pet.setOwner(null);
         return this;
     }

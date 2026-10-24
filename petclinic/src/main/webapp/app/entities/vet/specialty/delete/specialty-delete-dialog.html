@@ -1,5 +1,5 @@
 @if (specialty) {
-  <form name="deleteForm" (ngSubmit)="confirmDelete(specialty.id!)">
+  <form name="deleteForm" (ngSubmit)="confirmDelete(specialty.id)">
     <div class="modal-header">
       <h4 class="modal-title" data-cy="specialtyDeleteDialogHeading" jhiTranslate="entity.delete.title">Confirm delete operation</h4>
     </div>
@@ -16,7 +16,7 @@
     </div>
 
     <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="cancel()">
+      <button type="button" class="btn btn-secondary" (click)="cancel()">
         <fa-icon icon="ban" />&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
       </button>
 

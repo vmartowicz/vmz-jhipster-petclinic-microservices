@@ -1,16 +1,19 @@
 import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import SharedModule from 'app/shared/shared.module';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
+import { Alert, AlertError } from 'app/shared/alert';
+import { TranslateDirective } from 'app/shared/language';
 import { IPetType } from '../pet-type.model';
 
 @Component({
   selector: 'jhi-pet-type-detail',
   templateUrl: './pet-type-detail.html',
-  imports: [SharedModule, RouterLink],
+  imports: [FontAwesomeModule, Alert, AlertError, TranslateDirective, RouterLink],
 })
 export class PetTypeDetail {
-  petType = input<IPetType | null>(null);
+  readonly petType = input<IPetType | null>(null);
 
   previousState(): void {
     globalThis.history.back();

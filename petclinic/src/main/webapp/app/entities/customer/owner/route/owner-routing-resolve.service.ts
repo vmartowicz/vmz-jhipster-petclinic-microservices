@@ -1,28 +1,29 @@
-import { HttpResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, Router } from '@angular/router';
 
-import { EMPTY, Observable, of } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
+import { EMPTY, Observable, catchError, of } from 'rxjs';
 
 import { IOwner } from '../owner.model';
 import { OwnerService } from '../service/owner.service';
 
 const ownerResolve = (route: ActivatedRouteSnapshot): Observable<null | IOwner> => {
-  const id = route.params.id;
+  const { id } = route.params;
   if (id) {
-    return inject(OwnerService)
-      .find(id)
-      .pipe(
-        mergeMap((owner: HttpResponse<IOwner>) => {
-          if (owner.body) {
-            return of(owner.body);
-          }
-          inject(Router).navigate(['404']);
-          return EMPTY;
-        }),
-      );
+    const router = inject(Router);
+    const service = inject(OwnerService);
+    return service.find(id).pipe(
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 404) {
+          router.navigate(['404']);
+        } else {
+          router.navigate(['error']);
+        }
+        return EMPTY;
+      }),
+    );
   }
+
   return of(null);
 };
 

@@ -4,15 +4,15 @@ import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
-import SharedModule from 'app/shared/shared.module';
+import { TranslateDirective } from 'app/shared/language';
 
 @Component({
   selector: 'jhi-error',
+  imports: [TranslateDirective],
   templateUrl: './error.html',
-  imports: [SharedModule],
 })
 export default class Error implements OnInit, OnDestroy {
-  errorMessage = signal<string | undefined>(undefined);
+  readonly errorMessage = signal<string | undefined>(undefined);
   errorKey?: string;
   langChangeSubscription?: Subscription;
 

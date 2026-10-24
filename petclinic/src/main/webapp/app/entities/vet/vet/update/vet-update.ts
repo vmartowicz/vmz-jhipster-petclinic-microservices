@@ -3,12 +3,13 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
-import { Observable } from 'rxjs';
-import { finalize, map } from 'rxjs/operators';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { Observable, finalize, map } from 'rxjs';
 
 import { SpecialtyService } from 'app/entities/vet/specialty/service/specialty.service';
 import { ISpecialty } from 'app/entities/vet/specialty/specialty.model';
-import SharedModule from 'app/shared/shared.module';
+import { AlertError } from 'app/shared/alert';
+import { TranslateDirective } from 'app/shared/language';
 import { VetService } from '../service/vet.service';
 import { IVet } from '../vet.model';
 
@@ -17,10 +18,10 @@ import { VetFormGroup, VetFormService } from './vet-form.service';
 @Component({
   selector: 'jhi-vet-update',
   templateUrl: './vet-update.html',
-  imports: [SharedModule, ReactiveFormsModule],
+  imports: [TranslateDirective, FontAwesomeModule, AlertError, ReactiveFormsModule],
 })
 export class VetUpdate implements OnInit {
-  isSaving = false;
+  readonly isSaving = signal(false);
   vet: IVet | null = null;
 
   specialtiesSharedCollection = signal<ISpecialty[]>([]);
@@ -51,7 +52,7 @@ export class VetUpdate implements OnInit {
   }
 
   save(): void {
-    this.isSaving = true;
+    this.isSaving.set(true);
     const vet = this.vetFormService.getVet(this.editForm);
     if (vet.id === null) {
       this.subscribeToSaveResponse(this.vetService.create(vet));
@@ -60,7 +61,7 @@ export class VetUpdate implements OnInit {
     }
   }
 
-  protected subscribeToSaveResponse(result: Observable<HttpResponse<IVet>>): void {
+  protected subscribeToSaveResponse(result: Observable<IVet | null>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(),
       error: () => this.onSaveError(),
@@ -76,15 +77,15 @@ export class VetUpdate implements OnInit {
   }
 
   protected onSaveFinalize(): void {
-    this.isSaving = false;
+    this.isSaving.set(false);
   }
 
   protected updateForm(vet: IVet): void {
     this.vet = vet;
     this.vetFormService.resetForm(this.editForm, vet);
 
-    this.specialtiesSharedCollection.set(
-      this.specialtyService.addSpecialtyToCollectionIfMissing<ISpecialty>(this.specialtiesSharedCollection(), ...(vet.specialties ?? [])),
+    this.specialtiesSharedCollection.update(specialties =>
+      this.specialtyService.addSpecialtyToCollectionIfMissing<ISpecialty>(specialties, ...(vet.specialtieses ?? [])),
     );
   }
 
@@ -94,7 +95,7 @@ export class VetUpdate implements OnInit {
       .pipe(map((res: HttpResponse<ISpecialty[]>) => res.body ?? []))
       .pipe(
         map((specialties: ISpecialty[]) =>
-          this.specialtyService.addSpecialtyToCollectionIfMissing<ISpecialty>(specialties, ...(this.vet?.specialties ?? [])),
+          this.specialtyService.addSpecialtyToCollectionIfMissing<ISpecialty>(specialties, ...(this.vet?.specialtieses ?? [])),
         ),
       )
       .subscribe((specialties: ISpecialty[]) => this.specialtiesSharedCollection.set(specialties));

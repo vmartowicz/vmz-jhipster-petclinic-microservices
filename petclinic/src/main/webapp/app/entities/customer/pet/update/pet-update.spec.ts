@@ -1,9 +1,10 @@
-import { HttpResponse, provideHttpClient } from '@angular/common/http';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { HttpResponse } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { Subject, from, of } from 'rxjs';
 
 import { IOwner } from 'app/entities/customer/owner/owner.model';
@@ -27,9 +28,8 @@ describe('Pet Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
       providers: [
-        provideHttpClient(),
+        provideTranslateService(),
         provideHttpClientTesting(),
         {
           provide: ActivatedRoute,
@@ -57,10 +57,10 @@ describe('Pet Management Update Component', () => {
       pet.type = type;
 
       const petTypeCollection: IPetType[] = [{ id: 13878 }];
-      jest.spyOn(petTypeService, 'query').mockReturnValue(of(new HttpResponse({ body: petTypeCollection })));
+      vi.spyOn(petTypeService, 'query').mockReturnValue(of(new HttpResponse({ body: petTypeCollection })));
       const additionalPetTypes = [type];
       const expectedCollection: IPetType[] = [...additionalPetTypes, ...petTypeCollection];
-      jest.spyOn(petTypeService, 'addPetTypeToCollectionIfMissing').mockReturnValue(expectedCollection);
+      vi.spyOn(petTypeService, 'addPetTypeToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ pet });
       comp.ngOnInit();
@@ -79,10 +79,10 @@ describe('Pet Management Update Component', () => {
       pet.owner = owner;
 
       const ownerCollection: IOwner[] = [{ id: 25615 }];
-      jest.spyOn(ownerService, 'query').mockReturnValue(of(new HttpResponse({ body: ownerCollection })));
+      vi.spyOn(ownerService, 'query').mockReturnValue(of(new HttpResponse({ body: ownerCollection })));
       const additionalOwners = [owner];
       const expectedCollection: IOwner[] = [...additionalOwners, ...ownerCollection];
-      jest.spyOn(ownerService, 'addOwnerToCollectionIfMissing').mockReturnValue(expectedCollection);
+      vi.spyOn(ownerService, 'addOwnerToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ pet });
       comp.ngOnInit();
@@ -114,67 +114,67 @@ describe('Pet Management Update Component', () => {
   describe('save', () => {
     it('should call update service on save for existing entity', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<IPet>>();
+      const saveSubject = new Subject<IPet>();
       const pet = { id: 23154 };
-      jest.spyOn(petFormService, 'getPet').mockReturnValue(pet);
-      jest.spyOn(petService, 'update').mockReturnValue(saveSubject);
-      jest.spyOn(comp, 'previousState');
+      vi.spyOn(petFormService, 'getPet').mockReturnValue(pet);
+      vi.spyOn(petService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ pet });
       comp.ngOnInit();
 
       // WHEN
       comp.save();
-      expect(comp.isSaving).toEqual(true);
-      saveSubject.next(new HttpResponse({ body: pet }));
+      expect(comp.isSaving()).toEqual(true);
+      saveSubject.next(pet);
       saveSubject.complete();
 
       // THEN
       expect(petFormService.getPet).toHaveBeenCalled();
       expect(comp.previousState).toHaveBeenCalled();
       expect(petService.update).toHaveBeenCalledWith(expect.objectContaining(pet));
-      expect(comp.isSaving).toEqual(false);
+      expect(comp.isSaving()).toEqual(false);
     });
 
     it('should call create service on save for new entity', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<IPet>>();
+      const saveSubject = new Subject<IPet>();
       const pet = { id: 23154 };
-      jest.spyOn(petFormService, 'getPet').mockReturnValue({ id: null });
-      jest.spyOn(petService, 'create').mockReturnValue(saveSubject);
-      jest.spyOn(comp, 'previousState');
+      vi.spyOn(petFormService, 'getPet').mockReturnValue({ id: null });
+      vi.spyOn(petService, 'create').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ pet: null });
       comp.ngOnInit();
 
       // WHEN
       comp.save();
-      expect(comp.isSaving).toEqual(true);
-      saveSubject.next(new HttpResponse({ body: pet }));
+      expect(comp.isSaving()).toEqual(true);
+      saveSubject.next(pet);
       saveSubject.complete();
 
       // THEN
       expect(petFormService.getPet).toHaveBeenCalled();
       expect(petService.create).toHaveBeenCalled();
-      expect(comp.isSaving).toEqual(false);
+      expect(comp.isSaving()).toEqual(false);
       expect(comp.previousState).toHaveBeenCalled();
     });
 
     it('should set isSaving to false on error', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<IPet>>();
+      const saveSubject = new Subject<IPet>();
       const pet = { id: 23154 };
-      jest.spyOn(petService, 'update').mockReturnValue(saveSubject);
-      jest.spyOn(comp, 'previousState');
+      vi.spyOn(petService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ pet });
       comp.ngOnInit();
 
       // WHEN
       comp.save();
-      expect(comp.isSaving).toEqual(true);
+      expect(comp.isSaving()).toEqual(true);
       saveSubject.error('This is an error!');
 
       // THEN
       expect(petService.update).toHaveBeenCalled();
-      expect(comp.isSaving).toEqual(false);
+      expect(comp.isSaving()).toEqual(false);
       expect(comp.previousState).not.toHaveBeenCalled();
     });
   });
@@ -184,7 +184,7 @@ describe('Pet Management Update Component', () => {
       it('should forward to petTypeService', () => {
         const entity = { id: 13878 };
         const entity2 = { id: 6067 };
-        jest.spyOn(petTypeService, 'comparePetType');
+        vi.spyOn(petTypeService, 'comparePetType');
         comp.comparePetType(entity, entity2);
         expect(petTypeService.comparePetType).toHaveBeenCalledWith(entity, entity2);
       });
@@ -194,7 +194,7 @@ describe('Pet Management Update Component', () => {
       it('should forward to ownerService', () => {
         const entity = { id: 25615 };
         const entity2 = { id: 10278 };
-        jest.spyOn(ownerService, 'compareOwner');
+        vi.spyOn(ownerService, 'compareOwner');
         comp.compareOwner(entity, entity2);
         expect(ownerService.compareOwner).toHaveBeenCalledWith(entity, entity2);
       });

@@ -56,7 +56,7 @@ public class OwnerResource {
      * {@code POST  /owners} : Create a new owner.
      *
      * @param ownerDTO the ownerDTO to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new ownerDTO, or with status {@code 400 (Bad Request)} if the owner has already an ID.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new ownerDTO, or with status {@code 400 (Bad Request)} if the owner already has an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
@@ -120,7 +120,7 @@ public class OwnerResource {
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody OwnerDTO ownerDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update Owner partially : {}, {}", id, ownerDTO);
+        LOG.debug("REST request to partially update Owner : {}, {}", id, ownerDTO);
         if (ownerDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -141,11 +141,11 @@ public class OwnerResource {
     }
 
     /**
-     * {@code GET  /owners} : get all the owners.
+     * {@code GET  /owners} : get all the Owners.
      *
      * @param pageable the pagination information.
      * @param criteria the criteria which the requested entities should match.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of owners in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of Owners in body.
      */
     @GetMapping("")
     public ResponseEntity<List<OwnerDTO>> getAllOwners(

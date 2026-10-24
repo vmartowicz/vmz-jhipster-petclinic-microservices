@@ -1,12 +1,12 @@
-import { HttpResponse } from '@angular/common/http';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
-import { Observable } from 'rxjs';
-import { finalize } from 'rxjs/operators';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { Observable, finalize } from 'rxjs';
 
-import SharedModule from 'app/shared/shared.module';
+import { AlertError } from 'app/shared/alert';
+import { TranslateDirective } from 'app/shared/language';
 import { IAuthority } from '../authority.model';
 import { AuthorityService } from '../service/authority.service';
 
@@ -15,10 +15,10 @@ import { AuthorityFormGroup, AuthorityFormService } from './authority-form.servi
 @Component({
   selector: 'jhi-authority-update',
   templateUrl: './authority-update.html',
-  imports: [SharedModule, ReactiveFormsModule],
+  imports: [TranslateDirective, FontAwesomeModule, AlertError, ReactiveFormsModule],
 })
 export class AuthorityUpdate implements OnInit {
-  isSaving = false;
+  readonly isSaving = signal(false);
   authority: IAuthority | null = null;
 
   protected authorityService = inject(AuthorityService);
@@ -42,12 +42,12 @@ export class AuthorityUpdate implements OnInit {
   }
 
   save(): void {
-    this.isSaving = true;
+    this.isSaving.set(true);
     const authority = this.authorityFormService.getAuthority(this.editForm);
     this.subscribeToSaveResponse(this.authorityService.create(authority));
   }
 
-  protected subscribeToSaveResponse(result: Observable<HttpResponse<IAuthority>>): void {
+  protected subscribeToSaveResponse(result: Observable<IAuthority | null>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(),
       error: () => this.onSaveError(),
@@ -63,7 +63,7 @@ export class AuthorityUpdate implements OnInit {
   }
 
   protected onSaveFinalize(): void {
-    this.isSaving = false;
+    this.isSaving.set(false);
   }
 
   protected updateForm(authority: IAuthority): void {

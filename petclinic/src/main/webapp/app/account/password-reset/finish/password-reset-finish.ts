@@ -2,24 +2,26 @@ import { AfterViewInit, Component, ElementRef, OnInit, inject, signal, viewChild
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
+import { TranslatePipe } from '@ngx-translate/core';
+
 import PasswordStrengthBar from 'app/account/password/password-strength-bar/password-strength-bar';
-import SharedModule from 'app/shared/shared.module';
+import { TranslateDirective } from 'app/shared/language';
 
 import { PasswordResetFinishService } from './password-reset-finish.service';
 
 @Component({
   selector: 'jhi-password-reset-finish',
-  imports: [SharedModule, RouterLink, ReactiveFormsModule, PasswordStrengthBar],
+  imports: [TranslateDirective, TranslatePipe, RouterLink, ReactiveFormsModule, PasswordStrengthBar],
   templateUrl: './password-reset-finish.html',
 })
 export default class PasswordResetFinish implements OnInit, AfterViewInit {
-  newPassword = viewChild.required<ElementRef>('newPassword');
+  readonly newPassword = viewChild.required<ElementRef>('newPassword');
 
-  initialized = signal(false);
-  doNotMatch = signal(false);
-  error = signal(false);
-  success = signal(false);
-  key = signal('');
+  readonly initialized = signal(false);
+  readonly doNotMatch = signal(false);
+  readonly error = signal(false);
+  readonly success = signal(false);
+  readonly key = signal('');
 
   passwordForm = new FormGroup({
     newPassword: new FormControl('', {

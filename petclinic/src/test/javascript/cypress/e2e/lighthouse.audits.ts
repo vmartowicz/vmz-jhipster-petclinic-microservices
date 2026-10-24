@@ -23,6 +23,6 @@ describe('Lighthouse Audits', () => {
       },
       screenEmulation: { disabled: true },
     };
-    cy.lighthouse(customThresholds, desktopConfig);
+    cy.lighthouse(customThresholds, desktopConfig).should('not.be.undefined');
   });
 });

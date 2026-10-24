@@ -1,6 +1,7 @@
 package fr.vmz.jhipster.petclinic.service;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -23,8 +24,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -34,6 +37,7 @@ import tech.jhipster.config.JHipsterProperties;
 /**
  * Integration tests for {@link MailService}.
  */
+@ExtendWith(MockitoExtension.class)
 @IntegrationTest
 class MailServiceIT {
 
@@ -187,11 +191,7 @@ class MailServiceIT {
     @Test
     void testSendEmailWithException() {
         doThrow(MailSendException.class).when(javaMailSender).send(any(MimeMessage.class));
-        try {
-            mailService.sendEmail("john.doe@example.com", "testSubject", "testContent", false, false);
-        } catch (Exception e) {
-            fail("Exception shouldn't have been thrown");
-        }
+        assertDoesNotThrow(() -> mailService.sendEmail("john.doe@example.com", "testSubject", "testContent", false, false));
     }
 
     @Test

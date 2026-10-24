@@ -25,7 +25,7 @@ import tech.jhipster.web.util.reactive.ResponseUtil;
  */
 @RestController
 @RequestMapping("/api/authorities")
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class AuthorityResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthorityResource.class);
@@ -45,37 +45,33 @@ public class AuthorityResource {
      * {@code POST  /authorities} : Create a new authority.
      *
      * @param authority the authority to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new authority, or with status {@code 400 (Bad Request)} if the authority has already an ID.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new authority, or with status {@code 400 (Bad Request)} if the authority already has an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public Mono<ResponseEntity<Authority>> createAuthority(@Valid @RequestBody Authority authority) throws URISyntaxException {
         LOG.debug("REST request to save Authority : {}", authority);
-        return authorityRepository
-            .existsById(authority.getName())
-            .flatMap(exists -> {
-                if (exists) {
-                    return Mono.error(new BadRequestAlertException("authority already exists", ENTITY_NAME, "idexists"));
+        return authorityRepository.existsById(authority.getName()).flatMap(exists -> {
+            if (exists) {
+                return Mono.error(new BadRequestAlertException("authority already exists", ENTITY_NAME, "idexists"));
+            }
+            return authorityRepository.save(authority).map(result -> {
+                try {
+                    return ResponseEntity.created(new URI("/api/authorities/" + result.getName()))
+                        .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getName()))
+                        .body(result);
+                } catch (URISyntaxException e) {
+                    throw new RuntimeException(e);
                 }
-                return authorityRepository
-                    .save(authority)
-                    .map(result -> {
-                        try {
-                            return ResponseEntity.created(new URI("/api/authorities/" + result.getName()))
-                                .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getName()))
-                                .body(result);
-                        } catch (URISyntaxException e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
             });
+        });
     }
 
     /**
-     * {@code GET  /authorities} : get all the authorities.
+     * {@code GET  /authorities} : get all the Authorities.
      *
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of authorities in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of Authorities in body.
      */
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
@@ -85,8 +81,8 @@ public class AuthorityResource {
     }
 
     /**
-     * {@code GET  /authorities} : get all the authorities as a stream.
-     * @return the {@link Flux} of authorities.
+     * {@code GET  /authorities} : get all the Authorities as a stream.
+     * @return the {@link Flux} of Authorities.
      */
     @GetMapping(value = "", produces = MediaType.APPLICATION_NDJSON_VALUE)
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
@@ -121,9 +117,12 @@ public class AuthorityResource {
         LOG.debug("REST request to delete Authority : {}", id);
         return authorityRepository
             .deleteById(id)
+
             .then(
                 Mono.just(
-                    ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id)).build()
+                    ResponseEntity.noContent()
+                        .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id))
+                        .build()
                 )
             );
     }

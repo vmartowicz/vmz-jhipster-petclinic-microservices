@@ -21,7 +21,7 @@
           </dd>
           <dt><span jhiTranslate="petclinicApp.vetSpecialty.vets">Vets</span></dt>
           <dd>
-            @for (vets of specialtyRef.vets; track $index; let last = $last) {
+            @for (vets of specialtyRef.vetses; track $index; let last = $last) {
               <span>
                 <a [routerLink]="['/vet', vets.id, 'view']">{{ vets?.lastName }}</a
                 >{{ last ? '' : ', ' }}
@@ -30,7 +30,7 @@
           </dd>
         </dl>
 
-        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <button type="button" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
           <fa-icon icon="arrow-left" />&nbsp;<span jhiTranslate="entity.action.back">Back</span>
         </button>
 

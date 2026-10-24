@@ -2,7 +2,6 @@ package fr.vmz.jhipster.petclinic.visit;
 
 import fr.vmz.jhipster.petclinic.visit.config.AsyncSyncConfiguration;
 import fr.vmz.jhipster.petclinic.visit.config.EmbeddedSQL;
-import fr.vmz.jhipster.petclinic.visit.config.JacksonConfiguration;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -14,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@SpringBootTest(classes = { VisitApp.class, JacksonConfiguration.class, AsyncSyncConfiguration.class })
+@SpringBootTest(
+    classes = { VisitApp.class, AsyncSyncConfiguration.class, fr.vmz.jhipster.petclinic.visit.config.JacksonHibernateConfiguration.class }
+)
 @EmbeddedSQL
 public @interface IntegrationTest {}

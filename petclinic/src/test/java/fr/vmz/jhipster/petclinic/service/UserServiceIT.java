@@ -45,8 +45,11 @@ class UserServiceIT {
 
     private User user;
 
+    private Long numberOfUsers;
+
     @BeforeEach
     void init() {
+        numberOfUsers = userRepository.count().block();
         user = new User();
         user.setLogin(DEFAULT_LOGIN);
         user.setPassword(RandomStringUtils.insecure().nextAlphanumeric(60));
@@ -61,8 +64,9 @@ class UserServiceIT {
 
     @AfterEach
     void cleanupAndCheck() {
-        userRepository.deleteAllUserAuthorities().block();
-        userRepository.deleteAll().block();
+        userService.deleteUser(DEFAULT_LOGIN).block();
+        assertThat(userRepository.count().block()).isEqualTo(numberOfUsers);
+        numberOfUsers = null;
     }
 
     @Test

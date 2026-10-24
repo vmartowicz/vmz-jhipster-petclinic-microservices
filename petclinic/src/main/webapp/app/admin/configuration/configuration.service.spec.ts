@@ -1,18 +1,18 @@
-import { provideHttpClient } from '@angular/common/http';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { Bean, ConfigProps, Env, PropertySource } from './configuration.model';
 import { ConfigurationService } from './configuration.service';
 
-describe('Logs Service', () => {
+describe('Configuration Service', () => {
   let service: ConfigurationService;
   let httpMock: HttpTestingController;
   let expectedResult: Bean[] | PropertySource[] | null;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClientTesting()],
     });
 
     expectedResult = null;

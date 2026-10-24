@@ -1,23 +1,22 @@
-import { NgClass } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, inject, signal } from '@angular/core';
 
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbAlert } from '@ng-bootstrap/ng-bootstrap/alert';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
-import { AlertModel, AlertService } from 'app/core/util/alert.service';
-import { EventManager, EventWithContent } from 'app/core/util/event-manager.service';
+import { AlertModel, AlertService, EventManager, EventWithContent } from 'app/core/util';
+import { getMessageFromHeaders } from 'app/shared/jhipster/headers';
 
 import { AlertErrorModel } from './alert-error.model';
 
 @Component({
   selector: 'jhi-alert-error',
   templateUrl: './alert-error.html',
-  imports: [NgClass, NgbModule],
+  imports: [NgbAlert],
 })
 export class AlertError implements OnDestroy {
-  alerts = signal<AlertModel[]>([]);
+  readonly alerts = signal<AlertModel[]>([]);
   errorListener: Subscription;
   httpErrorListener: Subscription;
 
@@ -27,12 +26,12 @@ export class AlertError implements OnDestroy {
   private readonly translateService = inject(TranslateService);
 
   constructor() {
-    this.errorListener = this.eventManager.subscribe('petclinicApp.error', (response: EventWithContent<unknown> | string) => {
+    this.errorListener = this.eventManager.subscribe('petclinicApp.error', (response: EventWithContent<unknown>) => {
       const errorResponse = (response as EventWithContent<AlertErrorModel>).content;
       this.addErrorAlert(errorResponse.message, errorResponse.key, errorResponse.params);
     });
 
-    this.httpErrorListener = this.eventManager.subscribe('petclinicApp.httpError', (response: EventWithContent<unknown> | string) => {
+    this.httpErrorListener = this.eventManager.subscribe('petclinicApp.httpError', (response: EventWithContent<unknown>) => {
       this.handleHttpError(response);
     });
   }
@@ -51,14 +50,14 @@ export class AlertError implements OnDestroy {
   }
 
   close(alert: AlertModel): void {
-    alert.close?.(this.alerts());
+    alert.close?.();
   }
 
   private addErrorAlert(message?: string, translationKey?: string, translationParams?: Record<string, unknown>): void {
-    this.alertService.addAlert({ type: 'danger', message, translationKey, translationParams }, this.alerts());
+    this.alertService.addAlert({ type: 'danger', message, translationKey, translationParams }, this.alerts);
   }
 
-  private handleHttpError(response: EventWithContent<unknown> | string): void {
+  private handleHttpError(response: EventWithContent<unknown>): void {
     const httpErrorResponse = (response as EventWithContent<HttpErrorResponse>).content;
     switch (httpErrorResponse.status) {
       // connection refused, server not reachable
@@ -81,19 +80,13 @@ export class AlertError implements OnDestroy {
   }
 
   private handleBadRequest(httpErrorResponse: HttpErrorResponse): void {
-    const arr = httpErrorResponse.headers.keys();
-    let errorHeader: string | null = null;
-    let entityKey: string | null = null;
-    for (const entry of arr) {
-      if (entry.toLowerCase().endsWith('app-error')) {
-        errorHeader = httpErrorResponse.headers.get(entry);
-      } else if (entry.toLowerCase().endsWith('app-params')) {
-        entityKey = httpErrorResponse.headers.get(entry);
-      }
-    }
-    if (errorHeader) {
-      const alertData = entityKey ? { entityName: this.translateService.instant(`global.menu.entities.${entityKey}`) } : undefined;
-      this.addErrorAlert(errorHeader, errorHeader, alertData);
+    const headers = Object.fromEntries(httpErrorResponse.headers.keys().map(key => [key, httpErrorResponse.headers.getAll(key)]));
+    const message = getMessageFromHeaders(headers);
+    if (message.errorKey) {
+      const alertData = message.param ? { entityName: this.translateService.instant(`global.menu.entities.${message.param}`) } : undefined;
+      this.addErrorAlert(message.errorKey, message.errorKey, alertData);
+    } else if (message.errorMessage) {
+      this.addErrorAlert(message.errorMessage);
     } else if (httpErrorResponse.error !== '' && httpErrorResponse.error.fieldErrors) {
       this.handleFieldsError(httpErrorResponse);
     } else if (httpErrorResponse.error !== '' && httpErrorResponse.error.message) {

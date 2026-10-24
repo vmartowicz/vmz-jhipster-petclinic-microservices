@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class SpecialtyTestSamples {
 
     private static final Random random = new Random();
-    private static final AtomicLong longCount = new AtomicLong(random.nextInt() + (2L * Integer.MAX_VALUE));
+    private static final AtomicLong longCount = new AtomicLong(random.nextInt() + 2L * Integer.MAX_VALUE);
 
     public static Specialty getSpecialtySample1() {
         return new Specialty().id(1L).name("name1");

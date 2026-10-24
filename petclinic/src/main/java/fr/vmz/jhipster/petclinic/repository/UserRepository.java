@@ -11,7 +11,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.beanutils.BeanComparator;
 import org.springframework.data.domain.*;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.r2dbc.convert.R2dbcConverter;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.r2dbc.repository.Query;
@@ -46,9 +45,6 @@ public interface UserRepository extends R2dbcRepository<User, Long>, UserReposit
 
     @Query("INSERT INTO jhi_user_authority VALUES(:userId, :authority)")
     Mono<Void> saveUserAuthority(Long userId, String authority);
-
-    @Query("DELETE FROM jhi_user_authority")
-    Mono<Void> deleteAllUserAuthorities();
 
     @Query("DELETE FROM jhi_user_authority WHERE user_id = :userId")
     Mono<Void> deleteUserAuthorities(Long userId);
@@ -104,7 +100,7 @@ class UserRepositoryInternalImpl implements UserRepositoryInternal {
             )
             .all()
             .groupBy(t -> t.getT1().getLogin())
-            .flatMap(l -> l.collectList().map(t -> updateUserWithAuthorities(t.get(0).getT1(), t)))
+            .flatMap(l -> l.collectList().map(t -> updateUserWithAuthorities(t.getFirst().getT1(), t)))
             .sort(
                 Sort.Direction.fromString(direction) == Sort.DEFAULT_DIRECTION
                     ? new BeanComparator<>(property)
@@ -120,7 +116,13 @@ class UserRepositoryInternalImpl implements UserRepositoryInternal {
             .sql("DELETE FROM jhi_user_authority WHERE user_id = :userId")
             .bind("userId", user.getId())
             .then()
-            .then(r2dbcEntityTemplate.delete(User.class).matching(query(where("id").is(user.getId()))).all().then());
+            .then(
+                r2dbcEntityTemplate
+                    .delete(User.class)
+                    .matching(query(where("id").is(user.getId())))
+                    .all()
+                    .then()
+            );
     }
 
     private Mono<User> findOneWithAuthoritiesBy(String fieldName, Object fieldValue) {
@@ -133,7 +135,7 @@ class UserRepositoryInternalImpl implements UserRepositoryInternal {
             .all()
             .collectList()
             .filter(l -> !l.isEmpty())
-            .map(l -> updateUserWithAuthorities(l.get(0).getT1(), l));
+            .map(l -> updateUserWithAuthorities(l.getFirst().getT1(), l));
     }
 
     private User updateUserWithAuthorities(User user, List<Tuple2<User, Optional<String>>> tuples) {

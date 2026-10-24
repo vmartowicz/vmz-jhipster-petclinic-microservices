@@ -1,12 +1,12 @@
-import { HttpResponse } from '@angular/common/http';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
-import { Observable } from 'rxjs';
-import { finalize } from 'rxjs/operators';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { Observable, finalize } from 'rxjs';
 
-import SharedModule from 'app/shared/shared.module';
+import { AlertError } from 'app/shared/alert';
+import { TranslateDirective } from 'app/shared/language';
 import { IOwner } from '../owner.model';
 import { OwnerService } from '../service/owner.service';
 
@@ -15,10 +15,10 @@ import { OwnerFormGroup, OwnerFormService } from './owner-form.service';
 @Component({
   selector: 'jhi-owner-update',
   templateUrl: './owner-update.html',
-  imports: [SharedModule, ReactiveFormsModule],
+  imports: [TranslateDirective, FontAwesomeModule, AlertError, ReactiveFormsModule],
 })
 export class OwnerUpdate implements OnInit {
-  isSaving = false;
+  readonly isSaving = signal(false);
   owner: IOwner | null = null;
 
   protected ownerService = inject(OwnerService);
@@ -42,7 +42,7 @@ export class OwnerUpdate implements OnInit {
   }
 
   save(): void {
-    this.isSaving = true;
+    this.isSaving.set(true);
     const owner = this.ownerFormService.getOwner(this.editForm);
     if (owner.id === null) {
       this.subscribeToSaveResponse(this.ownerService.create(owner));
@@ -51,7 +51,7 @@ export class OwnerUpdate implements OnInit {
     }
   }
 
-  protected subscribeToSaveResponse(result: Observable<HttpResponse<IOwner>>): void {
+  protected subscribeToSaveResponse(result: Observable<IOwner | null>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(),
       error: () => this.onSaveError(),
@@ -67,7 +67,7 @@ export class OwnerUpdate implements OnInit {
   }
 
   protected onSaveFinalize(): void {
-    this.isSaving = false;
+    this.isSaving.set(false);
   }
 
   protected updateForm(owner: IOwner): void {

@@ -59,6 +59,6 @@ public class SpecialtyAsserts {
     public static void assertSpecialtyUpdatableRelationshipsEquals(Specialty expected, Specialty actual) {
         assertThat(actual)
             .as("Verify Specialty relationships")
-            .satisfies(a -> assertThat(a.getVets()).as("check vets").isEqualTo(expected.getVets()));
+            .satisfies(a -> assertThat(a.getVetses()).as("check vetses").isEqualTo(expected.getVetses()));
     }
 }

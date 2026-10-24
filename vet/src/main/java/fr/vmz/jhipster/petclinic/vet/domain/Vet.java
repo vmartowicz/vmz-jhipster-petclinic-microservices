@@ -45,8 +45,8 @@ public class Vet implements Serializable {
         inverseJoinColumns = @JoinColumn(name = "specialties_id")
     )
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnoreProperties(value = { "vets" }, allowSetters = true)
-    private Set<Specialty> specialties = new HashSet<>();
+    @JsonIgnoreProperties(value = { "vetses" }, allowSetters = true)
+    private Set<Specialty> specialtieses = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -89,26 +89,26 @@ public class Vet implements Serializable {
         this.lastName = lastName;
     }
 
-    public Set<Specialty> getSpecialties() {
-        return this.specialties;
+    public Set<Specialty> getSpecialtieses() {
+        return this.specialtieses;
     }
 
-    public void setSpecialties(Set<Specialty> specialties) {
-        this.specialties = specialties;
+    public void setSpecialtieses(Set<Specialty> specialties) {
+        this.specialtieses = specialties;
     }
 
-    public Vet specialties(Set<Specialty> specialties) {
-        this.setSpecialties(specialties);
+    public Vet specialtieses(Set<Specialty> specialties) {
+        this.setSpecialtieses(specialties);
         return this;
     }
 
     public Vet addSpecialties(Specialty specialty) {
-        this.specialties.add(specialty);
+        this.specialtieses.add(specialty);
         return this;
     }
 
     public Vet removeSpecialties(Specialty specialty) {
-        this.specialties.remove(specialty);
+        this.specialtieses.remove(specialty);
         return this;
     }
 

@@ -12,9 +12,11 @@ import java.util.BitSet;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.h2.H2ConsoleProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.h2console.autoconfigure.H2ConsoleProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -22,20 +24,26 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.env.Environment;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.data.convert.WritingConverter;
-import org.springframework.data.r2dbc.convert.MappingR2dbcConverter;
+import org.springframework.data.r2dbc.convert.R2dbcConverter;
 import org.springframework.data.r2dbc.convert.R2dbcCustomConversions;
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.r2dbc.dialect.DialectResolver;
+import org.springframework.data.r2dbc.dialect.H2Dialect;
 import org.springframework.data.r2dbc.dialect.R2dbcDialect;
-import org.springframework.data.r2dbc.query.UpdateMapper;
+import org.springframework.data.r2dbc.mapping.R2dbcMappingContext;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
-import org.springframework.data.relational.core.dialect.RenderContextFactory;
-import org.springframework.data.relational.core.sql.render.SqlRenderer;
+import org.springframework.data.relational.RelationalManagedTypes;
+import org.springframework.data.relational.core.dialect.InsertRenderContext;
+import org.springframework.data.relational.core.mapping.DefaultNamingStrategy;
+import org.springframework.data.relational.core.mapping.NamingStrategy;
+import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import tech.jhipster.config.JHipsterConstants;
 import tech.jhipster.config.h2.H2ConfigurationHelper;
 
 @Configuration
 @EnableR2dbcRepositories({ "fr.vmz.jhipster.petclinic.repository" })
+@RegisterReflectionForBinding({ java.sql.Date[].class, java.sql.Time[].class, java.sql.Timestamp[].class })
 @EnableTransactionManagement
 @EnableConfigurationProperties(H2ConsoleProperties.class)
 public class DatabaseConfiguration {
@@ -77,7 +85,7 @@ public class DatabaseConfiguration {
         return String.valueOf(port);
     }
 
-    // LocalDateTime seems to be the only type that is supported across all drivers atm
+    // LocalDateTime seems to be the only type that is supported across all drivers at the moment
     // See https://github.com/r2dbc/r2dbc-h2/pull/139 https://github.com/mirromutth/r2dbc-mysql/issues/105
     @Bean
     public R2dbcCustomConversions r2dbcCustomConversions(R2dbcDialect dialect) {
@@ -92,20 +100,47 @@ public class DatabaseConfiguration {
         return R2dbcCustomConversions.of(dialect, converters);
     }
 
+    /**
+     * Spring Data R2DBC 4 uses quoted (case-sensitive) table and column names by default, while the Liquibase
+     * changelogs create them unquoted. Keep plain identifiers, so both use the database default letter casing.
+     */
+    @Bean
+    public R2dbcMappingContext r2dbcMappingContext(
+        ObjectProvider<NamingStrategy> namingStrategy,
+        R2dbcCustomConversions r2dbcCustomConversions,
+        RelationalManagedTypes r2dbcManagedTypes
+    ) {
+        R2dbcMappingContext relationalMappingContext = R2dbcMappingContext.forPlainIdentifiers(
+            namingStrategy.getIfAvailable(() -> DefaultNamingStrategy.INSTANCE)
+        );
+        relationalMappingContext.setSimpleTypeHolder(r2dbcCustomConversions.getSimpleTypeHolder());
+        relationalMappingContext.setManagedTypes(r2dbcManagedTypes);
+        return relationalMappingContext;
+    }
+
     @Bean
     public R2dbcDialect dialect(ConnectionFactory connectionFactory) {
-        return DialectResolver.getDialect(connectionFactory);
+        R2dbcDialect dialect = DialectResolver.getDialect(connectionFactory);
+        if (dialect instanceof H2Dialect) {
+            // Spring Data renders an insert without values as `VALUES (DEFAULT)`, which H2 rejects for tables with
+            // more than one column. Use `DEFAULT VALUES` so an entity with only null fields can be inserted.
+            return new H2Dialect() {
+                @Override
+                public InsertRenderContext getInsertRenderContext() {
+                    return () -> " DEFAULT VALUES";
+                }
+            };
+        }
+        return dialect;
     }
 
+    /**
+     * Spring Boot resolves the dialect itself when creating the {@link R2dbcEntityTemplate}; create it with the
+     * customized dialect so it renders inserts without values in a form the database accepts.
+     */
     @Bean
-    public UpdateMapper updateMapper(R2dbcDialect dialect, MappingR2dbcConverter mappingR2dbcConverter) {
-        return new UpdateMapper(dialect, mappingR2dbcConverter);
-    }
-
-    @Bean
-    public SqlRenderer sqlRenderer(R2dbcDialect dialect) {
-        RenderContextFactory factory = new RenderContextFactory(dialect);
-        return SqlRenderer.create(factory.createRenderContext());
+    public R2dbcEntityTemplate r2dbcEntityTemplate(DatabaseClient databaseClient, R2dbcDialect dialect, R2dbcConverter converter) {
+        return new R2dbcEntityTemplate(databaseClient, dialect, converter);
     }
 
     @WritingConverter

@@ -1,15 +1,18 @@
 package fr.vmz.jhipster.petclinic.web.rest;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import fr.vmz.jhipster.petclinic.IntegrationTest;
 import fr.vmz.jhipster.petclinic.domain.User;
 import fr.vmz.jhipster.petclinic.repository.UserRepository;
 import fr.vmz.jhipster.petclinic.security.AuthoritiesConstants;
+import fr.vmz.jhipster.petclinic.service.UserService;
 import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -26,19 +29,25 @@ class PublicUserResourceIT {
     private UserRepository userRepository;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private WebTestClient webTestClient;
 
     private User user;
+    private Long numberOfUsers;
 
     @BeforeEach
     void initTest() {
+        numberOfUsers = userRepository.count().block();
         user = UserResourceIT.initTestUser();
     }
 
     @AfterEach
     void cleanupAndCheck() {
-        userRepository.deleteAllUserAuthorities().block();
-        userRepository.deleteAll().block();
+        userService.deleteUser(user.getLogin()).block();
+        assertThat(userRepository.count().block()).isEqualTo(numberOfUsers);
+        numberOfUsers = null;
     }
 
     @Test
@@ -57,9 +66,9 @@ class PublicUserResourceIT {
             .expectHeader()
             .contentType(MediaType.APPLICATION_JSON)
             .expectBody()
-            .jsonPath("$.[?(@.id == %d)].login", user.getId())
+            .jsonPath("$.[?(@.id == %d)].login".formatted(user.getId()))
             .isEqualTo(user.getLogin())
-            .jsonPath("$.[?(@.id == %d)].keys()", user.getId())
+            .jsonPath("$.[?(@.id == %d)].keys()".formatted(user.getId()))
             .isEqualTo(Set.of("id", "login"))
             .jsonPath("$.[*].email")
             .doesNotHaveJsonPath()

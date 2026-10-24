@@ -13,10 +13,10 @@ import org.mapstruct.*;
  */
 @Mapper(componentModel = "spring")
 public interface SpecialtyMapper extends EntityMapper<SpecialtyDTO, Specialty> {
-    @Mapping(target = "vets", source = "vets", qualifiedByName = "vetLastNameSet")
+    @Mapping(target = "vetses", source = "vetses", qualifiedByName = "vetLastNameSet")
     SpecialtyDTO toDto(Specialty s);
 
-    @Mapping(target = "vets", ignore = true)
+    @Mapping(target = "vetses", ignore = true)
     @Mapping(target = "removeVets", ignore = true)
     Specialty toEntity(SpecialtyDTO specialtyDTO);
 

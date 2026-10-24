@@ -1,12 +1,15 @@
 package fr.vmz.jhipster.petclinic.web.filter;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import fr.vmz.jhipster.petclinic.IntegrationTest;
 import fr.vmz.jhipster.petclinic.security.AuthoritiesConstants;
 import java.time.Duration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -56,6 +59,19 @@ class SpaWebFilterIT {
     @Test
     void testFilterDoesNotForwardToIndexForDotFile() {
         webTestClient.get().uri("/file.js").exchange().expectStatus().isNotFound();
+    }
+
+    @Test
+    @WithAnonymousUser
+    void staticAssetsArePubliclyAccessible() {
+        webTestClient
+            .get()
+            .uri("/test-resource.txt")
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(String.class)
+            .value(body -> assertThat(body).isEqualToNormalizingNewlines("test resource\n"));
     }
 
     @Test

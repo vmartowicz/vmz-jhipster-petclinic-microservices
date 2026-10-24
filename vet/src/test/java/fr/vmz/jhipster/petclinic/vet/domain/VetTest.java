@@ -31,15 +31,15 @@ class VetTest {
         Specialty specialtyBack = getSpecialtyRandomSampleGenerator();
 
         vet.addSpecialties(specialtyBack);
-        assertThat(vet.getSpecialties()).containsOnly(specialtyBack);
+        assertThat(vet.getSpecialtieses()).containsOnly(specialtyBack);
 
         vet.removeSpecialties(specialtyBack);
-        assertThat(vet.getSpecialties()).doesNotContain(specialtyBack);
+        assertThat(vet.getSpecialtieses()).doesNotContain(specialtyBack);
 
-        vet.specialties(new HashSet<>(Set.of(specialtyBack)));
-        assertThat(vet.getSpecialties()).containsOnly(specialtyBack);
+        vet.specialtieses(new HashSet<>(Set.of(specialtyBack)));
+        assertThat(vet.getSpecialtieses()).containsOnly(specialtyBack);
 
-        vet.setSpecialties(new HashSet<>());
-        assertThat(vet.getSpecialties()).doesNotContain(specialtyBack);
+        vet.setSpecialtieses(new HashSet<>());
+        assertThat(vet.getSpecialtieses()).doesNotContain(specialtyBack);
     }
 }

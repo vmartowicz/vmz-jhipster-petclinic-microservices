@@ -1,9 +1,11 @@
+import { KeyValuePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal';
 
-import SharedModule from 'app/shared/shared.module';
+import { TranslateDirective } from 'app/shared/language';
 
 import { HealthDetails, HealthModel, HealthStatus } from './health.model';
 import { HealthService } from './health.service';
@@ -12,10 +14,10 @@ import HealthModal from './modal/health-modal';
 @Component({
   selector: 'jhi-health',
   templateUrl: './health.html',
-  imports: [SharedModule],
+  imports: [TranslateDirective, FontAwesomeModule, KeyValuePipe],
 })
 export default class Health implements OnInit {
-  health?: HealthModel;
+  readonly health = signal<HealthModel | null>(null);
 
   private readonly modalService = inject(NgbModal);
   private readonly healthService = inject(HealthService);
@@ -33,10 +35,10 @@ export default class Health implements OnInit {
 
   refresh(): void {
     this.healthService.checkHealth().subscribe({
-      next: health => (this.health = health),
+      next: health => this.health.set(health),
       error: (error: HttpErrorResponse) => {
         if (error.status === 503) {
-          this.health = error.error;
+          this.health.set(error.error);
         }
       },
     });

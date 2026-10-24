@@ -3,27 +3,27 @@ import { AfterViewInit, Component, ElementRef, inject, signal, viewChild } from 
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
-import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
-import { EMAIL_ALREADY_USED_TYPE, LOGIN_ALREADY_USED_TYPE } from 'app/config/error.constants';
-import SharedModule from 'app/shared/shared.module';
+import { EMAIL_ALREADY_USED_TYPE, LOGIN_ALREADY_USED_TYPE } from 'app/shared/jhipster/error.constants';
+import { TranslateDirective } from 'app/shared/language';
 import PasswordStrengthBar from '../password/password-strength-bar/password-strength-bar';
 
 import { RegisterService } from './register.service';
 
 @Component({
   selector: 'jhi-register',
-  imports: [SharedModule, RouterLink, ReactiveFormsModule, PasswordStrengthBar],
+  imports: [TranslateDirective, TranslatePipe, RouterLink, ReactiveFormsModule, PasswordStrengthBar],
   templateUrl: './register.html',
 })
 export default class Register implements AfterViewInit {
-  login = viewChild.required<ElementRef>('login');
+  readonly login = viewChild.required<ElementRef>('login');
 
-  doNotMatch = signal(false);
-  error = signal(false);
-  errorEmailExists = signal(false);
-  errorUserExists = signal(false);
-  success = signal(false);
+  readonly doNotMatch = signal(false);
+  readonly error = signal(false);
+  readonly errorEmailExists = signal(false);
+  readonly errorUserExists = signal(false);
+  readonly success = signal(false);
 
   registerForm = new FormGroup({
     login: new FormControl('', {
@@ -66,7 +66,7 @@ export default class Register implements AfterViewInit {
     if (password === confirmPassword) {
       const { login, email } = this.registerForm.getRawValue();
       this.registerService
-        .save({ login, email, password, langKey: this.translateService.getCurrentLang() })
+        .save({ login, email, password, langKey: this.translateService.getCurrentLang() ?? 'en' })
         .subscribe({ next: () => this.success.set(true), error: response => this.processError(response) });
     } else {
       this.doNotMatch.set(true);

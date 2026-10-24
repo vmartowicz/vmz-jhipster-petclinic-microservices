@@ -1,22 +1,24 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal';
 
-import { ITEM_DELETED_EVENT } from 'app/config/navigation.constants';
-import SharedModule from 'app/shared/shared.module';
+import { ITEM_DELETED_EVENT } from 'app/config';
+import { AlertError } from 'app/shared/alert';
+import { TranslateDirective } from 'app/shared/language';
 import { IOwner } from '../owner.model';
 import { OwnerService } from '../service/owner.service';
 
 @Component({
   templateUrl: './owner-delete-dialog.html',
-  imports: [SharedModule, FormsModule],
+  imports: [TranslateDirective, FormsModule, FontAwesomeModule, AlertError],
 })
 export class OwnerDeleteDialog {
   owner?: IOwner;
 
-  protected ownerService = inject(OwnerService);
-  protected activeModal = inject(NgbActiveModal);
+  protected readonly ownerService = inject(OwnerService);
+  protected readonly activeModal = inject(NgbActiveModal);
 
   cancel(): void {
     this.activeModal.dismiss();

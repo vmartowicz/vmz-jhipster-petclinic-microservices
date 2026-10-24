@@ -10,7 +10,7 @@
 
         @if (editForm.controls.id.value !== null) {
           <div class="mb-3">
-            <label class="form-label" for="field_id" jhiTranslate="petclinicApp.visitVisit.id">ID</label>
+            <label class="form-label" for="field_id" jhiTranslate="global.field.id">ID</label>
             <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
           </div>
         }
@@ -45,10 +45,10 @@
           />
           @if (descriptionRef.invalid && (descriptionRef.dirty || descriptionRef.touched)) {
             <div>
-              @if (editForm.get('description')?.errors?.required) {
+              @if (descriptionRef.errors?.required) {
                 <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
               }
-              @if (editForm.get('description')?.errors?.maxlength) {
+              @if (descriptionRef.errors?.maxlength) {
                 <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '255' }"
                   >This field cannot be longer than 255 characters.</small
                 >
@@ -63,10 +63,10 @@
           <input type="number" class="form-control" name="petId" id="field_petId" data-cy="petId" formControlName="petId" />
           @if (petIdRef.invalid && (petIdRef.dirty || petIdRef.touched)) {
             <div>
-              @if (editForm.get('petId')?.errors?.required) {
+              @if (petIdRef.errors?.required) {
                 <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
               }
-              <small class="form-text text-danger" [hidden]="!editForm.get('petId')?.errors?.number" jhiTranslate="entity.validation.number"
+              <small class="form-text text-danger" [hidden]="!petIdRef.errors?.number" jhiTranslate="entity.validation.number"
                 >This field should be a number.</small
               >
             </div>
@@ -83,7 +83,7 @@
           type="submit"
           id="save-entity"
           data-cy="entityCreateSaveButton"
-          [disabled]="editForm.invalid || isSaving"
+          [disabled]="editForm.invalid || isSaving()"
           class="btn btn-primary"
         >
           <fa-icon icon="save" />&nbsp;<span jhiTranslate="entity.action.save">Save</span>

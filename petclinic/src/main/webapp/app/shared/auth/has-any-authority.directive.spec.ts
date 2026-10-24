@@ -1,11 +1,10 @@
-import { provideHttpClient } from '@angular/common/http';
+import { type Mock, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Component, ElementRef, WritableSignal, signal, viewChild } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 
-import { Account } from 'app/core/auth/account.model';
-import { AccountService } from 'app/core/auth/account.service';
+import { Account, AccountService } from 'app/core/auth';
 
 import HasAnyAuthorityDirective from './has-any-authority.directive';
 
@@ -14,38 +13,34 @@ import HasAnyAuthorityDirective from './has-any-authority.directive';
   template: `<div *jhiHasAnyAuthority="'ROLE_ADMIN'" #content></div>`,
 })
 class TestHasAnyAuthorityDirective {
-  content = viewChild<ElementRef>('content');
+  readonly content = viewChild<ElementRef>('content');
 }
 
 describe('HasAnyAuthorityDirective tests', () => {
-  let mockAccountService: AccountService;
   let currentAccount: WritableSignal<Account | null>;
+  let hasAnyAuthority: Mock;
 
   beforeEach(() => {
+    currentAccount = signal<Account | null>({ activated: true, authorities: [] } as any);
+    hasAnyAuthority = vi.fn((): boolean => Boolean(currentAccount()));
+
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
       providers: [
-        provideHttpClient(),
+        provideTranslateService(),
         {
           provide: AccountService,
           useValue: {
-            isAuthenticated: jest.fn(),
+            account: currentAccount,
+            hasAnyAuthority,
           },
         },
       ],
     });
   });
 
-  beforeEach(() => {
-    mockAccountService = TestBed.inject(AccountService);
-    currentAccount = signal<Account | null>({ activated: true, authorities: [] } as any);
-    mockAccountService.trackCurrentAccount = jest.fn(() => currentAccount);
-  });
-
   describe('set jhiHasAnyAuthority', () => {
     it('should show restricted content to user if user has required role', () => {
       // GIVEN
-      mockAccountService.hasAnyAuthority = jest.fn(() => true);
       const fixture = TestBed.createComponent(TestHasAnyAuthorityDirective);
       const comp = fixture.componentInstance;
 
@@ -53,12 +48,12 @@ describe('HasAnyAuthorityDirective tests', () => {
       fixture.detectChanges();
 
       // THEN
-      expect(comp.content).toBeDefined();
+      expect(comp.content()).toBeDefined();
     });
 
     it('should not show restricted content to user if user has not required role', () => {
       // GIVEN
-      mockAccountService.hasAnyAuthority = jest.fn(() => false);
+      currentAccount.set(null);
       const fixture = TestBed.createComponent(TestHasAnyAuthorityDirective);
       const comp = fixture.componentInstance;
 
@@ -73,7 +68,6 @@ describe('HasAnyAuthorityDirective tests', () => {
   describe('change authorities', () => {
     it('should show or not show restricted content correctly if user authorities are changing', () => {
       // GIVEN
-      mockAccountService.hasAnyAuthority = jest.fn((): boolean => Boolean(currentAccount()));
       const fixture = TestBed.createComponent(TestHasAnyAuthorityDirective);
       const comp = fixture.componentInstance;
 
@@ -97,7 +91,7 @@ describe('HasAnyAuthorityDirective tests', () => {
       fixture.detectChanges();
 
       // THEN
-      expect(comp.content).toBeDefined();
+      expect(comp.content()).toBeDefined();
     });
   });
 });

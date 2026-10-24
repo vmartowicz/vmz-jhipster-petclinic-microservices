@@ -18,7 +18,7 @@ public class SpecialtyDTO implements Serializable {
     @Size(max = 80)
     private String name;
 
-    private Set<VetDTO> vets = new HashSet<>();
+    private Set<VetDTO> vetses = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -36,12 +36,12 @@ public class SpecialtyDTO implements Serializable {
         this.name = name;
     }
 
-    public Set<VetDTO> getVets() {
-        return vets;
+    public Set<VetDTO> getVetses() {
+        return vetses;
     }
 
-    public void setVets(Set<VetDTO> vets) {
-        this.vets = vets;
+    public void setVetses(Set<VetDTO> vetses) {
+        this.vetses = vetses;
     }
 
     @Override
@@ -71,7 +71,7 @@ public class SpecialtyDTO implements Serializable {
         return "SpecialtyDTO{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
-            ", vets=" + getVets() +
+            ", vetses=" + getVetses() +
             "}";
     }
 }

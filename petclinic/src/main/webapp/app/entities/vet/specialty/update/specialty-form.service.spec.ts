@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 
 import { sampleWithNewData, sampleWithRequiredData } from '../specialty.test-samples';
@@ -20,7 +21,7 @@ describe('Specialty Form Service', () => {
           expect.objectContaining({
             id: expect.any(Object),
             name: expect.any(Object),
-            vets: expect.any(Object),
+            vetses: expect.any(Object),
           }),
         );
       });
@@ -32,7 +33,7 @@ describe('Specialty Form Service', () => {
           expect.objectContaining({
             id: expect.any(Object),
             name: expect.any(Object),
-            vets: expect.any(Object),
+            vetses: expect.any(Object),
           }),
         );
       });

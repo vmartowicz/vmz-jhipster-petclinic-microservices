@@ -1,9 +1,9 @@
-import { HttpResponse, provideHttpClient } from '@angular/common/http';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { Subject, from, of } from 'rxjs';
 
 import { IAuthority } from '../authority.model';
@@ -21,9 +21,8 @@ describe('Authority Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
       providers: [
-        provideHttpClient(),
+        provideTranslateService(),
         provideHttpClientTesting(),
         {
           provide: ActivatedRoute,
@@ -56,24 +55,24 @@ describe('Authority Management Update Component', () => {
   describe('save', () => {
     it('should call create service on save for new entity', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<IAuthority>>();
+      const saveSubject = new Subject<IAuthority>();
       const authority = { name: '572a7ecc-bf76-43f4-8026-46b42fba586d' };
-      jest.spyOn(authorityFormService, 'getAuthority').mockReturnValue({ name: null });
-      jest.spyOn(authorityService, 'create').mockReturnValue(saveSubject);
-      jest.spyOn(comp, 'previousState');
+      vi.spyOn(authorityFormService, 'getAuthority').mockReturnValue({ name: null });
+      vi.spyOn(authorityService, 'create').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ authority: null });
       comp.ngOnInit();
 
       // WHEN
       comp.save();
-      expect(comp.isSaving).toEqual(true);
-      saveSubject.next(new HttpResponse({ body: authority }));
+      expect(comp.isSaving()).toEqual(true);
+      saveSubject.next(authority);
       saveSubject.complete();
 
       // THEN
       expect(authorityFormService.getAuthority).toHaveBeenCalled();
       expect(authorityService.create).toHaveBeenCalled();
-      expect(comp.isSaving).toEqual(false);
+      expect(comp.isSaving()).toEqual(false);
       expect(comp.previousState).toHaveBeenCalled();
     });
   });

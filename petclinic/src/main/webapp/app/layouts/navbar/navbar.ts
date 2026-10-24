@@ -1,16 +1,18 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgbCollapse } from '@ng-bootstrap/ng-bootstrap/collapse';
+import { NgbDropdown, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown';
 import { TranslateService } from '@ngx-translate/core';
 import { environment } from 'environments/environment';
 
-import { LANGUAGES } from 'app/config/language.constants';
-import { AccountService } from 'app/core/auth/account.service';
-import { StateStorageService } from 'app/core/auth/state-storage.service';
+import { LANGUAGES } from 'app/config';
+import { AccountService, StateStorageService } from 'app/core/auth';
 import { ProfileService } from 'app/layouts/profiles/profile.service';
 import { LoginService } from 'app/login/login.service';
-import HasAnyAuthorityDirective from 'app/shared/auth/has-any-authority.directive';
-import SharedModule from 'app/shared/shared.module';
+import { HasAnyAuthorityDirective } from 'app/shared/auth';
+import { FindLanguageFromKeyPipe, TranslateDirective } from 'app/shared/language';
 
 import ActiveMenuDirective from './active-menu.directive';
 
@@ -18,15 +20,27 @@ import ActiveMenuDirective from './active-menu.directive';
   selector: 'jhi-navbar',
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
-  imports: [RouterLink, RouterLinkActive, SharedModule, HasAnyAuthorityDirective, ActiveMenuDirective],
+  imports: [
+    RouterLink,
+    RouterLinkActive,
+    FontAwesomeModule,
+    NgbCollapse,
+    NgbDropdown,
+    NgbDropdownMenu,
+    NgbDropdownToggle,
+    HasAnyAuthorityDirective,
+    ActiveMenuDirective,
+    FindLanguageFromKeyPipe,
+    TranslateDirective,
+  ],
 })
 export default class Navbar implements OnInit {
-  inProduction = signal(true);
-  isNavbarCollapsed = signal(true);
+  readonly inProduction = signal(true);
+  readonly isNavbarCollapsed = signal(true);
   readonly languages = LANGUAGES;
-  openAPIEnabled = signal(false);
+  readonly openAPIEnabled = signal(false);
   readonly version: string;
-  account = inject(AccountService).trackCurrentAccount();
+  readonly account = inject(AccountService).account;
 
   private readonly loginService = inject(LoginService);
   private readonly translateService = inject(TranslateService);
@@ -67,9 +81,5 @@ export default class Navbar implements OnInit {
     this.collapseNavbar();
     this.loginService.logout();
     this.router.navigate(['']);
-  }
-
-  toggleNavbar(): void {
-    this.isNavbarCollapsed.update(isNavbarCollapsed => !isNavbarCollapsed);
   }
 }
