@@ -37,7 +37,10 @@ spring:
       enabled: false # we use bundler for livereload
   docker:
     compose:
-      enabled: true
+      # Disabled in dev: H2 is used and consul is provided by the petclinic gateway stack.
+      # Starting src/main/docker/postgresql.yml would override the H2 datasource (service connection)
+      # and fail because the PostgreSQL driver is only on the classpath with the "prod" Maven profile.
+      enabled: false
       profiles:
         active: dev
   jackson:
