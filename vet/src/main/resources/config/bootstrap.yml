@@ -30,6 +30,8 @@ spring:
       port: 8500
   docker:
     compose:
-      enabled: true
+      # Disabled: this bootstrap context is the parent of the application context, so a PostgreSQL
+      # service connection created here would override the H2 datasource used in dev (see application-dev.yml).
+      enabled: false
       lifecycle-management: start-only
       file: src/main/docker/postgresql.yml
